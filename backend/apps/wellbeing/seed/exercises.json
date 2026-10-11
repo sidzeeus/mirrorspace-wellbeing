@@ -1,0 +1,114 @@
+{
+  "_notice": "NEEDS_HUMAN_REVIEW. Every entry is placeholder sample content written by an engineer, not a clinician. It is loaded with review_status=needs_review, which keeps it hidden from students unless SHOW_UNREVIEWED_CONTENT is on in development. A qualified mental-health professional must review, rewrite or replace each one before it is approved. See docs/review-needed.md R1.",
+  "exercises": [
+    {
+      "slug": "five-senses",
+      "category": "grounding",
+      "duration_minutes": 3,
+      "pattern": {},
+      "translations": {
+        "en": {
+          "title": "Five senses",
+          "summary": "Notice what is around you, one sense at a time.",
+          "steps": [
+            "Look around and name five things you can see.",
+            "Notice four things you can touch, and how each one feels.",
+            "Listen for three sounds, near or far.",
+            "Notice two things you can smell.",
+            "Notice one thing you can taste, or take a sip of water."
+          ]
+        }
+      }
+    },
+    {
+      "slug": "paced-breathing-4-6",
+      "category": "breathing",
+      "duration_minutes": 3,
+      "pattern": { "inhale": 4, "exhale": 6 },
+      "translations": {
+        "en": {
+          "title": "Slow breathing",
+          "summary": "Breathe in for four, out for six. Stop whenever you like.",
+          "steps": [
+            "Sit or stand in a way that feels steady.",
+            "Breathe in through your nose while the light grows.",
+            "Breathe out slowly while it shrinks.",
+            "If you feel light-headed, stop and breathe normally."
+          ]
+        }
+      }
+    },
+    {
+      "slug": "three-lines",
+      "category": "journaling",
+      "duration_minutes": 5,
+      "pattern": {},
+      "translations": {
+        "en": {
+          "title": "Three lines",
+          "summary": "Write three short lines about today, on paper or anywhere private.",
+          "steps": [
+            "Write one line about something that happened today.",
+            "Write one line about how it felt.",
+            "Write one line about something you would like tomorrow.",
+            "Keep it or throw it away. Nothing you write is saved in this app."
+          ]
+        }
+      }
+    },
+    {
+      "slug": "one-small-step",
+      "category": "planning",
+      "duration_minutes": 4,
+      "pattern": {},
+      "translations": {
+        "en": {
+          "title": "One small step",
+          "summary": "Pick one thing that feels too big and find its first ten minutes.",
+          "steps": [
+            "Name one task that is on your mind.",
+            "Ask: what is the first part I could do in ten minutes?",
+            "Decide when you will do that part.",
+            "Stop there. The rest can wait until that part is done."
+          ]
+        }
+      }
+    },
+    {
+      "slug": "stretch-and-stand",
+      "category": "movement",
+      "duration_minutes": 2,
+      "pattern": {},
+      "translations": {
+        "en": {
+          "title": "Stretch and stand",
+          "summary": "A short, gentle movement break. Skip anything that is uncomfortable.",
+          "steps": [
+            "Stand up, or sit tall if standing is not comfortable.",
+            "Roll your shoulders back slowly a few times.",
+            "Reach both arms up, then let them drop.",
+            "Walk to a window or a door and back."
+          ]
+        }
+      }
+    },
+    {
+      "slug": "screens-down",
+      "category": "wind_down",
+      "duration_minutes": 5,
+      "pattern": {},
+      "translations": {
+        "en": {
+          "title": "Screens down",
+          "summary": "A simple routine for the last few minutes before sleep.",
+          "steps": [
+            "Put your phone somewhere you cannot reach from bed.",
+            "Dim the lights if you can.",
+            "Get tomorrow's first thing ready, such as clothes or a bag.",
+            "Lie down and let your breathing slow on its own."
+          ]
+        }
+      }
+    }
+  ]
+}
