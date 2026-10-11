@@ -1,0 +1,5 @@
+# Keep LF line endings everywhere so files behave the same inside Linux containers.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.woff2 binary

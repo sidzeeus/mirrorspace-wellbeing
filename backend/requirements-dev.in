@@ -1,0 +1,13 @@
+# Development and CI dependencies. Regenerate the lock file with:
+#   pip-compile --strip-extras --output-file requirements-dev.txt requirements-dev.in
+-c requirements.txt
+pytest
+pytest-django
+pytest-cov
+factory-boy
+ruff
+mypy
+django-stubs
+djangorestframework-stubs
+pip-tools
+pip-audit

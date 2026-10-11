@@ -1,0 +1,15 @@
+# Runtime dependencies. Edit this file, then regenerate the lock file:
+#   pip-compile --strip-extras --output-file requirements.txt requirements.in
+Django>=5.2,<5.3
+djangorestframework
+django-environ
+django-cors-headers
+drf-spectacular
+psycopg[binary]
+celery
+redis
+argon2-cffi
+gunicorn
+sentry-sdk
+whitenoise
+tzdata
