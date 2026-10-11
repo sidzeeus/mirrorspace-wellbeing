@@ -1,0 +1,9 @@
+{% autoescape off %}Hello,
+
+Someone tried to create a {{ app_name }} account with this address, but you already have one. No new account was created and nothing has changed.
+
+Sign in: {{ login_link }}
+Forgot your password? {{ reset_link }}
+
+If this was not you, you can ignore this email.
+{% endautoescape %}

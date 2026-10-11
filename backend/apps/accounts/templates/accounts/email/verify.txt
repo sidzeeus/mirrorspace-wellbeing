@@ -1,0 +1,10 @@
+{% autoescape off %}Hello,
+
+Someone used this address to create a {{ app_name }} account. If that was you, confirm your email by opening this link:
+
+{{ link }}
+
+The link works for {{ valid_days }} days. If you did not create an account, ignore this email and nothing will happen. The unconfirmed account is removed automatically.
+
+{{ app_name }} is a self-help tool. It is not therapy and it is not monitored by anyone.
+{% endautoescape %}
