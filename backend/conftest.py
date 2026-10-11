@@ -43,3 +43,25 @@ def auth_client(user) -> APIClient:
     client = APIClient()
     assert client.login(email=user.email, password=DEFAULT_PASSWORD)
     return client
+
+
+@pytest.fixture
+def set_now(monkeypatch):
+    """Freeze "now". Use force-authenticated clients afterwards (sessions have expiry)."""
+
+    def _set(moment):
+        monkeypatch.setattr("django.utils.timezone.now", lambda: moment)
+
+    return _set
+
+
+@pytest.fixture
+def as_user():
+    """An API client acting as `user` without a session, safe to use with `set_now`."""
+
+    def _client(user) -> APIClient:
+        client = APIClient()
+        client.force_authenticate(user)
+        return client
+
+    return _client

@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import logging
 from typing import cast
 
 from django.contrib.auth import authenticate, login, logout
 from django.middleware.csrf import get_token
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -17,6 +19,7 @@ from rest_framework.views import APIView
 from config.views import CsrfProtectedAPIView
 
 from . import services
+from .export import build_export
 from .models import User
 from .serializers import (
     CsrfSerializer,
@@ -33,11 +36,14 @@ from .serializers import (
 from .throttles import (
     AccountDeleteThrottle,
     EmailActionThrottle,
+    ExportThrottle,
     LoginEmailThrottle,
     LoginIPThrottle,
     RegisterThrottle,
 )
 from .tokens import read_email_verification_token, user_from_password_reset_parts
+
+logger = logging.getLogger(__name__)
 
 # One wording for every "we may have sent an email" response, so the reply never
 # reveals whether an address has an account.
@@ -198,6 +204,25 @@ class PasswordResetConfirmView(CsrfProtectedAPIView):
             raise ValidationError({"new_password": exc.detail}) from exc
         services.reset_password(user, data["new_password"])
         return _detail("Your password has been changed. Sign in with the new one.")
+
+
+class ExportView(APIView):
+    """GET /api/v1/export: download everything held about the signed-in person."""
+
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [ExportThrottle]
+
+    @extend_schema(responses={200: OpenApiTypes.OBJECT})
+    def get(self, request: Request) -> Response:
+        user = cast(User, request.user)
+        logger.info("data_export_downloaded", extra={"user_id": str(user.pk)})
+        return Response(
+            build_export(user),
+            headers={
+                "Content-Disposition": 'attachment; filename="my-data.json"',
+                "Cache-Control": "no-store",
+            },
+        )
 
 
 class AccountView(APIView):

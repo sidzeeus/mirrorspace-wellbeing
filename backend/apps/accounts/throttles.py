@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from django.utils.crypto import salted_hmac
 from rest_framework.request import Request
-from rest_framework.throttling import SimpleRateThrottle
+from rest_framework.throttling import SimpleRateThrottle, UserRateThrottle
 
 from config.api import IPThrottle
 
@@ -47,3 +47,7 @@ class EmailActionThrottle(IPThrottle):
 
 class AccountDeleteThrottle(IPThrottle):
     scope = "account_delete"
+
+
+class ExportThrottle(UserRateThrottle):
+    scope = "export"
