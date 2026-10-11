@@ -2,7 +2,7 @@
 
 Updated at the end of every phase. Each entry says what is done, what is unfinished, and what was assumed.
 
-Current phase: **Phase 1 complete. Phase 2 not started.**
+Current phase: **Phase 2 complete. Phase 3 not started.**
 
 ## Phase checklist
 
@@ -24,13 +24,13 @@ Current phase: **Phase 1 complete. Phase 2 not started.**
 - [x] `manage.py check --deploy` clean under production settings
 
 ### Phase 2: Core wellbeing (Prompt 2)
-- [ ] checkins (no free-text note), local date + timezone handling
-- [ ] episodes and triggers
-- [ ] wellbeing: exercises, translations, exercise events, seed command
-- [ ] Patterns endpoint (correlation-only observations)
-- [ ] Export and deletion cover the new models
-- [ ] Cross-user access tests for every user-owned resource
-- [ ] `docs/api.md`
+- [x] checkins (no free-text note), local date + timezone handling
+- [x] episodes and triggers
+- [x] wellbeing: exercises, translations, exercise events, seed command
+- [x] Patterns endpoint (correlation-only observations)
+- [x] Export and deletion cover the new models
+- [x] Cross-user access tests for every user-owned resource
+- [x] `docs/api.md`
 
 ### Phase 3: Safety and sharing (Prompt 3)
 - [ ] safety: safety plan, resource directory, stale-entry command
@@ -114,3 +114,30 @@ Assumptions
 
 Needs human review
 - R15 (account email wording) and R16 (password and session rules) added to `docs/review-needed.md`.
+
+### 2026-10-12: Phase 2 (Core wellbeing)
+
+Done
+- `backend/apps/checkins`: `CheckIn` (one per user per local day, structured fields only, database range and not-empty constraints), `dates.py` (local date from the zone database), `patterns.py` and `GET /api/v1/patterns`.
+- `backend/apps/episodes`: `Trigger` and `Episode`, with `label` and `what_helped` encrypted at rest. An episode can only point at the owner's own trigger.
+- `backend/apps/wellbeing`: `Exercise`, `ExerciseTranslation`, `ExerciseEvent`; only approved content is served; `python manage.py seed_exercises` loads six placeholders as `needs_review`.
+- `backend/config/fields.py`: `EncryptedTextField` with key rotation. `backend/config/views.py`: `OwnedModelViewSet`.
+- `GET /api/v1/export` with a registry (`apps/accounts/export.py`) that each app adds a section to.
+- `docs/api.md` documents every route with examples and error cases.
+
+Verified on 2026-10-12
+- 290 tests pass on PostgreSQL 16, 97% coverage; ruff, ruff format, mypy clean; no missing migrations; OpenAPI schema generates with no warnings; `check --deploy` clean.
+- Cross-user contract (`OwnedResourceContract`) passes for check-ins, triggers, episodes and exercise events.
+- `tests/test_data_coverage.py` discovers user-owned models by introspection and fails if one is missing from the export or would survive account deletion.
+- Canary-string test: trigger labels and "what helped" text do not appear in logs.
+
+Unfinished or not verified
+- The CI workflow still has not run on GitHub (no remote).
+- No Hindi exercise text exists; the language fallback is tested with fixture data only.
+- Episode list has no date filter yet; add if the frontend needs it.
+
+Assumptions
+- Recorded as B13 to B20 and Q9 in `docs/decisions.md`.
+
+Needs human review
+- R1 and R10 now point at real placeholder content. R17 (scale meanings) and R18 (encryption key procedure) added.

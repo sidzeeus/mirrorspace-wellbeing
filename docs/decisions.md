@@ -38,6 +38,14 @@ Choices made while building where the specification was silent or contradictory.
 | B10 | OpenAPI schema in production | Staff only. Public in local and test. | The route list is useful to the team and of no use to students. | 2026-10-12 |
 | B11 | Django admin | Shows that an account exists and can lock it. Profiles and wellbeing data are not registered. | Operators should not be able to browse student records (blueprint section 2). | 2026-10-12 |
 | B12 | Unauthenticated requests | Answered with 401, not DRF's default 403. | Lets the frontend tell "signed out" from "not allowed" without guessing. | 2026-10-12 |
+| B13 | Free text in Phase 2 | Two short fields only: a trigger's `label` (80 characters) and an episode's `what_helped` (200). Both are encrypted at rest with Fernet (`FIELD_ENCRYPTION_KEYS`), never logged, and excluded from any email. The blueprint's optional episode "description" is not built. | The features need the person's own words, but long open text is the hardest data to protect, so it is kept short and encrypted (same reasoning as D4). | 2026-10-12 |
+| B14 | Scales | Mood, sleep quality, energy, stress and episode intensity all use 1 to 5. Sleep duration is hours with one decimal. | One scale everywhere keeps the check-in under 20 seconds and the controls large. | 2026-10-12 |
+| B15 | Second check-in on the same day | `POST /check-ins` replaces that day's check-in (200) instead of failing. | No error state on a flaky phone connection, and still exactly one row per day. | 2026-10-12 |
+| B16 | Back-dating check-ins | Allowed up to 7 days back, never forward. The date cannot be changed afterwards. | Lets someone fill in yesterday without making history freely editable. | 2026-10-12 |
+| B17 | Which local date a check-in gets | The date in the person's time zone at the moment of saving, using the zone database (daylight saving aware). Changing time zone later does not rewrite past check-ins. | A late-night check-in belongs to the day the person was living in. | 2026-10-12 |
+| B18 | Unreviewed content | Hidden from the API unless `SHOW_UNREVIEWED_CONTENT` is on; production settings force it off. When shown, items carry `reviewed: false`. Draft and retired content is never served. | Non-negotiable 8: placeholders must not be able to reach students. | 2026-10-12 |
+| B19 | Pattern observations | Shown only with 6+ paired days, 2+ days on each side of the person's median sleep, and a difference of 0.5 or more. Otherwise a neutral "not enough yet" line. | Avoids reading meaning into noise. | 2026-10-12 |
+| B20 | Exercise feedback | An append-only event log per user; "hidden" is derived from the latest hide/unhide event. Events can be deleted, not edited. | Simple, reversible, and fully exportable. | 2026-10-12 |
 
 ## Open questions
 
@@ -52,4 +60,5 @@ These are for the project owner. Until answered, the stated default is used.
 | Q5 | Default timezone for new accounts. | Browser-detected timezone sent at registration, falling back to `Asia/Kolkata`. |
 | Q6 | Chat transcript retention period when a student turns transcripts on. | 30 days, user-adjustable downward, deletable at any time. |
 | Q7 | Who is the named human owner for helpline verification, and how often? | Unassigned. Entries older than 90 days are flagged stale; release is blocked on re-verification. |
+| Q9 | Should the patterns screen show the "You checked in on X of the last N days" line at all? | Shown, as a plain count with no judgement. Flagged for review under R10. |
 | Q8 | Final product name and sender domain for email. | Working name only; sender address comes from environment. |
