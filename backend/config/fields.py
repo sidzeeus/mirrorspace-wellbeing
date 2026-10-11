@@ -12,6 +12,7 @@ sorted or made unique in SQL.
 
 from __future__ import annotations
 
+import json
 from functools import lru_cache
 from typing import Any
 
@@ -19,6 +20,7 @@ from cryptography.fernet import Fernet, MultiFernet
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
+from django.utils.crypto import salted_hmac
 
 
 @lru_cache(maxsize=4)
@@ -49,3 +51,35 @@ class EncryptedTextField(models.TextField):
         if value is None or value == "":
             return value
         return encrypt(str(value))
+
+
+class EncryptedJSONField(models.TextField):
+    """A JSON value (list or dict) that is encrypted at rest."""
+
+    def from_db_value(self, value: str | None, expression: Any, connection: Any) -> Any:
+        if value is None or value == "":
+            return self.get_default() if self.has_default() else None
+        return json.loads(decrypt(value))
+
+    def to_python(self, value: Any) -> Any:
+        return value
+
+    def get_prep_value(self, value: Any) -> str | None:
+        if value is None:
+            return None
+        return encrypt(json.dumps(value, ensure_ascii=False))
+
+
+def keyed_hash(purpose: str, value: str) -> str:
+    """A one-way, secret-keyed fingerprint (HMAC-SHA256, hex).
+
+    Used where a value must be matched or counted without being stored: a contact's
+    email for duplicate and "do not email" checks, and a deleted user's id in the
+    audit trail. Without the server's secret key the fingerprint cannot be reversed
+    or recomputed.
+    """
+    if not settings.PSEUDONYM_KEY:
+        raise ImproperlyConfigured("PSEUDONYM_KEY must be set.")
+    return salted_hmac(
+        f"keyed-hash.{purpose}", value, secret=settings.PSEUDONYM_KEY, algorithm="sha256"
+    ).hexdigest()
