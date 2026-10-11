@@ -14,7 +14,7 @@ Nothing on this list may reach real students until its "Signed off by" column is
 | R4 | SOS screen wording and the default SOS message text | Safeguarding professional | SOS flow, Phase 3 and Prompt 5d | Not yet written | |
 | R5 | Weekly email wording, including the fixed neutral line | Safeguarding professional | Weekly message generator, Phase 3 | Not yet written | |
 | R6 | Privacy notice, consent notices and their versions | India-qualified privacy lawyer (DPDP Act and Rules) | Onboarding, sharing flow, `docs/privacy.md` | Not yet written | |
-| R7 | Age policy (18+ self-confirmation) and whether it is sufficient | India-qualified privacy lawyer | Registration | Decision D1; mechanism not yet built | |
+| R7 | Age policy (18+ self-confirmation) and whether it is sufficient | India-qualified privacy lawyer | Registration (`RegisterSerializer.validate_age_confirmed`) | Self-confirmation checkbox built in Phase 1 | |
 | R8 | Retention periods: 12-month pseudonymized audit data, chat transcript retention | Privacy lawyer | `docs/privacy.md` | Decision D5; not yet built | |
 | R9 | "What this app is and is not" statement and every "not therapy, not monitored" disclaimer | Mental-health professional and lawyer | Landing page, onboarding, SOS, chat | Not yet written | |
 | R10 | Pattern observation sentences (correlation-only wording) | Mental-health professional | Patterns endpoint, Phase 2 | Not yet written | |
@@ -22,6 +22,8 @@ Nothing on this list may reach real students until its "Signed off by" column is
 | R12 | AI chat system policy, curated knowledge documents, and evaluation-set review | Clinician | Chat app, Phase 4 | Not yet written | |
 | R13 | AI and email provider data-processing, retention and training terms | Privacy lawyer | Provider choice (Q1, Q2) | Provider not chosen | |
 | R14 | Overall safeguarding review before any real student use | Safeguarding lead | Whole product | Not started | |
+| R15 | Account email wording (confirm email, password reset, "you already have an account"), including the line "It is not therapy and it is not monitored by anyone." | Lawyer for the disclaimer; owner for tone | `backend/apps/accounts/templates/accounts/email/` | Placeholder written in Phase 1 | |
+| R16 | Password rules (10+ characters, common-password check) and the 7-day idle session timeout | Owner / security reviewer | `backend/config/settings/base.py` | Built in Phase 1 | |
 
 ## String checklists
 

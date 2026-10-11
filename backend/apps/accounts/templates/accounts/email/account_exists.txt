@@ -1,4 +1,4 @@
-{% autoescape off %}Hello,
+{# NEEDS_HUMAN_REVIEW: placeholder wording, see docs/review-needed.md R15 #}{% autoescape off %}Hello,
 
 Someone tried to create a {{ app_name }} account with this address, but you already have one. No new account was created and nothing has changed.
 
