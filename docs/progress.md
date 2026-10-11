@@ -2,7 +2,7 @@
 
 Updated at the end of every phase. Each entry says what is done, what is unfinished, and what was assumed.
 
-Current phase: **Phase 2 complete. Phase 3 not started.**
+Current phase: **Phase 3 complete (backend for Phases 1 to 3 done). Frontend (Prompt 4) not started.**
 
 ## Phase checklist
 
@@ -33,12 +33,12 @@ Current phase: **Phase 2 complete. Phase 3 not started.**
 - [x] `docs/api.md`
 
 ### Phase 3: Safety and sharing (Prompt 3)
-- [ ] safety: safety plan, resource directory, stale-entry command
-- [ ] sharing: trusted contacts, double opt-in, unsubscribe, consent records, weekly message generator, preview
-- [ ] notifications: idempotent Celery tasks, consent re-check at send, retries, bounces, timezone/DST
-- [ ] SOS notify-contact with explicit confirmation and rate limits
-- [ ] audit: consent and security events, pseudonymization on deletion
-- [ ] `docs/privacy.md`
+- [x] safety: safety plan, resource directory, stale-entry command
+- [x] sharing: trusted contacts, double opt-in, unsubscribe, consent records, weekly message generator, preview
+- [x] notifications: idempotent Celery tasks, consent re-check at send, retries, bounces, timezone/DST
+- [x] SOS notify-contact with explicit confirmation and rate limits
+- [x] audit: consent and security events, pseudonymization on deletion
+- [x] `docs/privacy.md`
 
 ### Frontend (Prompts 4, 5a to 5e, 6)
 - [ ] 4: Design plan, tokens, themes, typography, core components, the Lumen, landing page
@@ -141,3 +141,35 @@ Assumptions
 
 Needs human review
 - R1 and R10 now point at real placeholder content. R17 (scale meanings) and R18 (encryption key procedure) added.
+
+### 2026-10-12: Phase 3 (Safety and sharing)
+
+Done
+- `backend/apps/safety`: `SafetyPlan` (one per user, encrypted, no id in the URL) and `Resource` (served only once verified; `stale` flag). Commands `seed_resources` and `flag_stale_resources`.
+- `backend/apps/sharing`: `TrustedContact` (encrypted, double opt-in), `SuppressedAddress` (do-not-email fingerprints), `ConsentRecord`; `weekly.py` (the four-field note), `schedule.py` (zone-aware send times), `sos.py`, `tokens.py`, `notices.py`.
+- `backend/apps/notifications`: `Notification` with a unique idempotency key; `services.attempt` (consent re-check, at-most-once send, retries, bounces); provider adapter; planner and sweeper tasks; bounce webhook.
+- `backend/apps/audit`: `AuditEvent`, `record`, `pseudonymize_user`, `purge_expired`. Account flows now write audit events.
+- `docs/privacy.md` and the Phase 3 section of `docs/api.md`.
+
+Verified on 2026-10-12
+- 521 tests pass on PostgreSQL 16, 98% coverage; ruff, ruff format, mypy clean; no missing migrations; OpenAPI schema generates with no warnings; `check --deploy` clean.
+- Every test named in Prompt 3 exists: no email without active consent; consent revoked, paused, contact unsubscribed or removed between scheduling and sending; duplicate task delivery; bounce handling; time zone and DST; unsubscribe; double opt-in; SOS explicit confirmation and rate limits; cross-user contracts for safety plan, contacts, consents and notifications.
+- Weekly note: the sent email is compared byte for byte with one built from the four allowed fields; the collector is shown to run only a COUNT and a name lookup.
+- Live on the Docker stack with a real worker: one invitation; consent refused before acceptance; one weekly note although the planner ran twice; one SOS email although the request was sent twice; one-click unsubscribe withdrew consent; no private text in structured logs; after account deletion zero owned rows remained and 13 audit rows were pseudonymized.
+
+Bugs the tests caught during this phase (all fixed)
+- A contact's email address could be changed with PATCH (a declared serializer field ignores `read_only_fields`).
+- The "time zone changed, reschedule" signal handler was held by a weak reference and silently disconnected.
+
+Unfinished or not verified
+- The CI workflow still has not run on GitHub (no remote).
+- No real email provider is connected. Delivery was verified with Django's SMTP error types and the console backend, not against a provider API.
+- The bounce webhook is generic; a provider-specific adapter is needed once one is chosen (R22).
+- Invitation, weekly and SOS emails are plain text and English only.
+- Admin MFA and infrastructure-level rate limiting remain for the hardening phase.
+
+Assumptions
+- Recorded as B21 to B37 and Q10, Q11 in `docs/decisions.md`.
+
+Needs human review
+- R2, R4, R5, R6, R8 now point at real placeholder content. R19 to R22 added.

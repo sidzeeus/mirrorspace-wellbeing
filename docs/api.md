@@ -2,7 +2,7 @@
 
 Base path: `/api/v1`. The machine-readable description is at `GET /api/v1/schema` (OpenAPI 3; staff only in production).
 
-This file documents the routes that exist today (Phases 1 and 2). It is updated with each phase.
+This file documents the routes that exist today (Phases 1 to 3). It is updated with each phase.
 
 ## Rules that apply to every route
 
@@ -161,7 +161,12 @@ Limit: 10 an hour. Returns everything held about the signed-in person as a JSON 
   "check_ins": [{"id": "...", "local_date": "2026-10-11", "timezone": "Asia/Kolkata", "mood": 4.0, "sleep_hours": 6.5, "sleep_quality": null, "energy": 3.0, "stress": null, "created_at": "...", "updated_at": "..."}],
   "triggers": [{"id": "...", "label": "Exam week", "is_active": true, "preferred_exercises": ["five-senses"], "created_at": "..."}],
   "episodes": [{"id": "...", "occurred_at": "...", "intensity": 4, "duration_minutes": 20, "trigger_id": "...", "helped_exercise": "five-senses", "what_helped": "Calling my sister", "created_at": "..."}],
-  "exercise_events": [{"id": "...", "exercise": "five-senses", "kind": "not_helpful", "created_at": "..."}]
+  "exercise_events": [{"id": "...", "exercise": "five-senses", "kind": "not_helpful", "created_at": "..."}],
+  "safety_plan": {"warning_signs": ["..."], "coping_steps": ["..."], "people": ["..."], "resources": ["in-tele-manas"], "updated_at": "..."},
+  "trusted_contacts": [{"id": "...", "name": "Meera", "email": "meera@example.com", "relationship": "sister", "status": "confirmed", "invited_at": "...", "responded_at": "...", "created_at": "..."}],
+  "consents": [{"id": "...", "purpose": "weekly_summary", "contact_id": "...", "scope": ["display_name", "week_start", "week_end", "check_in_days"], "notice_version": "2026-10-placeholder-1", "status": "revoked", "status_reason": "revoked_by_user", "granted_at": "...", "last_confirmed_at": "...", "paused_at": null, "revoked_at": "...", "send_weekday": 0, "send_hour": 9}],
+  "notifications": [{"id": "...", "purpose": "weekly_summary", "contact_id": "...", "status": "sent", "status_code": "", "scheduled_at": "...", "sent_at": "..."}],
+  "audit_events": [{"action": "consent.granted", "object_type": "consentrecord", "metadata": {"purpose": "weekly_summary", "notice_version": "2026-10-placeholder-1"}, "created_at": "..."}]
 }
 ```
 
@@ -377,3 +382,294 @@ The person's own events, newest first, paginated.
 
 ### GET, DELETE /exercise-events/{id}
 Read or remove one event. Events cannot be edited (`405`).
+
+## Safety plan
+
+One plan per person, in their own words. Everything written is encrypted at rest. There is no id in the URL: the plan always belongs to the signed-in person.
+
+### GET /safety-plan
+Before anything is saved, returns an empty plan (and stores nothing):
+
+```json
+{"warning_signs": [], "coping_steps": [], "people": [], "resource_ids": [], "updated_at": null}
+```
+
+### PUT /safety-plan
+Creates or replaces the plan. Each list holds up to 12 lines of up to 200 characters; blank lines are dropped.
+
+```json
+{
+  "warning_signs": ["Skipping meals", "Not replying to messages"],
+  "coping_steps": ["Walk to the end of the road", "Slow breathing for three minutes"],
+  "people": ["Meera, my sister"],
+  "resource_ids": ["3b1f2c9e-5a44-4c1d-9f0e-8d7c6b5a4e21"]
+}
+```
+
+`200` returns the saved plan with `updated_at`.
+`400`: a list with more than 12 lines, a line over 200 characters, a value that is not a list, or a `resource_ids` entry that is unknown or not verified.
+
+### DELETE /safety-plan
+Removes the plan. `204`.
+
+## Resources
+
+### GET /resources (public)
+Helplines and services that a named person has verified. Public, so they can be shown before sign-up and cached for offline use. Filters: `?region=IN` (also matches `IN-KA`), `?language=hi`, `?type=` (`helpline`, `emergency`, `text_line`, `campus`, `online`).
+
+```json
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": "3b1f2c9e-5a44-4c1d-9f0e-8d7c6b5a4e21",
+      "slug": "in-tele-manas",
+      "name": "Tele-MANAS",
+      "description": "...",
+      "type": "helpline",
+      "region": "IN",
+      "languages": ["en", "hi"],
+      "phone": "14416",
+      "url": "",
+      "hours": "",
+      "source": "...",
+      "verified_on": "2026-10-01",
+      "stale": false,
+      "reviewed": true
+    }
+  ]
+}
+```
+
+- Only entries with status `approved` are returned. In development, `SHOW_UNREVIEWED_CONTENT=true` also returns placeholders with `"reviewed": false`.
+- `stale` is `true` when the entry was last verified more than `RESOURCE_MAX_AGE_DAYS` (90) ago, or never. Stale entries are still listed so the screen can flag them.
+- The seeded entries are unverified placeholders (NEEDS_HUMAN_REVIEW) and are hidden in production until a person verifies them.
+
+### GET /resources/{id} (public)
+One entry. `404` if unknown or not verified. The directory is read-only (`405` for writes).
+
+## Trusted contacts
+
+People the student chooses. A contact gets no account and sees no records. Name, email and relationship are encrypted at rest. Up to 3 contacts.
+
+| Status | Meaning |
+|---|---|
+| `pending` | Invited. Nothing else can be sent to them. |
+| `confirmed` | They accepted. They can receive the weekly note (if turned on) and a Support message. |
+| `declined` | They said no. Final. |
+| `unsubscribed` | They unsubscribed from an email. |
+| `bounced` | Their mail server permanently rejected a message. |
+| `unavailable` | The address has asked not to receive email from this app. No invitation was sent. |
+
+### GET /trusted-contacts
+The student's own contacts.
+
+### POST /trusted-contacts
+Limit: 10 a day (shared with re-sending invitations). Sends one invitation email.
+
+```json
+{"name": "Meera", "email": "meera@example.com", "relationship": "sister"}
+```
+
+`201`:
+
+```json
+{"id": "467425ab-775c-4869-b3d7-48995991a617", "name": "Meera", "email": "meera@example.com", "relationship": "sister", "status": "pending", "invited_at": "2026-10-12T04:40:00Z", "responded_at": null, "created_at": "2026-10-12T04:40:00Z"}
+```
+
+Errors (`400`, `{"detail", "code"}`):
+
+| `code` | Meaning |
+|---|---|
+| `display_name_required` | Add a display name first, so the contact knows who is asking. |
+| `own_email` | The student's own address. |
+| `duplicate_contact` | Already added. |
+| `too_many_contacts` | 3 already exist. |
+
+### GET, PATCH, DELETE /trusted-contacts/{id}
+`PATCH` changes `name` or `relationship` only; the address cannot be edited. `DELETE` removes the contact and withdraws every consent involving them (`204`).
+
+### POST /trusted-contacts/{id}/resend-invitation
+At most 3 invitations in total, at least 24 hours apart. `400` codes: `not_pending`, `invitation_too_soon`, `invitation_limit`, `unavailable`.
+
+## Links opened by a contact (public)
+
+The contact has no account. A signed token from their email is the only credential, sent in the request body. All of these need the CSRF header, and are limited to 30 an hour per address. An invalid or expired token answers `400` `{"detail": "This link is not valid or has expired.", "code": "invalid_link"}`.
+
+| Route | Body | Result |
+|---|---|---|
+| `POST /contact-invitations/view` | `{"token"}` | `{"from_name", "status", "what_you_may_receive", "limits"}`. The only student data shown is their display name. |
+| `POST /contact-invitations/accept` | `{"token"}` | Contact becomes `confirmed`. Repeating it is harmless. |
+| `POST /contact-invitations/decline` | `{"token"}` | Contact becomes `declined`. A later accept answers `400` `invitation_closed`. |
+| `POST /unsubscribe` | `{"token", "block_all": false}` | Contact becomes `unsubscribed` and every consent involving them is withdrawn. `block_all: true` also stops every message from this app to that address, for any student. |
+| `POST /unsubscribe/one-click?token=...` | none | Same as unsubscribe. This is the target of the `List-Unsubscribe` email header, called by mail providers, so it takes no cookie and no CSRF token. |
+
+Invitation links last 14 days. Unsubscribe links do not expire.
+
+## Sharing and consent
+
+Sharing is off until the student turns it on. The list of consents is also the consent history: withdrawing keeps the row.
+
+### GET /sharing/notices (public)
+The notice versions a consent request must quote, and the weekly notice text.
+
+### GET /sharing/preview?contact={id}
+The exact weekly note, before anything is turned on. Turns nothing on and sends nothing.
+
+```json
+{
+  "recipient": {"id": "467425ab-...", "name": "Meera", "email": "meera@example.com"},
+  "recipient_can_receive": true,
+  "subject": "Weekly note from Asha Rao",
+  "body": "Asha Rao uses Mirrorspace and chose to send you this short note each week.\n\nWeek of 5 October 2026 to 11 October 2026: checked in 3 of 7 days.\n\nThis is a routine weekly note. Silence does not mean anything either way.\n\nMirrorspace is a self-help tool. It is not monitored by anyone and it is not an emergency service.\n\nTo stop receiving these messages: [a personal unsubscribe link]",
+  "fields_shared": ["display_name", "week_start", "week_end", "check_in_days"],
+  "values": {"display_name": "Asha Rao", "week_start": "2026-10-05", "week_end": "2026-10-11", "check_in_days": 3},
+  "notice": {"purpose": "...", "shared": ["..."], "never_shared": ["..."], "limits": ["..."], "control": "..."},
+  "notice_version": "2026-10-placeholder-1",
+  "preview_hash": "9f2c...64-hex-characters",
+  "default_schedule": {"send_weekday": 0, "send_hour": 9},
+  "reconfirm_every_days": 90
+}
+```
+
+`400` `invalid_contact` for a missing, malformed, unknown or someone else's contact id (all identical).
+
+### GET /sharing/consent
+Every consent the student has given, newest first.
+
+```json
+{
+  "id": "0c7d...", "purpose": "weekly_summary", "contact": "467425ab-...",
+  "scope": ["display_name", "week_start", "week_end", "check_in_days"],
+  "notice_version": "2026-10-placeholder-1",
+  "status": "active", "status_reason": "",
+  "granted_at": "2026-10-12T04:45:00Z", "last_confirmed_at": "2026-10-12T04:45:00Z",
+  "paused_at": null, "revoked_at": null,
+  "send_weekday": 0, "send_hour": 9, "next_send_at": "2026-10-19T03:30:00Z"
+}
+```
+
+`send_weekday` is 0 (Monday) to 6; `send_hour` is 0 to 23, in the student's own time zone. `next_send_at` is UTC and is `null` whenever the consent is not active.
+
+### POST /sharing/consent
+Turns the weekly note on for one contact.
+
+```json
+{
+  "purpose": "weekly_summary",
+  "contact": "467425ab-775c-4869-b3d7-48995991a617",
+  "notice_version": "2026-10-placeholder-1",
+  "preview_hash": "9f2c...from-the-preview",
+  "confirmed": true,
+  "send_weekday": 0,
+  "send_hour": 9
+}
+```
+
+`201` returns the consent. Nothing is emailed at this point. Every condition is required; `400` otherwise:
+
+| `code` or field | Meaning |
+|---|---|
+| `confirmed` | Missing or not `true`. |
+| `preview_required` | No contact or no preview hash. |
+| `invalid_contact` | Not one of the student's contacts. |
+| `contact_not_confirmed` | The contact has not accepted the invitation. |
+| `notice_outdated` | The notice changed since it was shown. |
+| `preview_outdated` | The message wording changed since the preview. |
+| `already_enabled` | A live consent already exists for this contact. |
+
+Recording that the privacy notice was read uses the same route: `{"purpose": "privacy_notice", "notice_version": "...", "confirmed": true}`.
+
+### DELETE /sharing/consent/{id}
+Withdraws consent. `200` with the consent, now `status: "revoked"`, `revoked_at` set and `next_send_at: null`. The row is kept. Repeating the call is harmless.
+
+### POST /sharing/consent/{id}/pause, /resume, /confirm
+- `pause`: stops the schedule. `400` `not_active` unless active.
+- `resume`: restarts it and counts as a fresh confirmation. `400` `not_paused`, `contact_not_confirmed` or `notice_outdated`.
+- `confirm`: refreshes `last_confirmed_at`. A weekly note that is not confirmed for 90 days pauses itself with `status_reason: "reconfirmation_needed"`.
+
+Consents cannot be edited (`405` for `PUT` and `PATCH`).
+
+## Support (SOS)
+
+A message the student chooses to send to a confirmed contact. Nothing else in the system can send it. The text is fixed and cannot be edited.
+
+### POST /sos/preview
+Body `{"contact": "<id>"}`. Shows the exact recipient and exact text. Sends nothing and records nothing.
+
+```json
+{
+  "recipient": {"id": "467425ab-...", "name": "Meera", "email": "meera@example.com"},
+  "recipient_can_receive": true,
+  "subject": "Asha Rao would like to hear from you",
+  "body": "Asha Rao asked Mirrorspace to send you this message.\n\nThey are having a difficult moment and would like to hear from you. ...\n\nTo stop receiving these messages: [a personal unsubscribe link]",
+  "message_hash": "5d1a...64-hex-characters",
+  "limits": "This app is not monitored. It cannot tell you whether the message was read, and it cannot guarantee a reply."
+}
+```
+
+### POST /sos/notify-contact
+Limits: 3 an hour and 6 in 24 hours.
+
+```json
+{
+  "contact": "467425ab-775c-4869-b3d7-48995991a617",
+  "message_hash": "5d1a...from-the-preview",
+  "idempotency_key": "a3c1e2f4-6b7d-4e8f-9a0b-1c2d3e4f5a6b",
+  "confirmed": true
+}
+```
+
+`idempotency_key` is a UUID the client generates once per send attempt. Repeating the request with the same key (a double tap, a retry on a bad connection) sends one message.
+
+`202`:
+
+```json
+{
+  "notification_id": "465acb65-d327-47b5-9d7f-6a3e169b38ba",
+  "status": "pending",
+  "detail": "Your message is queued to send. This app cannot tell you whether it has been read. If you need support now, you can call a helpline."
+}
+```
+
+The reply never says "sent" or "delivered". Follow the status at `GET /notifications/{id}`.
+
+`400` (nothing is sent in any of these cases):
+
+| `code` or field | Meaning |
+|---|---|
+| `confirmed` | Missing or not `true`. |
+| `invalid_contact` | Not one of the student's contacts. |
+| `contact_not_confirmed` | The contact has not agreed to receive messages. |
+| `preview_outdated` | The hash does not match what would be sent now (different contact, changed display name, changed wording). |
+| `sos_daily_limit` | 6 already sent in 24 hours. |
+
+`429` when the hourly limit is reached.
+
+## Notifications
+
+### GET /notifications and GET /notifications/{id}
+What was sent on the student's behalf and what happened to it. Read-only. There is no message text.
+
+```json
+{"id": "465acb65-...", "purpose": "sos", "contact": "467425ab-...", "status": "sent", "status_code": "", "scheduled_at": "2026-10-12T04:50:00Z", "sent_at": "2026-10-12T04:50:02Z"}
+```
+
+| `status` | Meaning |
+|---|---|
+| `pending` / `sending` | Waiting or in progress. |
+| `sent` | The email provider accepted it. This does **not** mean it reached an inbox or was read. |
+| `cancelled` | Not sent. `status_code` says why: `consent_inactive`, `contact_not_confirmed`, `contact_removed`, `address_suppressed`, `account_closed`, `invitation_closed`. |
+| `failed` | Could not be sent: `provider_unavailable` (gave up after 5 attempts), `outcome_unknown`, `unexpected_error`. |
+| `bounced` | The recipient's mail server permanently rejected it. The contact becomes `bounced` and consent is withdrawn. |
+
+### POST /webhooks/email-events
+For the email provider, not for the frontend. Requires the header `X-Webhook-Secret`; answers `404` when `EMAIL_WEBHOOK_SECRET` is not configured and `403` for a wrong secret.
+
+```json
+{"provider_reference": "<message-id-returned-when-sending>", "event": "bounced"}
+```
+
+`event` is `bounced` or `complained`. `200` `{"handled": true}`, or `false` when the reference is unknown.
