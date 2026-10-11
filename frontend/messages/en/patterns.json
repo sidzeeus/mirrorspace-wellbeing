@@ -1,0 +1,33 @@
+{
+  "_review": "NEEDS_HUMAN_REVIEW: observation wording is a placeholder (docs/review-needed.md R10). Observations describe what was entered. They never diagnose, predict, advise or claim a cause; a unit test scans them for banned wording.",
+  "title": "Patterns",
+  "intro": "What your own check-ins show. These are observations, not conclusions.",
+  "range": "Period",
+  "days": "{days} days",
+  "metric": "Show",
+  "metrics": {
+    "mood": "Mood",
+    "sleep_hours": "Sleep hours",
+    "sleep_quality": "Sleep quality",
+    "energy": "Energy",
+    "stress": "Stress"
+  },
+  "chart": "{metric} over the last {days} days. {count, plural, =0 {No entries yet.} one {One entry: {min}.} other {# entries, from {min} to {max}.}}",
+  "empty": "Nothing to show for this period yet. Check-ins you save will appear here.",
+  "table": "Show the numbers as a table",
+  "date": "Date",
+  "notAnswered": "Not answered",
+  "observationsTitle": "What stands out",
+  "observations": {
+    "check_in_count": "You checked in on {count} of the last {days} days.",
+    "not_enough_data": "Patterns appear here after about a week of check-ins. There is no rush.",
+    "sleep_energy_lower": "On days you logged less sleep than your usual, you rated your energy lower on average.",
+    "sleep_energy_higher": "On days you logged less sleep than your usual, you rated your energy higher on average.",
+    "sleep_mood_lower": "On days you logged less sleep than your usual, you rated your mood lower on average.",
+    "sleep_mood_higher": "On days you logged less sleep than your usual, you rated your mood higher on average.",
+    "sleep_stress_lower": "On days you logged less sleep than your usual, you rated your stress lower on average.",
+    "sleep_stress_higher": "On days you logged less sleep than your usual, you rated your stress higher on average."
+  },
+  "note": "These observations come only from what you entered. They are not a diagnosis, and they cannot show that one thing leads to another.",
+  "error": "Your patterns could not be loaded."
+}

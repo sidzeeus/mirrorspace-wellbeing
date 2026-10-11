@@ -1,0 +1,52 @@
+{
+  "_review": "NEEDS_HUMAN_REVIEW: the meaning given to each step of the scales is placeholder wording (docs/review-needed.md R17).",
+  "title": "Check in",
+  "intro": "Answer what you like and leave the rest. Nothing here is graded.",
+  "editing": "You already checked in today. Saving replaces it.",
+  "mood": "Mood",
+  "moodUnset": "Move the slider to answer",
+  "moodClear": "Leave mood blank",
+  "lumen": "A light that follows the mood slider. {state}",
+  "lumenStates": {
+    "unset": "It is resting until you answer.",
+    "1": "It is small and dim.",
+    "2": "It is dim and a little fuller.",
+    "3": "It is medium in size and brightness.",
+    "4": "It is bright and full.",
+    "5": "It is at its brightest and fullest."
+  },
+  "sleepHours": "Hours of sleep last night",
+  "sleepHoursValue": "{hours, plural, =0 {0 hours} one {1 hour} other {# hours}}",
+  "sleepUnset": "Not answered",
+  "less": "Half an hour less",
+  "more": "Half an hour more",
+  "sleepQuality": "Sleep quality",
+  "energy": "Energy",
+  "stress": "Stress",
+  "clear": "Clear this answer",
+  "level": {
+    "1": "Very low",
+    "2": "Low",
+    "3": "In between",
+    "4": "High",
+    "5": "Very high"
+  },
+  "sleepLevel": {
+    "1": "Very restless",
+    "2": "Restless",
+    "3": "Mixed",
+    "4": "Restful",
+    "5": "Very restful"
+  },
+  "save": "Save check-in",
+  "skip": "Skip for now",
+  "nothing": "Choose at least one answer to save, or skip for now.",
+  "saved": "Check-in saved.",
+  "after": {
+    "title": "One optional thing",
+    "body": "If you would like to try something short:",
+    "open": "Open this exercise",
+    "notNow": "Not now",
+    "none": "That is everything. You can change today's check-in any time."
+  }
+}

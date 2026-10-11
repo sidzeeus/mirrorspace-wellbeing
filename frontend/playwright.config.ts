@@ -11,7 +11,8 @@ const PORT = Number(process.env.E2E_PORT ?? 3000);
 
 export default defineConfig({
   testDir: "./e2e",
-  timeout: 45_000,
+  // Generous: each test creates its data through `docker compose exec`, which is slow.
+  timeout: 120_000,
   expect: { timeout: 8_000 },
   fullyParallel: false,
   workers: 1,
