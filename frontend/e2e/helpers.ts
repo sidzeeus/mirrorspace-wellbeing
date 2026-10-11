@@ -39,11 +39,15 @@ ${onboarded ? "record_privacy_notice(u, PRIVACY_NOTICE_VERSION)" : ""}
 }
 
 export function verificationToken(email: string): string {
+  // The Django shell prints a banner line first; the token is the last line.
   return manage(`
 from apps.accounts.models import User
 from apps.accounts.tokens import make_email_verification_token
 print(make_email_verification_token(User.objects.get(email=${JSON.stringify(email)})))
-`);
+`)
+    .split(String.fromCharCode(10))
+    .pop()!
+    .trim();
 }
 
 /** Remove every account the browser tests created. */
@@ -96,7 +100,11 @@ export async function setPrefs(page: Page, prefs: Record<string, string>): Promi
 export function watchConsole(page: Page): string[] {
   const problems: string[] = [];
   page.on("console", (message) => {
-    if (message.type() === "error") problems.push(message.text());
+    if (message.type() !== "error") return;
+    // The browser logs every non-2xx response. Refusals the app expects and handles
+    // (bad input, signed out, not allowed, rate limited) are not console errors.
+    if (/status of (400|401|403|429)/.test(message.text())) return;
+    problems.push(message.text());
   });
   page.on("pageerror", (error) => problems.push(error.message));
   return problems;

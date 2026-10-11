@@ -1,0 +1,32 @@
+{
+  "title": "Home",
+  "hello": "Hello, {name}",
+  "helloPlain": "Hello",
+  "checkIn": {
+    "title": "Today",
+    "invite": "Check in if you like. It takes about twenty seconds, and you can skip any part.",
+    "done": "You checked in today. You can change it if something has shifted.",
+    "start": "Check in",
+    "change": "Change today's check-in"
+  },
+  "week": {
+    "title": "The last seven days",
+    "lumen": "Seven clusters of dots, one for each of the last seven days. {count, plural, =0 {None are lit.} one {One is lit: {days}.} other {# are lit: {days}.}}",
+    "summary": "{count, plural, =0 {No check-ins in the last seven days.} one {A check-in on one day: {days}.} other {Check-ins on # days: {days}.}}",
+    "note": "A lit cluster means you checked in that day. It is not a score, and an unlit day is not a problem.",
+    "patterns": "See patterns"
+  },
+  "step": {
+    "title": "One small thing",
+    "none": "Exercises appear here once a reviewer has approved them.",
+    "minutes": "{minutes, plural, one {About one minute} other {About # minutes}}",
+    "open": "Open this exercise",
+    "all": "All exercises"
+  },
+  "quick": {
+    "title": "Close at hand",
+    "plan": "My safety plan",
+    "support": "Support options"
+  },
+  "error": "Your home screen could not be loaded."
+}

@@ -1,0 +1,31 @@
+{
+  "_review": "NEEDS_HUMAN_REVIEW: placeholder notice wording. A privacy lawyer and a mental-health professional must review it (docs/review-needed.md R6, R9).",
+  "progress": "Step {step} of {total}",
+  "notice": {
+    "title": "Before you start",
+    "intro": "Three short things to know. This is a placeholder notice that is still waiting for legal review.",
+    "what": {
+      "title": "What this app is",
+      "body": "A self-help tool for noticing how you are doing and trying small things. It is not therapy, it cannot diagnose anything, and it is not an emergency service."
+    },
+    "private": {
+      "title": "What happens to what you enter",
+      "body": "Your check-ins, episodes and safety plan are stored for you alone. The words you write are encrypted. Nobody monitors them, and nothing is shared unless you turn sharing on yourself."
+    },
+    "control": {
+      "title": "What you control",
+      "body": "You can download everything held about you, and delete your account and its data, at any time in Settings."
+    },
+    "age": "I am 18 or older",
+    "read": "I have read this notice",
+    "version": "Notice version {version}",
+    "required": "Tick both boxes to continue.",
+    "continue": "Continue"
+  },
+  "preferences": {
+    "title": "Make it comfortable",
+    "intro": "All optional. You can change any of this later in Settings.",
+    "finish": "Finish",
+    "skip": "Skip this step"
+  }
+}
