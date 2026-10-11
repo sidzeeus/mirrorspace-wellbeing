@@ -1,3 +1,106 @@
-# Placeholder created in Prompt 0.
-# Phase 1 defines the services: web, worker, beat, db, redis, frontend.
-services: {}
+# Local development stack. From a clean clone:
+#
+#   docker compose up --build
+#
+# It runs with the values in .env.example. To change any of them, copy that file to
+# .env (never committed) and edit; .env overrides .env.example.
+#
+#   API        http://localhost:8000/api/v1/health
+#   Frontend   http://localhost:3000
+#   Emails     printed in the logs of the `worker` service
+
+name: mirrorspace
+
+x-backend: &backend
+  build:
+    context: .
+    dockerfile: Dockerfile.backend
+  env_file:
+    - path: .env.example
+      required: true
+    - path: .env
+      required: false
+  volumes:
+    - ./backend:/app
+  depends_on:
+    db:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  db:
+    # PostgreSQL 16 with the pgvector extension available (used from Phase 4).
+    image: pgvector/pgvector:0.8.7-pg16
+    environment:
+      POSTGRES_DB: wellbeing
+      POSTGRES_USER: wellbeing
+      POSTGRES_PASSWORD: wellbeing
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wellbeing -d wellbeing"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7.4.11-alpine
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  web:
+    <<: *backend
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "healthcheck.py", "/api/v1/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  worker:
+    <<: *backend
+    command: celery -A config worker --loglevel info --concurrency 2
+    healthcheck:
+      disable: true
+
+  beat:
+    <<: *backend
+    command: celery -A config beat --loglevel info --schedule /tmp/celerybeat-schedule
+    healthcheck:
+      disable: true
+
+  frontend:
+    build:
+      context: ./frontend
+      target: dev
+    env_file:
+      - path: .env.example
+        required: true
+      - path: .env
+        required: false
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+      - frontend_next:/app/.next
+    depends_on:
+      - web
+
+volumes:
+  pgdata:
+  frontend_node_modules:
+  frontend_next:

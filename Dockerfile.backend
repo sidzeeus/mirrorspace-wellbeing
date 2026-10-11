@@ -1,2 +1,44 @@
-# Placeholder created in Prompt 0.
-# Phase 1 writes the image: pinned base image, non-root user, no secrets in layers.
+# syntax=docker/dockerfile:1
+# Build context is the repository root:  docker build -f Dockerfile.backend .
+# One image serves the API, the Celery worker and Celery Beat; the command differs.
+FROM python:3.11.17-slim-bookworm
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
+
+RUN groupadd --system --gid 10001 app \
+    && useradd --system --uid 10001 --gid app --home-dir /app --shell /usr/sbin/nologin app
+
+WORKDIR /app
+
+COPY backend/requirements.txt ./
+RUN pip install -r requirements.txt
+
+COPY --chown=app:app backend/ ./
+
+# Collect static files for the admin. The values below exist only so the production
+# settings module can load during the build. They are placeholders, not secrets, and
+# nothing here is used at run time.
+RUN DJANGO_SETTINGS_MODULE=config.settings.production \
+    DJANGO_SECRET_KEY=build-time-placeholder-not-used-at-runtime \
+    DJANGO_ALLOWED_HOSTS=localhost \
+    FRONTEND_URL=http://localhost \
+    DATABASE_URL=postgres://build:build@localhost:5432/build \
+    REDIS_URL=redis://localhost:6379/0 \
+    CSRF_TRUSTED_ORIGINS=http://localhost \
+    CORS_ALLOWED_ORIGINS=http://localhost \
+    DEFAULT_FROM_EMAIL=build@localhost \
+    python manage.py collectstatic --noinput \
+    && chown -R app:app /app/staticfiles
+
+USER app
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD ["python", "healthcheck.py", "/api/v1/health"]
+
+# Gunicorn stops accepting new requests on SIGTERM and lets in-flight ones finish.
+# The access log is left off: application logs are structured and redacted instead.
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "30", "--graceful-timeout", "30"]

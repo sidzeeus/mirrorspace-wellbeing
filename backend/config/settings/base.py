@@ -140,7 +140,7 @@ SESSION_SAVE_EVERY_REQUEST = True
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = env.bool("COOKIE_SECURE", default=False)
-SESSION_COOKIE_DOMAIN = env("COOKIE_DOMAIN", default=None)
+SESSION_COOKIE_DOMAIN = env("COOKIE_DOMAIN", default="") or None
 
 # The frontend gets its CSRF token from GET /api/v1/auth/csrf, so the cookie itself
 # does not need to be readable by JavaScript.
