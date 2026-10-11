@@ -29,6 +29,15 @@ Choices made while building where the specification was silent or contradictory.
 | B1 | Check-in "optional note" in blueprint section 3 and section 6 | Not built. D4 applies. | Part A overrides Part E for decisions. | 2026-10-12 |
 | B2 | Blueprint API lists `DELETE /api/v1/sharing/consent/{id}` | Revoking sets `status=revoked` and `revoked_at`; the row is kept. | Consent history must stay visible to the student (non-negotiable 2, README C.6). | 2026-10-12 |
 | B3 | Product name | The repository folder name `mirrorspace` is treated as a working name only. User-facing copy uses a single configurable app-name string. | No name was specified; a single string keeps renaming cheap. | 2026-10-12 |
+| B4 | Registering with an email that already has an account | The API gives the same 201 reply either way. No second account is made; the real owner gets an email saying someone tried. Resend-verification and password-reset replies are equally uniform. | Having an account in a wellbeing app is itself sensitive, so nobody should be able to test whether a given person uses it. | 2026-10-12 |
+| B5 | Accounts that never confirm their email | Deleted automatically after 7 days (`UNVERIFIED_ACCOUNT_TTL_DAYS`). | Data minimization: an address typed by mistake, or by someone else, is not kept. | 2026-10-12 |
+| B6 | Tokens in emailed links | Carried in the URL fragment (`#token=...`), not the query string. | Browsers never send the fragment to a server, so tokens stay out of access logs and Referer headers. | 2026-10-12 |
+| B7 | Session lifetime | Idle timeout of 7 days, renewed on each request (`SESSION_COOKIE_AGE_SECONDS`). | Short enough to limit exposure on a shared or lost phone, long enough not to lock out a weekly user. | 2026-10-12 |
+| B8 | Account deletion | Requires the current password. The account is locked and every session ended immediately; a background task erases the data, and an hourly sweep completes any erase whose task was lost. | Deletion is irreversible, so it needs proof of identity; and it must take effect even if the queue is down. | 2026-10-12 |
+| B9 | Sign-in before email confirmation | Not allowed. Completing a password reset also confirms the email. | Stops someone registering with another person's address and using the account. | 2026-10-12 |
+| B10 | OpenAPI schema in production | Staff only. Public in local and test. | The route list is useful to the team and of no use to students. | 2026-10-12 |
+| B11 | Django admin | Shows that an account exists and can lock it. Profiles and wellbeing data are not registered. | Operators should not be able to browse student records (blueprint section 2). | 2026-10-12 |
+| B12 | Unauthenticated requests | Answered with 401, not DRF's default 403. | Lets the frontend tell "signed out" from "not allowed" without guessing. | 2026-10-12 |
 
 ## Open questions
 
