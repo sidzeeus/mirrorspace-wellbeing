@@ -23,6 +23,8 @@ PRODUCTION_ENV = {
     "CORS_ALLOWED_ORIGINS": "https://app.example.test",
     "DEFAULT_FROM_EMAIL": "no-reply@example.test",
     "FIELD_ENCRYPTION_KEYS": "MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDE=",
+    "PSEUDONYM_KEY": "p" * 48,
+    "API_BASE_URL": "https://api.example.test",
 }
 
 
@@ -30,7 +32,7 @@ def manage(*args: str, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
     base = {
         k: v
         for k, v in os.environ.items()
-        if not k.startswith(("DJANGO_", "DATABASE_", "FIELD_", "SHOW_"))
+        if not k.startswith(("DJANGO_", "DATABASE_", "FIELD_", "SHOW_", "PSEUDONYM_", "API_"))
     }
     return subprocess.run(  # noqa: S603 - fixed arguments, our own manage.py
         [sys.executable, "manage.py", *args],
@@ -154,6 +156,7 @@ class TestProductionSettings:
             "DATABASE_URL",
             "REDIS_URL",
             "FIELD_ENCRYPTION_KEYS",
+            "PSEUDONYM_KEY",
         ],
     )
     def test_refuses_to_start_without_required_variables(self, missing):

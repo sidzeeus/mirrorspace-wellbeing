@@ -143,3 +143,43 @@ class OwnedResourceContract:
         if url is None:
             return
         assert client_for(owner).get(url).status_code == 200
+
+
+class SingletonResourceContract:
+    """Cross-user contract for a resource with one row per person and no id in the URL.
+
+    Subclasses set `url` and `payload` (a valid PUT body) and say which response field
+    should hold the canary text.
+    """
+
+    url: ClassVar[str]
+    payload: ClassVar[dict[str, Any]]
+
+    def test_anonymous_cannot_read_or_write(self):
+        assert APIClient().get(self.url).status_code == 401
+        assert APIClient().put(self.url, self.payload, format="json").status_code == 401
+        assert APIClient().delete(self.url).status_code == 401
+
+    def test_each_person_sees_only_their_own(self):
+        owner, other = UserFactory(), UserFactory()
+        assert client_for(owner).put(self.url, self.payload, format="json").status_code == 200
+
+        theirs = client_for(other).get(self.url)
+
+        assert theirs.status_code == 200
+        for value in self.payload.values():
+            if value:
+                assert str(value) not in str(theirs.json()), "another user's data was returned"
+
+    def test_writing_never_touches_another_persons_row(self):
+        owner, other = UserFactory(), UserFactory()
+        client_for(owner).put(self.url, self.payload, format="json")
+        before = client_for(owner).get(self.url).json()
+
+        emptied = {
+            key: [] if isinstance(value, list) else value for key, value in self.payload.items()
+        }
+        client_for(other).put(self.url, emptied, format="json")
+        client_for(other).delete(self.url)
+
+        assert client_for(owner).get(self.url).json() == before

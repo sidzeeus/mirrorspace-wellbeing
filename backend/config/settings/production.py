@@ -23,6 +23,9 @@ if "postgresql" in DATABASES["default"]["ENGINE"]:
 # Required. Losing these keys makes encrypted fields unreadable, so they are backed up
 # with the same care as the database.
 FIELD_ENCRYPTION_KEYS = env.list("FIELD_ENCRYPTION_KEYS")
+# Required, and must never change once in use (see base.py).
+PSEUDONYM_KEY = env("PSEUDONYM_KEY")
+API_BASE_URL = env("API_BASE_URL").rstrip("/")
 # Unreviewed placeholder content can never be shown in production.
 SHOW_UNREVIEWED_CONTENT = False
 

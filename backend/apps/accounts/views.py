@@ -16,6 +16,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from apps.audit.services import record as audit
 from config.views import CsrfProtectedAPIView
 
 from . import services
@@ -132,6 +133,7 @@ class LoginView(CsrfProtectedAPIView):
             password=serializer.validated_data["password"],
         )
         if user is None:
+            services.record_failed_login(serializer.validated_data["email"])
             return _detail(
                 "Email or password is incorrect.",
                 "invalid_credentials",
@@ -144,6 +146,7 @@ class LoginView(CsrfProtectedAPIView):
                 status.HTTP_403_FORBIDDEN,
             )
         login(request, user)  # also rotates the session key
+        audit("account.login", user=user)
         return Response(MeSerializer(user).data)
 
 
@@ -152,6 +155,7 @@ class LogoutView(APIView):
 
     @extend_schema(request=None, responses={204: None})
     def post(self, request: Request) -> Response:
+        audit("account.logout", user=request.user)
         logout(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -215,6 +219,7 @@ class ExportView(APIView):
     @extend_schema(responses={200: OpenApiTypes.OBJECT})
     def get(self, request: Request) -> Response:
         user = cast(User, request.user)
+        audit("account.export_downloaded", user=user)
         logger.info("data_export_downloaded", extra={"user_id": str(user.pk)})
         return Response(
             build_export(user),

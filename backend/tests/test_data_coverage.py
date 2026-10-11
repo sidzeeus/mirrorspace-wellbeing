@@ -17,6 +17,7 @@ from django.utils import timezone
 
 from apps.accounts import export, services
 from apps.accounts.models import User
+from apps.audit.models import AuditEvent
 from config import fields
 from tests.factories import (
     DEFAULT_PASSWORD,
@@ -25,6 +26,7 @@ from tests.factories import (
     ExerciseEventFactory,
     ExerciseFactory,
     TriggerFactory,
+    TrustedContactFactory,
     UserFactory,
 )
 
@@ -48,6 +50,12 @@ def user_owned_models() -> list[type[models.Model]]:
     return owned
 
 
+# Models that deliberately outlive the account, and why. Anything else linked to a
+# user must be deleted with it. Adding to this list is a privacy decision: record it in
+# docs/decisions.md and docs/privacy.md.
+SURVIVES_DELETION = {AuditEvent: "pseudonymized, then purged after the retention period (D5)"}
+
+
 def populate(user):
     exercise = ExerciseFactory()
     trigger = TriggerFactory(user=user, label=f"{CANARY}-label")
@@ -60,6 +68,40 @@ def populate(user):
         ),
         "event": ExerciseEventFactory(user=user, exercise=exercise, kind="not_helpful"),
         "exercise": exercise,
+        **populate_sharing(user),
+    }
+
+
+def populate_sharing(user):
+    from apps.audit.services import record
+    from apps.notifications.models import Notification
+    from apps.safety.models import SafetyPlan
+    from apps.sharing.models import ConsentRecord
+
+    contact = TrustedContactFactory(user=user, name=f"{CANARY}-contact")
+    now = timezone.now()
+    consent = ConsentRecord.objects.create(
+        user=user,
+        contact=contact,
+        purpose="weekly_summary",
+        scope=["display_name"],
+        notice_version="v-test",
+        granted_at=now,
+        last_confirmed_at=now,
+    )
+    return {
+        "plan": SafetyPlan.objects.create(user=user, warning_signs=[f"{CANARY}-sign"]),
+        "contact": contact,
+        "consent": consent,
+        "notification": Notification.objects.create(
+            user=user,
+            purpose="weekly_summary",
+            contact=contact,
+            consent=consent,
+            idempotency_key=f"test:{contact.pk}",
+            scheduled_at=now,
+        ),
+        "audit": record("consent.granted", user=user, obj=consent, purpose="weekly_summary"),
     }
 
 
@@ -80,6 +122,7 @@ class TestCoverageByIntrospection:
                     isinstance(field, models.ForeignKey | models.OneToOneField)
                     and field.related_model is User
                     and field.remote_field.on_delete is not models.CASCADE
+                    and model not in SURVIVES_DELETION
                 ):
                     not_cascading.append(f"{model.__name__}.{field.name}")
         assert not_cascading == [], f"would survive account deletion: {not_cascading}"
@@ -104,7 +147,17 @@ class TestExport:
             "triggers",
             "episodes",
             "exercise_events",
+            "safety_plan",
+            "trusted_contacts",
+            "consents",
+            "notifications",
+            "audit_events",
         }
+        assert body["safety_plan"]["warning_signs"] == [f"{CANARY}-sign"]
+        assert body["trusted_contacts"][0]["name"] == f"{CANARY}-contact"
+        assert body["consents"][0]["notice_version"] == "v-test"
+        assert body["notifications"][0]["purpose"] == "weekly_summary"
+        assert "consent.granted" in [e["action"] for e in body["audit_events"]]
         assert body["account"]["email"] == user.email
         assert body["check_ins"][0]["mood"] == 4 and body["check_ins"][0]["sleep_hours"] == 6.5
         assert body["triggers"][0]["label"] == f"{CANARY}-label"
@@ -130,7 +183,15 @@ class TestExport:
 
         assert other_user.email not in dumped
         assert str(other_user.pk) not in dumped
-        for key in ("check_in", "trigger", "episode", "event"):
+        for key in (
+            "check_in",
+            "trigger",
+            "episode",
+            "event",
+            "contact",
+            "consent",
+            "notification",
+        ):
             assert str(theirs[key].pk) not in dumped
 
     def test_is_rate_limited(self, auth_client):
@@ -140,6 +201,8 @@ class TestExport:
     def test_empty_account_exports_empty_lists(self, auth_client):
         body = auth_client.get(EXPORT).json()
         assert body["check_ins"] == body["triggers"] == body["episodes"] == []
+        assert body["trusted_contacts"] == body["consents"] == body["notifications"] == []
+        assert body["safety_plan"] is None
 
 
 @pytest.mark.django_db
@@ -154,6 +217,8 @@ class TestDeletion:
 
         assert response.status_code == 202
         for model in user_owned_models():
+            if model in SURVIVES_DELETION:
+                continue
             field = next(
                 f.name
                 for f in model._meta.get_fields()
@@ -166,6 +231,29 @@ class TestDeletion:
             assert model._default_manager.filter(**{f"{field}_id": other_user.pk}).exists(), (
                 f"{model.__name__} rows of another user were removed"
             )
+
+    def test_audit_trail_is_pseudonymized_not_linked(self, auth_client, user, other_user):
+        from apps.audit.services import pseudonym
+
+        populate(user)
+        populate(other_user)
+        user_id = str(user.pk)
+        events_before = AuditEvent.objects.filter(actor=user).count()
+        assert events_before > 0
+
+        auth_client.delete("/api/v1/account", {"password": DEFAULT_PASSWORD}, format="json")
+
+        kept = AuditEvent.objects.filter(actor_hash=pseudonym(user_id))
+        # Every earlier event, plus "deletion requested" and "erased".
+        assert kept.count() >= events_before + 1
+        assert not kept.exclude(actor__isnull=True).exists()
+        assert set(kept.values_list("object_id", flat=True)) == {""}
+        dumped = json.dumps(list(kept.values("actor_hash", "object_id", "metadata", "action")))
+        assert user_id not in dumped
+        assert user.email not in dumped
+        assert "account.erased" in dumped
+        # Another person's trail is untouched and still linked to them.
+        assert AuditEvent.objects.filter(actor=other_user).exists()
 
     def test_shared_content_survives_account_deletion(self, auth_client, user):
         made = populate(user)

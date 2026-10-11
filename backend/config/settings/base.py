@@ -40,6 +40,10 @@ INSTALLED_APPS = [
     "apps.wellbeing",
     "apps.checkins",
     "apps.episodes",
+    "apps.audit",
+    "apps.safety",
+    "apps.sharing",
+    "apps.notifications",
 ]
 
 MIDDLEWARE = [
@@ -112,6 +116,18 @@ CELERY_BEAT_SCHEDULE = {
         "task": "accounts.purge_stale_accounts",
         "schedule": crontab(minute="17"),
     },
+    "notifications-enqueue-due-weekly": {
+        "task": "notifications.enqueue_due_weekly",
+        "schedule": crontab(minute="*/10"),
+    },
+    "notifications-sweep-stuck": {
+        "task": "notifications.sweep_stuck",
+        "schedule": crontab(minute="5-59/10"),
+    },
+    "audit-purge-expired": {
+        "task": "audit.purge_expired",
+        "schedule": crontab(hour="4", minute="13"),
+    },
     "accounts-clear-expired-sessions": {
         "task": "accounts.clear_expired_sessions",
         "schedule": crontab(hour="3", minute="41"),
@@ -172,6 +188,28 @@ FIELD_ENCRYPTION_KEYS: list[str] = env.list("FIELD_ENCRYPTION_KEYS", default=[])
 # on. It exists for development only and is forced off in production.py.
 SHOW_UNREVIEWED_CONTENT = env.bool("SHOW_UNREVIEWED_CONTENT", default=False)
 
+# Secret for one-way fingerprints (a contact's email in the do-not-email list, a deleted
+# user's id in the audit trail). It must never change: a new value would stop the
+# do-not-email list from matching.
+PSEUDONYM_KEY = env("PSEUDONYM_KEY", default="")
+
+# --- Safety and sharing -----------------------------------------------------------
+
+# Public base URL of this API, used in the List-Unsubscribe email header.
+API_BASE_URL = env("API_BASE_URL", default="http://localhost:8000").rstrip("/")
+# A helpline entry counts as stale this many days after a person last verified it.
+RESOURCE_MAX_AGE_DAYS = env.int("RESOURCE_MAX_AGE_DAYS", default=90)
+# A weekly note pauses itself unless the student confirms it at least this often.
+CONSENT_RECONFIRM_DAYS = env.int("CONSENT_RECONFIRM_DAYS", default=90)
+# Consent and security events are purged after this many days (decision D5).
+AUDIT_RETENTION_DAYS = env.int("AUDIT_RETENTION_DAYS", default=365)
+# Most SOS messages one student can send in 24 hours.
+SOS_DAILY_LIMIT = env.int("SOS_DAILY_LIMIT", default=6)
+# How long an invitation link to a trusted contact works, in seconds.
+CONTACT_INVITATION_MAX_AGE = env.int("CONTACT_INVITATION_MAX_AGE_SECONDS", default=14 * 86400)
+# Shared secret for the email provider's bounce webhook. Empty disables the endpoint.
+EMAIL_WEBHOOK_SECRET = env("EMAIL_WEBHOOK_SECRET", default="")
+
 # --- Internationalisation ---------------------------------------------------------
 
 LANGUAGE_CODE = "en"
@@ -223,6 +261,9 @@ REST_FRAMEWORK = {
         "email_action": "5/hour",
         "account_delete": "5/hour",
         "export": "10/hour",
+        "contact_add": "10/day",
+        "sos": "3/hour",
+        "public_token": "30/hour",
     },
     "DEFAULT_PAGINATION_CLASS": "config.api.DefaultPagination",
     "PAGE_SIZE": 20,
@@ -242,6 +283,11 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     "SCHEMA_PATH_PREFIX": r"/api/v1",
     "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny"],
+    "ENUM_NAME_OVERRIDES": {
+        "ContactStatusEnum": "apps.sharing.models.ContactStatus",
+        "ConsentStatusEnum": "apps.sharing.models.ConsentStatus",
+        "NotificationStatusEnum": "apps.notifications.models.NotificationStatus",
+    },
 }
 
 ADMIN_URL = env("DJANGO_ADMIN_URL", default="admin/")

@@ -88,3 +88,39 @@ class ExerciseEventFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     exercise = factory.SubFactory(ExerciseFactory)
     kind = "completed"
+
+
+class TrustedContactFactory(factory.django.DjangoModelFactory):
+    """A contact who has accepted the invitation unless a test says otherwise."""
+
+    class Meta:
+        model = "sharing.TrustedContact"
+
+    user = factory.SubFactory(UserFactory)
+    name = factory.Sequence(lambda n: f"Contact {n}")
+    email = factory.Sequence(lambda n: f"contact{n}@example.test")
+    email_hash = factory.LazyAttribute(lambda o: _fingerprint(o.email))
+    status = "confirmed"
+
+
+def _fingerprint(email: str) -> str:
+    from apps.sharing.services import email_fingerprint
+
+    return email_fingerprint(email)
+
+
+class ResourceFactory(factory.django.DjangoModelFactory):
+    """A resource a person verified today."""
+
+    class Meta:
+        model = "safety.Resource"
+
+    slug = factory.Sequence(lambda n: f"resource-{n}")
+    name = factory.Sequence(lambda n: f"Helpline {n}")
+    type = "helpline"
+    region = "IN"
+    languages = ["en"]
+    phone = "0000"
+    status = "approved"
+    owner = "Test Owner"
+    verified_on = factory.LazyFunction(lambda: timezone.now().date())
