@@ -1,0 +1,3 @@
+# Placeholder created in Prompt 0.
+# Phase 1 defines the services: web, worker, beat, db, redis, frontend.
+services: {}
