@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (lint, types, tests)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.7-pg16
+        env:
+          POSTGRES_DB: wellbeing
+          POSTGRES_USER: wellbeing
+          POSTGRES_PASSWORD: wellbeing
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U wellbeing"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      DJANGO_SETTINGS_MODULE: config.settings.test
+      DATABASE_URL: postgres://wellbeing:wellbeing@localhost:5432/wellbeing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements*.txt
+      - name: Install dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+      - name: Lint
+        run: ruff check .
+      - name: Format check
+        run: ruff format --check .
+      - name: Type-check
+        run: mypy .
+      - name: Migrations are up to date
+        run: python manage.py makemigrations --check --dry-run
+      - name: Tests (including privacy and authorization tests)
+        run: pytest --cov=apps --cov=config --cov-report=term-missing:skip-covered
+
+  frontend:
+    name: Frontend (lint, types, build)
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+
+  images:
+    name: Container images build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Backend image
+        run: docker build -f Dockerfile.backend -t wellbeing-backend:ci .
+      - name: Frontend image
+        run: docker build --target production -t wellbeing-frontend:ci frontend
+      - name: Compose file is valid
+        run: docker compose config --quiet
