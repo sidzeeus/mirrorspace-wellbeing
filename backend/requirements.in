@@ -13,3 +13,4 @@ gunicorn
 sentry-sdk
 whitenoise
 tzdata
+cryptography

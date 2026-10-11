@@ -1,9 +1,15 @@
 """Local development. Never use these settings on a public host."""
 
+import base64
+
 from .base import *  # noqa: F403
 from .base import env
 
 DEBUG = True
+
+# A fixed development key so encrypted fields work out of the box. Not a secret.
+_DEV_FIELD_KEY = base64.urlsafe_b64encode(b"local-development-only-key-0000!").decode()
+FIELD_ENCRYPTION_KEYS = env.list("FIELD_ENCRYPTION_KEYS", default=[_DEV_FIELD_KEY])
 SECRET_KEY = env("DJANGO_SECRET_KEY", default="local-development-only-key-do-not-use-anywhere-else")
 ALLOWED_HOSTS = env.list(
     "DJANGO_ALLOWED_HOSTS",

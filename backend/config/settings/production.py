@@ -20,6 +20,12 @@ DATABASES["default"]["CONN_MAX_AGE"] = env.int("DATABASE_CONN_MAX_AGE", default=
 if "postgresql" in DATABASES["default"]["ENGINE"]:
     DATABASES["default"].setdefault("OPTIONS", {})["connect_timeout"] = 5
 
+# Required. Losing these keys makes encrypted fields unreadable, so they are backed up
+# with the same care as the database.
+FIELD_ENCRYPTION_KEYS = env.list("FIELD_ENCRYPTION_KEYS")
+# Unreviewed placeholder content can never be shown in production.
+SHOW_UNREVIEWED_CONTENT = False
+
 REDIS_URL = env("REDIS_URL")
 CACHES = {
     "default": {

@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     "corsheaders",
     "drf_spectacular",
     "apps.accounts",
+    "apps.wellbeing",
+    "apps.checkins",
+    "apps.episodes",
 ]
 
 MIDDLEWARE = [
@@ -160,6 +163,15 @@ EMAIL_VERIFICATION_MAX_AGE = env.int("EMAIL_VERIFICATION_MAX_AGE_SECONDS", defau
 # Accounts that never verify their email are removed after this many days.
 UNVERIFIED_ACCOUNT_TTL_DAYS = env.int("UNVERIFIED_ACCOUNT_TTL_DAYS", default=7)
 
+# --- Privacy ----------------------------------------------------------------------
+
+# Fernet keys for field-level encryption of free text. First key encrypts, all decrypt.
+FIELD_ENCRYPTION_KEYS: list[str] = env.list("FIELD_ENCRYPTION_KEYS", default=[])
+
+# Content that has not been signed off by a qualified reviewer is hidden unless this is
+# on. It exists for development only and is forced off in production.py.
+SHOW_UNREVIEWED_CONTENT = env.bool("SHOW_UNREVIEWED_CONTENT", default=False)
+
 # --- Internationalisation ---------------------------------------------------------
 
 LANGUAGE_CODE = "en"
@@ -210,6 +222,7 @@ REST_FRAMEWORK = {
         "register": "5/hour",
         "email_action": "5/hour",
         "account_delete": "5/hour",
+        "export": "10/hour",
     },
     "DEFAULT_PAGINATION_CLASS": "config.api.DefaultPagination",
     "PAGE_SIZE": 20,

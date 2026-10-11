@@ -22,11 +22,16 @@ PRODUCTION_ENV = {
     "CSRF_TRUSTED_ORIGINS": "https://app.example.test",
     "CORS_ALLOWED_ORIGINS": "https://app.example.test",
     "DEFAULT_FROM_EMAIL": "no-reply@example.test",
+    "FIELD_ENCRYPTION_KEYS": "MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDE=",
 }
 
 
 def manage(*args: str, env: dict[str, str]) -> subprocess.CompletedProcess[str]:
-    base = {k: v for k, v in os.environ.items() if not k.startswith(("DJANGO_", "DATABASE_"))}
+    base = {
+        k: v
+        for k, v in os.environ.items()
+        if not k.startswith(("DJANGO_", "DATABASE_", "FIELD_", "SHOW_"))
+    }
     return subprocess.run(  # noqa: S603 - fixed arguments, our own manage.py
         [sys.executable, "manage.py", *args],
         cwd=BACKEND_DIR,
@@ -143,7 +148,13 @@ class TestProductionSettings:
 
     @pytest.mark.parametrize(
         "missing",
-        ["DJANGO_SECRET_KEY", "DJANGO_ALLOWED_HOSTS", "DATABASE_URL", "REDIS_URL"],
+        [
+            "DJANGO_SECRET_KEY",
+            "DJANGO_ALLOWED_HOSTS",
+            "DATABASE_URL",
+            "REDIS_URL",
+            "FIELD_ENCRYPTION_KEYS",
+        ],
     )
     def test_refuses_to_start_without_required_variables(self, missing):
         env = {k: v for k, v in PRODUCTION_ENV.items() if k != missing}

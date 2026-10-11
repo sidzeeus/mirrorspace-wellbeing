@@ -1,10 +1,15 @@
 """Test settings: fast, deterministic, and never talking to a real provider."""
 
+import base64
+
 from .base import *  # noqa: F403
 
 DEBUG = False
 SECRET_KEY = "test-only-key-not-a-secret"
 ALLOWED_HOSTS = ["testserver", "localhost"]
+
+FIELD_ENCRYPTION_KEYS = [base64.urlsafe_b64encode(b"test-only-field-key-000000000000").decode()]
+SHOW_UNREVIEWED_CONTENT = False
 
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 
