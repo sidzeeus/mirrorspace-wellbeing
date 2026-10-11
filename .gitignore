@@ -35,3 +35,4 @@ backups/
 .idea/
 .DS_Store
 Thumbs.db
+frontend/next-env.d.ts
