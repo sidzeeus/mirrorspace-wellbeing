@@ -1,0 +1,303 @@
+@import "tailwindcss";
+
+/*
+  Design tokens (README Part C.3, docs/design-plan.md).
+  Colors are roles. Components use the role names through Tailwind (bg-ink, text-moon,
+  border-line ...) and never a hex value, so both themes stay first-class.
+*/
+:root {
+  color-scheme: dark;
+  --ink: #06070c;
+  --surface: #0e1018;
+  --surface-raised: #161926;
+  --line: rgb(237 235 255 / 0.12);
+  --line-strong: rgb(237 235 255 / 0.28);
+  --moon: #edebff;
+  --moon-dim: #9b9ab8;
+  --lumen: #8f88f5;
+  --lumen-hi: #b9b4ff;
+  --on-lumen: #0b0a1f;
+  --calm: #7fd6c2;
+  --warm: #f2c078;
+  --care: #f29ba8;
+  --on-care: #2a0a12;
+  --glow: rgb(124 116 242 / 0.22);
+  --dot: 237 235 255;
+}
+
+:root[data-theme="daybreak"] {
+  color-scheme: light;
+  --ink: #f5f6fb;
+  --surface: #ffffff;
+  --surface-raised: #eceef7;
+  --line: rgb(20 21 42 / 0.14);
+  --line-strong: rgb(20 21 42 / 0.36);
+  --moon: #14152a;
+  --moon-dim: #55577a;
+  --lumen: #4a41c9;
+  --lumen-hi: #2b2670;
+  --on-lumen: #ffffff;
+  --calm: #0f6f60;
+  --warm: #8a5a00;
+  --care: #a8324a;
+  --on-care: #ffffff;
+  --glow: rgb(74 65 201 / 0.14);
+  --dot: 43 38 112;
+  --lumen-l: 38%;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-surface: var(--surface);
+  --color-raised: var(--surface-raised);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-moon: var(--moon);
+  --color-dim: var(--moon-dim);
+  --color-lumen: var(--lumen);
+  --color-lumen-hi: var(--lumen-hi);
+  --color-on-lumen: var(--on-lumen);
+  --color-calm: var(--calm);
+  --color-warm: var(--warm);
+  --color-care: var(--care);
+  --color-on-care: var(--on-care);
+  --font-sans: var(--font-display), "Noto Sans Devanagari", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-data), ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius-control: 14px;
+}
+
+html {
+  background: var(--ink);
+  color: var(--moon);
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+/* "Larger text" setting: everything is sized in rem, so one change scales the app. */
+html[data-text="large"] {
+  font-size: 112.5%;
+}
+
+/* Low-bandwidth mode: no web fonts at all. */
+html[data-bandwidth="low"] {
+  --font-display: ui-sans-serif, system-ui, sans-serif;
+  --font-data: ui-monospace, monospace;
+}
+
+body {
+  min-height: 100dvh;
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+}
+
+/* Indian scripts need more vertical room and must never be clipped. */
+:lang(hi) body {
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+:focus-visible {
+  outline: 2px solid var(--lumen-hi);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--lumen);
+  color: var(--on-lumen);
+}
+
+@layer components {
+  .display {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    line-height: 1.02;
+    font-weight: 300;
+    letter-spacing: -0.035em;
+  }
+  .h1 {
+    font-size: clamp(1.9rem, 4vw, 2.75rem);
+    line-height: 1.1;
+    font-weight: 300;
+    letter-spacing: -0.025em;
+  }
+  .h2 {
+    font-size: 1.375rem;
+    line-height: 1.25;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .prose-width {
+    max-width: 68ch;
+  }
+  .data {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Structural panel: square, one hairline. */
+  .frame {
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  /* Crop marks just outside the four corners. Used on three stages only. */
+  .marks {
+    position: relative;
+  }
+  .marks::before {
+    content: "";
+    position: absolute;
+    inset: -9px;
+    pointer-events: none;
+    --m: 12px;
+    --c: var(--line-strong);
+    background:
+      linear-gradient(var(--c), var(--c)) top left / var(--m) 1px no-repeat,
+      linear-gradient(var(--c), var(--c)) top left / 1px var(--m) no-repeat,
+      linear-gradient(var(--c), var(--c)) top right / var(--m) 1px no-repeat,
+      linear-gradient(var(--c), var(--c)) top right / 1px var(--m) no-repeat,
+      linear-gradient(var(--c), var(--c)) bottom left / var(--m) 1px no-repeat,
+      linear-gradient(var(--c), var(--c)) bottom left / 1px var(--m) no-repeat,
+      linear-gradient(var(--c), var(--c)) bottom right / var(--m) 1px no-repeat,
+      linear-gradient(var(--c), var(--c)) bottom right / 1px var(--m) no-repeat;
+  }
+
+  /* Glass for navigation bars, with a solid fallback. */
+  .glass {
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    .glass {
+      background: color-mix(in srgb, var(--surface) 78%, transparent);
+      -webkit-backdrop-filter: blur(16px) saturate(1.2);
+      backdrop-filter: blur(16px) saturate(1.2);
+    }
+  }
+
+  /* The only glow in the product sits behind the Lumen. */
+  .lumen-glow {
+    background: radial-gradient(closest-side, var(--glow), transparent 72%);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0.625rem 1.25rem;
+    border-radius: 999px;
+    font-weight: 500;
+    line-height: 1.2;
+    text-align: center;
+    transition:
+      background-color 160ms ease,
+      border-color 160ms ease,
+      opacity 160ms ease;
+  }
+  .btn:disabled,
+  .btn[aria-disabled="true"] {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  .btn-primary {
+    background: var(--lumen-hi);
+    color: var(--on-lumen);
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--lumen-hi) 88%, var(--moon));
+  }
+  .btn-quiet {
+    border: 1px solid var(--line-strong);
+    color: var(--moon);
+  }
+  .btn-quiet:hover:not(:disabled) {
+    border-color: var(--moon-dim);
+    background: var(--surface-raised);
+  }
+  .btn-care {
+    background: var(--care);
+    color: var(--on-care);
+  }
+  .btn-text {
+    min-height: 44px;
+    padding: 0.5rem 0.25rem;
+    border-radius: 6px;
+    color: var(--lumen-hi);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .control {
+    min-height: 44px;
+    width: 100%;
+    border-radius: var(--radius-control);
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--moon);
+    padding: 0.625rem 0.875rem;
+  }
+  .control::placeholder {
+    color: var(--moon-dim);
+  }
+  .control[aria-invalid="true"] {
+    border-color: var(--warm);
+  }
+
+  .link {
+    color: var(--lumen-hi);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .page-fade {
+    animation: page-fade 220ms ease both;
+  }
+}
+
+@keyframes page-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+  Reduced motion: the system setting, or the in-app toggle. Every animation and
+  transition becomes an instant, static state.
+*/
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion="full"]) *,
+  html:not([data-motion="full"]) *::before,
+  html:not([data-motion="full"]) *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+}

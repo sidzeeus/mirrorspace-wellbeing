@@ -1,0 +1,63 @@
+{
+  "nav": { "helplines": "Helplines", "signIn": "Sign in" },
+  "hero": {
+    "lineOne": "Notice your patterns. Find one small step.",
+    "lineTwo": "Reach real help when you need it.",
+    "body": "A private place to check in with yourself in under twenty seconds, try one small thing, and keep your own plan for hard moments close.",
+    "create": "Create an account",
+    "helplines": "See helplines",
+    "limits": "For students aged 18 and over. Not therapy, and not an emergency service.",
+    "lumen": "A soft cluster of light made of small dots."
+  },
+  "story": {
+    "title": "How it works",
+    "one": {
+      "title": "Notice",
+      "body": "A check-in is four taps: mood, sleep, energy, stress. Skip any of them, or all of them. After a few weeks you can see your own patterns in plain words, with no scores.",
+      "lumen": "One point of light."
+    },
+    "two": {
+      "title": "One small step",
+      "body": "After a check-in, one short activity is offered: slow breathing, a grounding exercise, a ten-minute plan. Mark it as not helpful and it stops being suggested.",
+      "lumen": "The light takes the shape of a seated person."
+    },
+    "three": {
+      "title": "Real help",
+      "body": "Your own safety plan and checked helplines stay one tap away, even offline. If you choose, someone you trust can get a short weekly note, or a message you decide to send.",
+      "lumen": "Two people reaching toward a light between them."
+    }
+  },
+  "is": {
+    "title": "What this is",
+    "items": {
+      "a": "A place to notice how you are doing, on your own terms.",
+      "b": "Short self-help activities you can try or ignore.",
+      "c": "Your own safety plan and a list of helplines, available offline.",
+      "d": "Private by default. Nothing is shared unless you turn it on, and you can turn it off again."
+    }
+  },
+  "isNot": {
+    "title": "What this is not",
+    "items": {
+      "a": "Therapy, counselling or a diagnosis.",
+      "b": "An emergency service. If you are in danger, call your local emergency number.",
+      "c": "Monitored. Nobody reads what you enter, and nothing alerts anyone automatically.",
+      "d": "A replacement for people. It is here to help you reach them."
+    }
+  },
+  "helplines": {
+    "title": "Helplines you can call now",
+    "note": "Each number shows the date a person last checked it.",
+    "empty": "Checked helplines appear here once a person has verified each number. If you are in immediate danger, call your local emergency number.",
+    "unavailable": "The helpline list could not be loaded just now.",
+    "all": "All helplines",
+    "call": "Call {name} on {phone}",
+    "verified": "Checked on {date}",
+    "never": "Not checked yet"
+  },
+  "footer": {
+    "lineOne": "Built to be quiet.",
+    "lineTwo": "It does not track you, score you or keep you scrolling.",
+    "prototype": "This is a prototype. Its clinical, legal and safety wording is still waiting for expert review."
+  }
+}

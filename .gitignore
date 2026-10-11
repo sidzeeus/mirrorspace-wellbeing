@@ -36,3 +36,7 @@ backups/
 .DS_Store
 Thumbs.db
 frontend/next-env.d.ts
+
+# Frontend test output
+frontend/test-results/
+frontend/playwright-report/

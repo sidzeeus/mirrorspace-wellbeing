@@ -1,0 +1,25 @@
+{
+  "title": "Helplines and services",
+  "intro": "These services are run by other organisations, not by this app. Each entry shows the date a person last checked its details.",
+  "emergency": "If you or someone else is in immediate danger, call your local emergency number.",
+  "empty": "No checked helplines are listed yet. Entries appear here once a person has verified each number.",
+  "unavailable": "The helpline list could not be loaded. Check your connection and try again.",
+  "offlineCopy": "You are offline. This is the list saved on this device on {date}.",
+  "call": "Call {phone}",
+  "callLabel": "Call {name} on {phone}",
+  "website": "Open the website of {name}",
+  "websiteShort": "Website",
+  "region": "Region",
+  "languages": "Languages",
+  "hours": "Hours",
+  "verified": "Checked on {date}",
+  "never": "Not checked yet",
+  "stale": "This entry has not been checked recently. The details may have changed.",
+  "types": {
+    "helpline": "Helpline",
+    "emergency": "Emergency service",
+    "text_line": "Text or chat line",
+    "campus": "Campus service",
+    "online": "Online resource"
+  }
+}
