@@ -1,0 +1,29 @@
+{
+  "_notice": "NEEDS_HUMAN_REVIEW. Placeholder entries only. Nothing here has been verified by a person. Entries are loaded with status=needs_review and verified_on=null, so they are hidden from students (and shown as unverified and stale in development). Before ANY release a named human owner must check each number, its hours, languages and region against the official source, set verified_on, and approve it. This must be repeated before every release. See docs/review-needed.md R2.",
+  "resources": [
+    {
+      "slug": "in-tele-manas",
+      "name": "Tele-MANAS",
+      "description": "Government of India tele-mental-health helpline. PLACEHOLDER: details not verified.",
+      "type": "helpline",
+      "region": "IN",
+      "languages": ["en", "hi"],
+      "phone": "14416",
+      "url": "",
+      "hours": "",
+      "source": "README blueprint, section 8 (cites Indian government sources). Not independently verified."
+    },
+    {
+      "slug": "in-emergency-112",
+      "name": "Emergency response (112)",
+      "description": "National emergency number in India. PLACEHOLDER: details not verified.",
+      "type": "emergency",
+      "region": "IN",
+      "languages": [],
+      "phone": "112",
+      "url": "",
+      "hours": "",
+      "source": "Added by the engineer as an example entry. Not verified."
+    }
+  ]
+}
