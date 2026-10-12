@@ -52,9 +52,11 @@ jobs:
         run: python manage.py makemigrations --check --dry-run
       - name: Tests (including privacy and authorization tests)
         run: pytest --cov=apps --cov=config --cov-report=term-missing:skip-covered
+      - name: Dependency audit
+        run: pip-audit -r requirements.txt
 
   frontend:
-    name: Frontend (lint, types, build)
+    name: Frontend (lint, types, copy rules, build)
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -71,7 +73,47 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - run: npm run lint
       - run: npm run typecheck
+      - name: Copy rules (banned wording, no streaks, no monitoring claims)
+        run: npm run test:unit
       - run: npm run build
+      - name: Dependency audit (production dependencies)
+        run: npm audit --omit=dev --audit-level=high
+
+  browser:
+    name: Browser tests (flows, accessibility, offline, bundle budget)
+    runs-on: ubuntu-24.04
+    needs: [backend, frontend]
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start the API stack
+        run: docker compose up -d --build --wait db redis web worker
+      - name: Load placeholder content
+        run: |
+          docker compose exec -T web python manage.py seed_exercises
+          docker compose exec -T web python manage.py seed_resources
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install and build the frontend
+        working-directory: frontend
+        run: |
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          npm run build
+      - name: Playwright with axe on every screen, and the bundle budget
+        working-directory: frontend
+        run: npx playwright test
+      - name: Upload the report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: frontend/playwright-report
+          retention-days: 7
 
   images:
     name: Container images build

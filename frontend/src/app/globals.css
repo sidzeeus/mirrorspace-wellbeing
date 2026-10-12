@@ -90,12 +90,13 @@ body {
   font-family: var(--font-sans);
   line-height: 1.6;
   text-rendering: optimizeLegibility;
+  /* Long names and long words wrap instead of pushing the page sideways. */
+  overflow-wrap: anywhere;
 }
 
 /* Indian scripts need more vertical room and must never be clipped. */
 :lang(hi) body {
   line-height: 1.8;
-  overflow-wrap: anywhere;
 }
 
 :focus-visible {

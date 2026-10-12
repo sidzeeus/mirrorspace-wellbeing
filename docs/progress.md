@@ -2,7 +2,7 @@
 
 Updated at the end of every phase. Each entry says what is done, what is unfinished, and what was assumed.
 
-Current phase: **Phase 3 complete (backend for Phases 1 to 3 done). Frontend (Prompt 4) not started.**
+Current phase: **Frontend for Phases 1 to 3 complete (Prompts 4, 5a to 5e, 6). Phase 4 (AI chat) not started.**
 
 ## Phase checklist
 
@@ -41,13 +41,13 @@ Current phase: **Phase 3 complete (backend for Phases 1 to 3 done). Frontend (Pr
 - [x] `docs/privacy.md`
 
 ### Frontend (Prompts 4, 5a to 5e, 6)
-- [ ] 4: Design plan, tokens, themes, typography, core components, the Lumen, landing page
-- [ ] 5a: Auth screens, app shell, onboarding, dashboard
-- [ ] 5b: Check-in, patterns, episodes and triggers
-- [ ] 5c: Exercise library and players
-- [ ] 5d: Support (SOS), safety plan, resources, offline PWA cache
-- [ ] 5e: Sharing, consent history, privacy settings
-- [ ] 6: Localization, full PWA, accessibility hardening, bundle budget
+- [x] 4: Design plan, tokens, themes, typography, core components, the Lumen, landing page
+- [x] 5a: Auth screens, app shell, onboarding, dashboard
+- [x] 5b: Check-in, patterns, episodes and triggers
+- [x] 5c: Exercise library and players
+- [x] 5d: Support (SOS), safety plan, resources, offline PWA cache
+- [x] 5e: Sharing, consent history, privacy settings
+- [x] 6: Localization, full PWA, accessibility hardening, bundle budget
 
 ### Phase 4: AI support chat (Prompt 7)
 - [ ] Provider adapter, budgets and rate limits
@@ -173,3 +173,43 @@ Assumptions
 
 Needs human review
 - R2, R4, R5, R6, R8 now point at real placeholder content. R19 to R22 added.
+
+### 2026-10-12: Frontend (Prompts 4, 5a to 5e, 6)
+
+Done
+- `docs/design-plan.md`: tokens, type scale, wireframes, and the self-review against generic defaults with what changed.
+- Design system: `frontend/src/app/globals.css` (Night and Daybreak tokens, radii by hierarchy, crop marks, glass with a solid fallback, reduced-motion rules), `components/ui/primitives.tsx` and `components/ui/controls.tsx` (Radix-based).
+- The Lumen: `components/lumen/` (static SVG, WebGL, Canvas 2D, frame-rate guard). Documented in `docs/lumen.md`.
+- Screens: landing, helplines, sign in, register, verify email, forgot and reset password, onboarding, home, check-in, patterns, episodes and triggers, exercises, exercise and breathing player, safety plan, Support, sharing, consent history, settings, More, contact invitation, unsubscribe, offline.
+- `frontend/src/app/api/v1/[...path]/route.ts`: same-origin proxy to the API.
+- PWA: `public/sw.js`, `app/manifest.ts`, icons, update prompt, offline page.
+- Localization: every string in `frontend/messages/en/*.json`; partial placeholder Hindi in `messages/hi/`; `docs/localization.md` with the fluent-speaker review script.
+- CI: copy-rule unit tests, and a browser job that runs Playwright with axe and the bundle budget against the compose stack.
+
+Verified on 2026-10-12
+- 62 Playwright tests pass against the production build and the real API. They cover every flow named in the prompts: sign up to dashboard; check in to trend; complete an exercise and mark it not helpful; the SOS send path and the cancel path; Support offline; opt in, contact confirms, preview, confirm, revoke; sharing off by default.
+- axe (WCAG 2.2 AA rules) reports no violations on every screen, in both themes, at phone and desktop widths.
+- 7 copy-rule unit tests pass: banned wording in observations, no clinical labels, no streaks or praise, no monitoring claims, sentence case, translation keys.
+- Lighthouse, mobile, production build: landing performance 92, accessibility 100; Support 91 and 100; sign in 89 and 100.
+- Compressed JavaScript: landing 188 KB, Support 228 KB, sign in 233 KB (budgets 260, 290, 280).
+- No screen scrolls sideways at 320px with larger text, in English or Hindi.
+- Screenshots of the landing page in both themes at phone and desktop widths are in `docs/screenshots/`.
+
+Bugs the tests caught (all fixed)
+- The full-screen exercise player sat underneath the navigation bar.
+- The check-in confirmation could vanish because the form rebuilt itself after saving.
+- The landing header overflowed on a 320px phone with larger text; long display names pushed the home screen sideways.
+- The saved safety plan was unreachable offline on the Plan screen because the session check could not run.
+
+Unfinished or not verified
+- Sign in scores 89 on Lighthouse performance, one point under the 90 target for core screens. The landing page meets it.
+- No test on a real low-end Android phone or with a real screen reader. Automated checks only; the manual pass is in `docs/localization.md` section 4 and still to do.
+- The browser job in CI has not run on GitHub (no remote).
+- Hindi is partial and unreviewed.
+- The Lumen's frame-rate guard is not exercised by a test on a slow device.
+
+Assumptions
+- Recorded as B38 to B47 in `docs/decisions.md`.
+
+Needs human review
+- Every string on the Support, safety plan, helplines, sharing and contact screens is listed in `docs/review-needed.md` under "String checklists" (generated by `frontend/scripts/string-checklist.mjs`).

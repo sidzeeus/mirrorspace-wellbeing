@@ -14,7 +14,11 @@ export function PublicHeader() {
           {common("appName")}
         </Link>
         <nav aria-label={common("appName")} className="flex items-center gap-1 sm:gap-3">
-          <Link href="/resources" className="btn-text inline-flex items-center px-2 no-underline">
+          {/* On the narrowest phones the header keeps only sign-in; helplines stay in the page. */}
+          <Link
+            href="/resources"
+            className="btn-text hidden items-center px-2 no-underline min-[400px]:inline-flex"
+          >
             {t("helplines")}
           </Link>
           <Link href="/login" className="btn-text inline-flex items-center px-2 no-underline">

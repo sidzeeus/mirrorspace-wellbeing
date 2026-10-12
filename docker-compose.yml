@@ -91,6 +91,9 @@ services:
         required: true
       - path: .env
         required: false
+    environment:
+      # The frontend proxies /api/v1 to the API over the compose network.
+      API_INTERNAL_URL: http://web:8000
     ports:
       - "127.0.0.1:3000:3000"
     volumes:
