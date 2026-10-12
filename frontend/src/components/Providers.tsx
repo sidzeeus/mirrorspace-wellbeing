@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
 
+import { ServiceWorker } from "@/components/ServiceWorker";
 import { ToastProvider } from "@/components/ui/controls";
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -19,7 +20,10 @@ export function Providers({ children }: { children: ReactNode }) {
   );
   return (
     <QueryClientProvider client={client}>
-      <ToastProvider closeLabel={t("close")}>{children}</ToastProvider>
+      <ToastProvider closeLabel={t("close")}>
+        <ServiceWorker />
+        {children}
+      </ToastProvider>
     </QueryClientProvider>
   );
 }

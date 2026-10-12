@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useEffect } from "react";
 
+import { ApiError } from "@/lib/api";
 import { PRIVACY_PURPOSE } from "@/lib/constants";
 import { useConsents, useMe, useNotices } from "@/lib/hooks";
 
@@ -127,7 +128,11 @@ export function AppShell({ children }: { children: ReactNode }) {
     else if (accepted === true && onboarding) router.replace("/home");
   }, [me.isSuccess, me.data, accepted, onboarding, router]);
 
-  const ready = signedIn && accepted !== null && (accepted || onboarding);
+  // With no connection the session cannot be checked. The pages are still shown so the
+  // copies kept on this device (safety plan, exercises) stay reachable; every request
+  // for anything else simply fails and says so.
+  const offline = me.isError && me.error instanceof ApiError && me.error.status === 0;
+  const ready = offline || (signedIn && accepted !== null && (accepted || onboarding));
 
   return (
     <div className="lg:grid lg:min-h-dvh lg:grid-cols-[15rem_minmax(0,1fr)]">

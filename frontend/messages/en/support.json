@@ -1,0 +1,64 @@
+{
+  "_review": "NEEDS_HUMAN_REVIEW: every string on the Support screen is placeholder wording and must be reviewed by a safeguarding professional before release (docs/review-needed.md R4, R9, and the string checklist).",
+  "title": "Support",
+  "close": "Close support",
+  "intro": "Four things you can do right now. Take your time.",
+  "limits": "This app is not monitored. Nobody is told that you opened this screen, and the app cannot guarantee that anyone will respond.",
+  "emergency": "If you or someone else is in immediate danger, call your local emergency number.",
+  "offline": "You are offline. Your saved plan and helplines are still here. Sending a message needs a connection.",
+  "menu": "Support options",
+  "options": {
+    "calm": "A calming exercise",
+    "calmHint": "Slow breathing, at your own pace.",
+    "plan": "My safety plan",
+    "planHint": "What you wrote for moments like this.",
+    "message": "Message a trusted person",
+    "messageHint": "You see the exact message before anything is sent.",
+    "call": "Call a helpline",
+    "callHint": "Numbers a person has checked."
+  },
+  "calm": {
+    "title": "A calming exercise",
+    "body": "Breathe in for four, out for six. Stop whenever you like."
+  },
+  "plan": {
+    "title": "My safety plan",
+    "warning_signs": "My warning signs",
+    "coping_steps": "Things I can do",
+    "people": "People I can reach",
+    "empty": "You have not written a plan yet. You can write one when things are calmer.",
+    "write": "Write my plan",
+    "edit": "Edit my plan",
+    "signIn": "Sign in to see your plan.",
+    "saved": "This is the copy saved on this device on {date}.",
+    "unavailable": "Your plan could not be loaded, and there is no saved copy on this device."
+  },
+  "message": {
+    "title": "Message a trusted person",
+    "intro": "Choose a person. You will see exactly who the message goes to and exactly what it says before anything is sent.",
+    "signIn": "Sign in to message a trusted person.",
+    "needsConnection": "Sending a message needs a connection. You can still call a helpline below.",
+    "none": "Nobody has agreed to receive messages from you yet. You can invite someone in Sharing.",
+    "setUp": "Open Sharing",
+    "choose": "Message {name}",
+    "reviewTitle": "Review before sending",
+    "to": "To",
+    "subject": "Subject",
+    "text": "Message",
+    "notReceiving": "This person has not agreed to receive messages, so this cannot be sent.",
+    "send": "Send this message",
+    "cancel": "Do not send",
+    "cancelled": "Nothing was sent.",
+    "sending": "Sending",
+    "queuedTitle": "Queued to send",
+    "status": "Delivery status is in Sharing.",
+    "another": "Back to support options"
+  },
+  "call": {
+    "title": "Call a helpline",
+    "saved": "This is the list saved on this device on {date}.",
+    "empty": "No checked helplines are listed yet. If you are in immediate danger, call your local emergency number.",
+    "unavailable": "The helpline list could not be loaded, and there is no saved copy on this device."
+  },
+  "top": "Back to the top"
+}

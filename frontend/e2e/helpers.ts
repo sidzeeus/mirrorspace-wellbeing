@@ -109,3 +109,24 @@ export function watchConsole(page: Page): string[] {
   page.on("pageerror", (error) => problems.push(error.message));
   return problems;
 }
+
+/** The Django shell prints a banner first; the value a script printed is the last line. */
+export function lastLine(output: string): string {
+  return output.split(String.fromCharCode(10)).pop()!.trim();
+}
+
+type ContactOptions = { name: string; contactEmail: string; status?: string };
+
+/** A trusted contact for a user, already accepted unless a status is given. */
+export function createContact(
+  email: string,
+  { name, contactEmail, status = "confirmed" }: ContactOptions,
+): void {
+  manage(`
+from apps.accounts.models import User
+from apps.sharing.models import TrustedContact
+from apps.sharing.services import email_fingerprint
+u = User.objects.get(email=${JSON.stringify(email)})
+TrustedContact.objects.create(user=u, name=${JSON.stringify(name)}, email=${JSON.stringify(contactEmail)}, email_hash=email_fingerprint(${JSON.stringify(contactEmail)}), status=${JSON.stringify(status)})
+`);
+}
