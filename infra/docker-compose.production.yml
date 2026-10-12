@@ -1,0 +1,83 @@
+# Production services. PostgreSQL and Redis are managed services reached through
+# DATABASE_URL and REDIS_URL; they are not defined here.
+#
+# Images are always referenced by an immutable Git commit tag, never "latest":
+#
+#   BACKEND_IMAGE=ghcr.io/<owner>/<repo>-backend:sha-<commit>
+#   FRONTEND_IMAGE=ghcr.io/<owner>/<repo>-frontend:sha-<commit>
+#   ENV_FILE=/etc/wellbeing/production.env      (written by the host's secret store)
+#
+# Use infra/deploy.sh rather than running this by hand. See docs/runbook.md.
+
+name: wellbeing
+
+x-backend: &backend
+  image: ${BACKEND_IMAGE:?set BACKEND_IMAGE to an image tagged sha-<commit>}
+  env_file:
+    - ${ENV_FILE:?set ENV_FILE to the path of the environment file}
+  restart: unless-stopped
+  read_only: true
+  tmpfs:
+    - /tmp
+  cap_drop:
+    - ALL
+  security_opt:
+    - no-new-privileges:true
+
+services:
+  # Run on its own, before the new version starts serving:
+  #   docker compose run --rm migrate
+  migrate:
+    <<: *backend
+    command: python manage.py migrate --noinput
+    restart: "no"
+    profiles: ["migrate"]
+    healthcheck:
+      disable: true
+
+  web:
+    <<: *backend
+    # Published on loopback only: the host's reverse proxy terminates TLS in front.
+    ports:
+      - "127.0.0.1:8000:8000"
+    # Longer than gunicorn's graceful timeout, so in-flight requests can finish.
+    stop_grace_period: 40s
+
+  worker:
+    <<: *backend
+    command: celery -A config worker --loglevel info --concurrency 2
+    # Lets a task that is sending an email finish before the container stops.
+    stop_grace_period: 60s
+    healthcheck:
+      test: ["CMD-SHELL", "celery -A config inspect ping -d celery@$$HOSTNAME --timeout 5"]
+      interval: 60s
+      timeout: 15s
+      retries: 3
+      start_period: 30s
+
+  # Exactly one beat process must run, or scheduled jobs fire twice.
+  beat:
+    <<: *backend
+    command: celery -A config beat --loglevel info --schedule /tmp/celerybeat-schedule
+    healthcheck:
+      disable: true
+
+  frontend:
+    image: ${FRONTEND_IMAGE:?set FRONTEND_IMAGE to an image tagged sha-<commit>}
+    environment:
+      API_INTERNAL_URL: http://web:8000
+      NEXT_TELEMETRY_DISABLED: "1"
+    ports:
+      - "127.0.0.1:3000:3000"
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/.next/cache
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      - web
+    stop_grace_period: 20s

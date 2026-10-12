@@ -1,0 +1,62 @@
+name: Scheduled reminders
+
+# Things only a person can do, raised as issues so they are not forgotten. Nothing here
+# edits a helpline number or approves content: code must never do that.
+#
+# Dependency update pull requests are opened by Dependabot (.github/dependabot.yml).
+
+on:
+  schedule:
+    - cron: "30 3 * * 1" # Mondays 09:00 IST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  remind:
+    name: Open review reminders
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Helpline verification (every week)
+        run: |
+          set -eu
+          title="Verify helplines: week of $(date -u +%Y-%m-%d)"
+          if [ -z "$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[].number')" ]; then
+            gh label create needs-human-review --color B60205 --force > /dev/null
+            gh issue create --title "$title" --label needs-human-review --body "$(cat <<'BODY'
+          A named person must check every helpline entry against its official source. Code never does this.
+
+          1. On the production host, list entries that are stale or unverified:
+             `python manage.py flag_stale_resources --fail-on-stale`
+          2. For each entry, call or check the official page: number, hours, languages, region.
+          3. In the admin, correct the entry, set **Verified on** to today, set the **owner**, and set the status to approved (or retired).
+          4. Run the command again. It must report that all resources were verified.
+
+          A release must not go out while any entry shown to students is stale. See docs/runbook.md "Helplines".
+          BODY
+          )"
+          fi
+
+      - name: Content review and backup rehearsal (first Monday of the month)
+        run: |
+          set -eu
+          [ "$(date -u +%d)" -le 7 ] || exit 0
+          month="$(date -u +%Y-%m)"
+          for item in \
+            "Review exercises and chat knowledge|Check that every approved exercise and knowledge document is still accurate, and review anything waiting in needs_review. After changing knowledge documents run: python manage.py index_knowledge. See docs/review-needed.md R1 and R12." \
+            "Backup and restore rehearsal|Restore the latest production backup into a scratch database and confirm row counts and that encrypted fields decrypt. Follow docs/runbook.md \"Backup and restore\". Record the date and result in the runbook." \
+            "Review access and secrets|Confirm who has admin and host access, remove anyone who should not, and confirm FIELD_ENCRYPTION_KEYS and PSEUDONYM_KEY are backed up separately from the database."
+          do
+            title="${item%%|*}: $month"
+            body="${item#*|}"
+            if [ -z "$(gh issue list --state all --search "\"$title\" in:title" --json number --jq '.[].number')" ]; then
+              gh issue create --title "$title" --label needs-human-review --body "$body"
+            fi
+          done

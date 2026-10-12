@@ -1,0 +1,123 @@
+name: Build and publish images
+
+# Every commit on main, and every v* tag, produces two images in GitHub Container
+# Registry. Each is tagged with the immutable commit (sha-<commit>). A v* tag adds the
+# release tag as well. Nothing is ever published as "latest".
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  packages: write
+  security-events: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: ${{ matrix.name }} image
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: backend
+            context: .
+            file: Dockerfile.backend
+            target: ""
+          - name: frontend
+            context: frontend
+            file: frontend/Dockerfile
+            target: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Image name (lower case, as the registry requires)
+        id: image
+        run: echo "name=ghcr.io/${GITHUB_REPOSITORY,,}-${{ matrix.name }}" >> "$GITHUB_OUTPUT"
+
+      - name: Tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.image.outputs.name }}
+          flavor: latest=false
+          tags: |
+            type=sha,format=long,prefix=sha-
+            type=ref,event=tag
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build (not pushed yet)
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          target: ${{ matrix.target }}
+          load: true
+          tags: scan-target:${{ github.sha }}
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,scope=${{ matrix.name }},mode=max
+
+      - name: Scan the image for known vulnerabilities
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: scan-target:${{ github.sha }}
+          format: sarif
+          output: trivy-${{ matrix.name }}.sarif
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+
+      - name: Upload the scan result
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-${{ matrix.name }}.sarif
+          category: trivy-${{ matrix.name }}
+
+      - name: Check that the image holds no secret and does not run as root
+        run: |
+          set -eu
+          user="$(docker inspect --format '{{.Config.User}}' scan-target:${{ github.sha }})"
+          test -n "$user" && test "$user" != "root" && test "$user" != "0"
+          if docker history --no-trunc scan-target:${{ github.sha }} | grep -Eiq 'sk-ant-|BEGIN (RSA|OPENSSH) PRIVATE KEY|AKIA[0-9A-Z]{16}'; then
+            echo "A secret-looking value was found in the image history"; exit 1
+          fi
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish with the immutable commit tag
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          target: ${{ matrix.target }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.name }}
+
+  dependencies:
+    name: Dependency audit
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pip-audit && pip-audit -r backend/requirements.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm audit --omit=dev --audit-level=high
+        working-directory: frontend

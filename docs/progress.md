@@ -218,7 +218,7 @@ Needs human review
 
 Done
 - `backend/apps/chat`: `safety.py` (the crisis check, in code), `policy.py` (instructions, fixed replies, output check), `knowledge.py` (chunking, local embedding, retrieval over pgvector), `providers.py` (`MockProvider`, `AnthropicProvider`), `services.py` (the five-step pipeline, budgets, transcripts), models, API, `seed_knowledge` and `index_knowledge` commands.
-- `apps/chat/evaluation/cases.json`: 59 cases across grounded, unsupported, self-harm, panic, abuse, code-switched, misspelled, prompt injection, provider outage and rate limit.
+- `apps/chat/evaluation/cases.json`: 58 cases across grounded, unsupported, self-harm, panic, abuse, code-switched, misspelled, prompt injection, provider outage and rate limit.
 - `frontend/src/app/(app)/chat/page.tsx`: the "I am an AI" banner, limits, opt-in saving, sources, feedback, and fixed safety replies with routes to Support.
 
 Verified on 2026-10-12

@@ -1,0 +1,58 @@
+# Adds a throwaway PostgreSQL and Redis to the production services, so the production
+# images and settings can be rehearsed on one machine:
+#
+#   docker compose -f infra/docker-compose.production.yml \
+#                  -f infra/docker-compose.staging-local.yml up -d --wait
+#
+# For rehearsal only. Real environments use managed PostgreSQL and Redis.
+
+services:
+  db:
+    image: pgvector/pgvector:0.8.7-pg16
+    environment:
+      POSTGRES_DB: wellbeing
+      POSTGRES_USER: wellbeing
+      POSTGRES_PASSWORD: staging-rehearsal-only
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wellbeing -d wellbeing"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7.4.11-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  migrate:
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    ports: !override
+      - "127.0.0.1:18000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  beat:
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  frontend:
+    ports: !override
+      - "127.0.0.1:13000:3000"

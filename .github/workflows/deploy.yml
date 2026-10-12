@@ -1,0 +1,77 @@
+name: Deploy
+
+# Started by a person, for one commit, to one environment. The environment's secrets
+# and its required reviewers are configured in the repository settings
+# (Settings > Environments), so a production deploy needs an approval.
+#
+# Secrets expected in each environment:
+#   DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY, DEPLOY_KNOWN_HOSTS
+# Variables expected in each environment:
+#   API_URL, APP_URL, ENV_FILE (path on the host), DEPLOY_PATH (checkout of infra/ on the host)
+#
+# Application secrets (database URL, keys) never pass through this workflow. They live
+# in the host's secret store and reach the containers through ENV_FILE.
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Where to deploy
+        type: choice
+        options: [staging, production]
+        default: staging
+      sha:
+        description: Full Git commit SHA to deploy (its images must already be published)
+        required: true
+
+permissions:
+  contents: read
+  packages: read
+
+concurrency:
+  group: deploy-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy ${{ inputs.sha }} to ${{ inputs.environment }}
+    runs-on: ubuntu-24.04
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.sha }}
+
+      - name: The images for this commit exist
+        run: |
+          set -eu
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          for part in backend frontend; do
+            docker manifest inspect "ghcr.io/${GITHUB_REPOSITORY,,}-$part:sha-${{ inputs.sha }}" > /dev/null
+          done
+
+      - name: Connect to the host
+        run: |
+          set -eu
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_deploy && chmod 600 ~/.ssh/id_deploy
+          printf '%s\n' "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+
+      - name: Copy the deployment files for this commit
+        run: |
+          scp -i ~/.ssh/id_deploy -r infra \
+            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ vars.DEPLOY_PATH }}/"
+
+      - name: Migrate, deploy and smoke-test
+        run: |
+          ssh -i ~/.ssh/id_deploy "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
+            "REGISTRY=ghcr.io/${GITHUB_REPOSITORY,,} \
+             ENV_FILE='${{ vars.ENV_FILE }}' \
+             API_URL='${{ vars.API_URL }}' APP_URL='${{ vars.APP_URL }}' \
+             sh '${{ vars.DEPLOY_PATH }}/infra/deploy.sh' '${{ inputs.sha }}'"
+
+      - name: Smoke tests from outside the host
+        env:
+          API_URL: ${{ vars.API_URL }}
+          APP_URL: ${{ vars.APP_URL }}
+        run: sh infra/smoke-test.sh
