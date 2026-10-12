@@ -82,18 +82,18 @@ test.describe("landing page", () => {
     await context.close();
   });
 
-  test("reduced motion gives still images and no scroll-driven stage", async ({ browser }) => {
+  test("reduced motion gives still images and no canvas", async ({ browser }) => {
     const context = await browser.newContext({ ...devices["Pixel 7"], reducedMotion: "reduce" });
     const page = await context.newPage();
     await page.goto("/");
 
-    await expect(page.locator("[data-story]")).toHaveAttribute("data-story", "still");
     await expect(page.locator("canvas")).toHaveCount(0);
-    for (const lumen of await page.locator("[data-lumen]").all()) {
-      await expect(lumen).toHaveAttribute("data-renderer", "static");
+    expect(await page.locator("[data-scene]").count()).toBeGreaterThanOrEqual(5);
+    for (const scene of await page.locator("[data-scene]").all()) {
+      await expect(scene).toHaveAttribute("data-renderer", "still");
     }
     // Each step of the story still has its own image and description.
-    await expect(page.getByRole("img", { name: "Two people reaching toward a light" })).toBeVisible();
+    await expect(page.getByRole("img", { name: "Two people made of light" })).toBeVisible();
     await context.close();
   });
 
@@ -113,11 +113,22 @@ test.describe("landing page", () => {
     expect(family).not.toContain("Hanken");
   });
 
-  test("with motion allowed the Lumen animates or degrades cleanly", async ({ page }) => {
+  test("with motion allowed the hero scene animates or degrades cleanly", async ({ page }) => {
     await page.goto("/");
-    const hero = page.locator("[data-lumen]").first();
-    await expect(hero).toHaveAttribute("data-renderer", /^(webgl|canvas2d|static)$/);
-    await expect(hero).toHaveAttribute("aria-label", /cluster of light/);
+    const hero = page.locator("[data-scene='held']");
+    await expect(hero).toHaveAttribute("data-renderer", /^(canvas|still)$/);
+    await expect(hero).toHaveAttribute("aria-label", /light held between two open hands/);
+  });
+
+  test("low-bandwidth mode downloads no scene image", async ({ page }) => {
+    const scenes: string[] = [];
+    page.on("request", (request) => {
+      if (request.url().includes("/scenes/")) scenes.push(request.url());
+    });
+    await setPrefs(page, { bandwidth: "low" });
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    expect(scenes).toEqual([]);
   });
 
   test("works with JavaScript turned off", async ({ browser }) => {
@@ -126,7 +137,10 @@ test.describe("landing page", () => {
     await page.goto("/");
 
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Notice your patterns.");
-    expect(await page.locator("[data-lumen] svg circle").count()).toBeGreaterThan(50);
+    const still = page.locator("[data-scene='held'] .scene-still");
+    expect(await still.evaluate((element) => getComputedStyle(element).backgroundImage)).toContain(
+      "/scenes/held-",
+    );
     await expect(page.getByRole("heading", { name: "Real help", exact: true })).toBeVisible();
     await page.getByRole("link", { name: "See helplines" }).click();
     await expect(page).toHaveURL(/\/resources$/);

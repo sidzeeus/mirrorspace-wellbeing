@@ -133,3 +133,15 @@ One isolated component, documented in `docs/lumen.md`.
 - It always has a text alternative that states what it is showing.
 - Rendering chain: a static SVG of dots is rendered on the server, so there is always an image, including with JavaScript off. In the browser it upgrades to WebGL, or to Canvas 2D if WebGL is unavailable. Reduced motion and low-bandwidth mode keep the static SVG.
 - It measures its own frame rate. Below 50 frames a second it halves its particle count; if that is not enough it stops animating and shows the static image.
+
+## Revision, 2026-10-12: scenes
+
+The owner asked for the public pages to follow the reference images much more closely. What changed:
+
+- **Background** is pure black; surfaces are near-black. A faint film grain sits over everything.
+- **Scenes** replace the small framed Lumen on public pages. A scene is a large dithered picture of light drawn by code: `held` (a round light between two hands, the landing stage), `point`, `figure`, `pair` (the three story steps) and `terrain` (the footer). Dots run from deep indigo to white.
+- **Structure** is drawn with hairlines: a vertical and a horizontal rule across the stage, corner marks on framed blocks, full-width rules between sections.
+- **Controls** are square. The primary button is white on black. Labels, navigation and buttons use the mono face in small capitals.
+- **Headline** sits low and left on the stage, with the actions low and right.
+
+What did not change: both themes are first-class, text contrast meets WCAG 2.2 AA, touch targets are 44px, and motion is optional. A scene is a still image first. The canvas shimmer starts only when motion is allowed, pauses off screen, and stops itself on a slow device. Low-bandwidth mode downloads no scene image at all. The Lumen is unchanged inside the app, where it still carries meaning (a breath, a week).

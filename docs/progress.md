@@ -297,3 +297,19 @@ Assumptions
 
 - `docs/final-review.md`: 10 Definition of Done items and the 8 non-negotiables, each with evidence. One FAIL (nothing published, because nothing has been pushed). The rest pass in code; helplines, all wording and the chat need human sign-off before any student uses the app.
 - `docs/MY_GUIDE.md`: the owner's guide to how everything works.
+
+### 2026-10-12: Frontend restyle after owner feedback
+
+Done
+- New visual direction from the owner's four reference images: black background, dithered scenes, hairlines, corner marks, square controls, mono labels, film grain (decisions B63, B64).
+- `frontend/src/components/scene/`: `fields.ts` (the pictures, as brightness functions) and `Scene.tsx` (still image first, canvas shimmer where motion is allowed, stops itself on slow devices).
+- `frontend/scripts/make-scenes.mjs` writes the stills to `frontend/public/scenes/`.
+- Landing page, story, footer, public header and the sign-in family of pages rebuilt. Tokens in `globals.css` changed, so the signed-in screens inherit the black palette and square controls.
+
+Unfinished or not verified
+- Signed-in screens only inherit the new tokens; they have not been individually redesigned.
+- Not looked at on a real phone.
+
+Explained to the owner, not changed
+- Email is not "broken": locally it is printed to the worker log because no email provider is configured (question Q1).
+- Chat answers come from the built-in mock because no AI key is configured, and it only answers questions covered by the four placeholder knowledge documents.

@@ -39,7 +39,7 @@ export async function HelplineStrip() {
   const withPhone = (resources ?? []).filter((resource) => resource.phone);
   return (
     <section aria-labelledby="helplines-title" className="border-y border-line">
-      <div className="mx-auto max-w-6xl px-5 py-14">
+      <div className="mx-auto max-w-7xl px-5 py-14 lg:px-10">
         <div className="mb-8 flex flex-wrap items-baseline justify-between gap-4">
           <h2 id="helplines-title" className="h2">
             {t("title")}

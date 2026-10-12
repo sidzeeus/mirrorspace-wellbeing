@@ -500,6 +500,10 @@ Defined as CSS variables in `src/app/globals.css` and described in `docs/design-
 
 Every screen is checked with axe in the browser tests, at 320 px width and with larger text.
 
+### Scenes
+
+The large pictures on the landing, sign-in and footer are "scenes": `components/scene/fields.ts` describes each picture as a brightness at every point, and `components/scene/Scene.tsx` turns that into dots. The still versions in `public/scenes/` are written by `node scripts/make-scenes.mjs`; re-run it after editing `fields.ts`. Scenes are decoration only and never show anyone's data.
+
 ### The Lumen
 
 `components/lumen/Lumen.tsx` is the one decorative element: a soft cluster of up to 840 points (`MAX_PARTICLES` in `shapes.ts`) that rearranges into shapes, for example seven groups for the days of the week (`targets`).

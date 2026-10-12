@@ -1,5 +1,9 @@
 {
-  "nav": { "helplines": "Helplines", "signIn": "Sign in" },
+  "nav": {
+    "helplines": "Helplines",
+    "signIn": "Sign in",
+    "create": "Create an account"
+  },
   "hero": {
     "lineOne": "Notice your patterns. Find one small step.",
     "lineTwo": "Reach real help when you need it.",
@@ -7,24 +11,25 @@
     "create": "Create an account",
     "helplines": "See helplines",
     "limits": "For students aged 18 and over. Not therapy, and not an emergency service.",
-    "lumen": "A soft cluster of light made of small dots."
+    "lumen": "A round light held between two open hands, drawn in small dots.",
+    "eyebrow": "A private wellbeing companion for students"
   },
   "story": {
     "title": "How it works",
     "one": {
       "title": "Notice",
       "body": "A check-in is four taps: mood, sleep, energy, stress. Skip any of them, or all of them. After a few weeks you can see your own patterns in plain words, with no scores.",
-      "lumen": "One point of light."
+      "lumen": "One point of light with faint rings around it."
     },
     "two": {
       "title": "One small step",
       "body": "After a check-in, one short activity is offered: slow breathing, a grounding exercise, a ten-minute plan. Mark it as not helpful and it stops being suggested.",
-      "lumen": "The light takes the shape of a seated person."
+      "lumen": "The light takes the shape of a standing person."
     },
     "three": {
       "title": "Real help",
       "body": "Your own safety plan and checked helplines stay one tap away, even offline. If you choose, someone you trust can get a short weekly note, or a message you decide to send.",
-      "lumen": "Two people reaching toward a light between them."
+      "lumen": "Two people made of light, holding hands on a hillside."
     }
   },
   "is": {
@@ -58,6 +63,14 @@
   "footer": {
     "lineOne": "Built to be quiet.",
     "lineTwo": "It does not track you, score you or keep you scrolling.",
-    "prototype": "This is a prototype. Its clinical, legal and safety wording is still waiting for expert review."
+    "prototype": "This is a prototype. Its clinical, legal and safety wording is still waiting for expert review.",
+    "scene": "A dark landscape drawn in points of light.",
+    "explore": "Explore",
+    "account": "Account",
+    "limits": "Limits",
+    "limitA": "Not therapy or diagnosis",
+    "limitB": "Not an emergency service",
+    "limitC": "Not monitored by anyone",
+    "support": "Support, without signing in"
   }
 }

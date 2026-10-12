@@ -126,7 +126,7 @@ test("saving is opt-in and can be deleted", async ({ page }) => {
   await expect.poll(() => savedMessages(email)).toBe("2");
 
   await page.getByRole("button", { name: "Delete the saved conversation" }).click();
-  await expect(page.getByText("Saved conversation deleted.")).toBeVisible();
+  await expect(page.getByText("Saved conversation deleted.", { exact: true })).toBeVisible();
   await expect(page.locator("[data-turn]")).toHaveCount(0);
   await expect.poll(() => savedMessages(email)).toBe("0");
 });

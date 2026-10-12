@@ -88,6 +88,8 @@ Choices made while building where the specification was silent or contradictory.
 | B60 | Migrate first, then replace | `infra/deploy.sh` runs migrations with the new image while the old version serves, then replaces the containers, then runs smoke tests. Migrations must be backwards compatible and are never undone automatically. | Avoids downtime and makes a code-only rollback safe. | 2026-10-12 |
 | B61 | Deployment target | A generic Linux host running Docker Compose, reached over SSH, with managed PostgreSQL and Redis. No platform-specific tooling. | Question Q3 (which host) is unanswered; this works on any host and commits to none. | 2026-10-12 |
 | B62 | Failed sends are never retried after a restore or a sweep | `sweep_stuck` marks an unfinished send as failed; it does not send again. | At-most-once: a duplicate note or SOS to a contact is worse than a missing one the student can see and resend. | 2026-10-12 |
+| B63 | Public pages follow the owner's references closely | Pure black, dithered scenes of light (held light, a figure, two people on a hillside), hairline grid, corner marks, square controls, mono labels, film grain. Replaces the earlier "references are mood only" reading for the landing, sign-in and footer. | Owner's direction on 2026-10-12 after seeing the first design. Accessibility and low-data rules are unchanged. | 2026-10-12 |
+| B64 | Scenes are generated, not photographed | Every scene is drawn by code (`frontend/src/components/scene/fields.ts`). No stock image, no AI-generated image, no likeness of a person. Stills are committed PNGs (63 KB in total); low-bandwidth mode downloads none of them. | No licensing question, tiny downloads, and both themes come from one source. | 2026-10-12 |
 
 ## Open questions
 
