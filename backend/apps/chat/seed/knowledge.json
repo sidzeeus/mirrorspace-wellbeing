@@ -1,0 +1,29 @@
+{
+  "_notice": "NEEDS_HUMAN_REVIEW. Placeholder educational text written by an engineer, not a clinician. It is loaded with review_status=needs_review, so it is not indexed or quoted unless SHOW_UNREVIEWED_CONTENT is on in development. A qualified mental-health professional must review, rewrite or replace every document, and add proper sources, before it is approved. See docs/review-needed.md R12.",
+  "documents": [
+    {
+      "slug": "sleep-basics",
+      "title": "Sleep basics for students",
+      "source": "Placeholder text, not yet reviewed or sourced",
+      "body": "Sleep needs differ from person to person, and they shift during exams, travel and stressful weeks. Many adults feel rested with seven to nine hours of sleep, but there is no single correct number.\n\nA regular wake-up time often helps more than a regular bedtime. Getting up at a similar time each day, including weekends, gives the body a steadier rhythm.\n\nBright screens and caffeine late in the day can make it harder to fall asleep for some people. A short wind-down routine, such as dimming the lights and putting the phone out of reach, can make falling asleep easier.\n\nOne bad night is common and usually sorts itself out. If poor sleep goes on for weeks, or makes daily life hard, a doctor is the right person to ask."
+    },
+    {
+      "slug": "steadying-your-breathing",
+      "title": "Steadying your breathing",
+      "source": "Placeholder text, not yet reviewed or sourced",
+      "body": "Slow breathing is a simple way to steady yourself when you feel tense or stressed. Breathing out for a little longer than you breathe in tends to feel calming.\n\nOne common pattern is to breathe in through the nose for a count of four and out for a count of six. A few minutes is enough. There is no need to force deep breaths.\n\nIf slow breathing makes you feel dizzy or uncomfortable, stop and breathe normally. It does not suit everyone, and that is fine.\n\nThe breathing exercise in this app follows the same pattern, and you can change the pace to suit you."
+    },
+    {
+      "slug": "exam-stress",
+      "title": "Stress around exams and deadlines",
+      "source": "Placeholder text, not yet reviewed or sourced",
+      "body": "Feeling stressed before exams and deadlines is very common among students. Some stress can sharpen focus; a lot of it for a long time is tiring.\n\nBreaking a large task into a first small step often makes it easier to begin. Choose a step that takes about ten minutes, decide when you will do it, and stop there.\n\nShort breaks, some movement, regular meals and sleep all support concentration during a busy stretch. They are easy to drop exactly when they would help most.\n\nTalking to someone, such as a friend, a tutor or a student support service, can make a heavy week feel more manageable."
+    },
+    {
+      "slug": "grounding",
+      "title": "Grounding when thoughts are racing",
+      "source": "Placeholder text, not yet reviewed or sourced",
+      "body": "Grounding means bringing your attention back to what is around you right now. People use it when their thoughts are racing or they feel overwhelmed.\n\nA common method uses the senses: name five things you can see, four you can touch, three you can hear, two you can smell and one you can taste.\n\nGrounding does not solve the thing that is worrying you. It can give you a steadier moment in which to decide what to do next.\n\nIf grounding does not help, that does not mean you did it wrong. Different things help different people."
+    }
+  ]
+}

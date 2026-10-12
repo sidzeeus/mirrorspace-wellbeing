@@ -26,6 +26,8 @@ FIELD_ENCRYPTION_KEYS = env.list("FIELD_ENCRYPTION_KEYS")
 # Required, and must never change once in use (see base.py).
 PSEUDONYM_KEY = env("PSEUDONYM_KEY")
 API_BASE_URL = env("API_BASE_URL").rstrip("/")
+# The real provider. Its key is ANTHROPIC_API_KEY in the host's secret store.
+CHAT_PROVIDER = env("CHAT_PROVIDER", default="apps.chat.providers.AnthropicProvider")
 # Unreviewed placeholder content can never be shown in production.
 SHOW_UNREVIEWED_CONTENT = False
 

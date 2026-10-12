@@ -11,6 +11,8 @@ ALLOWED_HOSTS = ["testserver", "localhost"]
 FIELD_ENCRYPTION_KEYS = [base64.urlsafe_b64encode(b"test-only-field-key-000000000000").decode()]
 SHOW_UNREVIEWED_CONTENT = False
 PSEUDONYM_KEY = "test-only-pseudonym-key"
+# Tests never call a paid model.
+CHAT_PROVIDER = "apps.chat.providers.MockProvider"
 
 PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
 

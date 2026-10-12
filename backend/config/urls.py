@@ -5,6 +5,7 @@ from drf_spectacular.views import SpectacularAPIView
 from rest_framework.routers import SimpleRouter
 
 from apps.accounts.views import AccountView, ExportView
+from apps.chat.views import ChatFeedbackViewSet, ChatInfoView, ChatSessionViewSet
 from apps.checkins.views import CheckInViewSet, PatternsView
 from apps.episodes.views import EpisodeViewSet, TriggerViewSet
 from apps.notifications.views import EmailWebhookView, NotificationViewSet
@@ -24,6 +25,8 @@ router.register("resources", ResourceViewSet, basename="resource")
 router.register("trusted-contacts", sharing.TrustedContactViewSet, basename="trusted-contact")
 router.register("sharing/consent", sharing.ConsentViewSet, basename="consent")
 router.register("notifications", NotificationViewSet, basename="notification")
+router.register("chat/sessions", ChatSessionViewSet, basename="chat-session")
+router.register("chat/feedback", ChatFeedbackViewSet, basename="chat-feedback")
 
 api_v1: list[URLPattern | URLResolver] = [
     path("health", HealthView.as_view(), name="health"),
@@ -33,6 +36,7 @@ api_v1: list[URLPattern | URLResolver] = [
     path("account", AccountView.as_view(), name="account"),
     path("export", ExportView.as_view(), name="export"),
     path("patterns", PatternsView.as_view(), name="patterns"),
+    path("chat/info", ChatInfoView.as_view(), name="chat-info"),
     path("safety-plan", SafetyPlanView.as_view(), name="safety-plan"),
     path("sharing/preview", sharing.WeeklyPreviewView.as_view(), name="sharing-preview"),
     path("sharing/notices", sharing.NoticeVersionsView.as_view(), name="sharing-notices"),

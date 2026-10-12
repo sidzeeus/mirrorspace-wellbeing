@@ -14,6 +14,9 @@ ignore = [
 "conftest.py" = ["S105", "S106"]
 "config/settings/test.py" = ["S105"]
 "config/settings/local.py" = ["S105"]
+# Long literal sentences and patterns that read worse when wrapped.
+"apps/chat/policy.py" = ["E501"]
+"apps/chat/safety.py" = ["E501"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings.test"

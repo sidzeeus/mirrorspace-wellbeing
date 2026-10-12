@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "apps.safety",
     "apps.sharing",
     "apps.notifications",
+    "apps.chat",
 ]
 
 MIDDLEWARE = [
@@ -123,6 +124,10 @@ CELERY_BEAT_SCHEDULE = {
     "notifications-sweep-stuck": {
         "task": "notifications.sweep_stuck",
         "schedule": crontab(minute="5-59/10"),
+    },
+    "chat-purge-expired": {
+        "task": "chat.purge_expired",
+        "schedule": crontab(minute="37"),
     },
     "audit-purge-expired": {
         "task": "audit.purge_expired",
@@ -210,6 +215,19 @@ CONTACT_INVITATION_MAX_AGE = env.int("CONTACT_INVITATION_MAX_AGE_SECONDS", defau
 # Shared secret for the email provider's bounce webhook. Empty disables the endpoint.
 EMAIL_WEBHOOK_SECRET = env("EMAIL_WEBHOOK_SECRET", default="")
 
+# --- AI chat (Phase 4) -------------------------------------------------------------
+
+# Which class answers chat messages. The default never leaves the process. The real
+# provider reads its API key from the environment (ANTHROPIC_API_KEY) through its SDK;
+# the key is never a Django setting.
+CHAT_PROVIDER = env("CHAT_PROVIDER", default="apps.chat.providers.MockProvider")
+CHAT_MODEL = env("CHAT_MODEL", default="claude-opus-5-5")
+CHAT_MAX_OUTPUT_TOKENS = env.int("CHAT_MAX_OUTPUT_TOKENS", default=2048)
+CHAT_PROVIDER_TIMEOUT = env.float("CHAT_PROVIDER_TIMEOUT_SECONDS", default=30.0)
+# AI replies one student may receive in a day, and everyone together (a cost ceiling).
+CHAT_USER_DAILY_LIMIT = env.int("CHAT_USER_DAILY_LIMIT", default=40)
+CHAT_GLOBAL_DAILY_LIMIT = env.int("CHAT_GLOBAL_DAILY_LIMIT", default=2000)
+
 # --- Internationalisation ---------------------------------------------------------
 
 LANGUAGE_CODE = "en"
@@ -263,6 +281,7 @@ REST_FRAMEWORK = {
         "export": "10/hour",
         "contact_add": "10/day",
         "sos": "3/hour",
+        "chat": "10/min",
         "public_token": "30/hour",
     },
     "DEFAULT_PAGINATION_CLASS": "config.api.DefaultPagination",

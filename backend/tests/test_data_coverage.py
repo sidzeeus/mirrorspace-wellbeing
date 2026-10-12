@@ -102,7 +102,18 @@ def populate_sharing(user):
             scheduled_at=now,
         ),
         "audit": record("consent.granted", user=user, obj=consent, purpose="weekly_summary"),
+        **populate_chat(user),
     }
+
+
+def populate_chat(user):
+    from apps.chat.models import ChatFeedback, ChatMessage, ChatSession, ChatUsage
+
+    session = ChatSession.objects.create(user=user, save_transcript=True, expires_at=timezone.now())
+    ChatMessage.objects.create(session=session, role="user", content=f"{CANARY}-chat")
+    ChatFeedback.objects.create(user=user, session=session, kind="answer", helpful=True)
+    ChatUsage.objects.create(user=user, day=timezone.localdate(), replies=2)
+    return {"chat_session": session}
 
 
 class TestCoverageByIntrospection:
@@ -152,7 +163,11 @@ class TestExport:
             "consents",
             "notifications",
             "audit_events",
+            "chat",
         }
+        assert body["chat"]["sessions"][0]["messages"][0]["content"] == f"{CANARY}-chat"
+        assert body["chat"]["feedback"][0]["helpful"] is True
+        assert body["chat"]["usage"][0]["replies"] == 2
         assert body["safety_plan"]["warning_signs"] == [f"{CANARY}-sign"]
         assert body["trusted_contacts"][0]["name"] == f"{CANARY}-contact"
         assert body["consents"][0]["notice_version"] == "v-test"
@@ -191,6 +206,7 @@ class TestExport:
             "contact",
             "consent",
             "notification",
+            "chat_session",
         ):
             assert str(theirs[key].pk) not in dumped
 
@@ -203,6 +219,7 @@ class TestExport:
         assert body["check_ins"] == body["triggers"] == body["episodes"] == []
         assert body["trusted_contacts"] == body["consents"] == body["notifications"] == []
         assert body["safety_plan"] is None
+        assert body["chat"] == {"sessions": [], "feedback": [], "usage": []}
 
 
 @pytest.mark.django_db

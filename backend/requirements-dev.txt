@@ -58,7 +58,9 @@ faker==40.43.0
 filelock==4.1.1
     # via cachecontrol
 idna==3.20
-    # via requests
+    # via
+    #   -c requirements.txt
+    #   requests
 iniconfig==2.3.1
     # via pytest
 librt==0.16.0
