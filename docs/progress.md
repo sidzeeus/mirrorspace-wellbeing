@@ -71,7 +71,7 @@ Current phase: **All build phases complete (Phases 1 to 6 and the final review).
 
 ### Final
 - [x] Final review (Prompt 10): PASS / FAIL / NEEDS_HUMAN_REVIEW table
-- [ ] `docs/MY_GUIDE.md`
+- [x] `docs/MY_GUIDE.md`
 
 ## Log
 
