@@ -15,7 +15,11 @@ HOST_HEADER="${API_HOST:+Host: $API_HOST}"
 failures=0
 check() {
   description="$1"; expected="$2"; shift 2
-  actual="$(curl -sS -o /dev/null -m 20 -w '%{http_code}' ${PROTO_HEADER:+-H "$PROTO_HEADER"} "$@" || echo 000)"
+  # The status code is printed on a last line of its own and the body is discarded by
+  # `tail`, which avoids depending on /dev/null (not portable to every shell on Windows).
+  actual="$(curl -sS -m 20 -w '
+%{http_code}' ${PROTO_HEADER:+-H "$PROTO_HEADER"} "$@" 2>/dev/null | tail -n 1)"
+  [ -n "$actual" ] || actual=000
   if [ "$actual" = "$expected" ]; then
     echo "ok    $description ($actual)"
   else

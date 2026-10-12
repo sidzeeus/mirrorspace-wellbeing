@@ -2,7 +2,7 @@
 
 Updated at the end of every phase. Each entry says what is done, what is unfinished, and what was assumed.
 
-Current phase: **Phase 4 (AI chat) complete. Hardening not started.**
+Current phase: **All build phases complete (Phases 1 to 6 and the final review). Not ready for real students: see `docs/final-review.md`.**
 
 ## Phase checklist
 
@@ -57,20 +57,20 @@ Current phase: **Phase 4 (AI chat) complete. Hardening not started.**
 - [x] Evaluation set with mocked provider
 
 ### Phase 5: Hardening (Prompt 8)
-- [ ] Security baseline review, dependency audit
-- [ ] Route-enumeration test (auth, ownership, cross-user test exists)
-- [ ] Retention, deletion and export verification
-- [ ] Canary-string tests for logs, task names, Sentry
-- [ ] Load check, backup and restore rehearsal
-- [ ] `docs/security-review.md`
+- [x] Security baseline review, dependency audit
+- [x] Route-enumeration test (auth, ownership, cross-user test exists)
+- [x] Retention, deletion and export verification
+- [x] Canary-string tests for logs, task names, Sentry
+- [x] Load check, backup and restore rehearsal
+- [x] `docs/security-review.md`
 
 ### Phase 6: Deployment (Prompt 9)
-- [ ] Production images, graceful shutdown
-- [ ] GitHub Actions: PR, main (build, scan, publish to GHCR), deploy, scheduled checks
-- [ ] `docs/runbook.md`
+- [x] Production images, graceful shutdown
+- [x] GitHub Actions: PR, main (build, scan, publish to GHCR), deploy, scheduled checks
+- [x] `docs/runbook.md`
 
 ### Final
-- [ ] Final review (Prompt 10): PASS / FAIL / NEEDS_HUMAN_REVIEW table
+- [x] Final review (Prompt 10): PASS / FAIL / NEEDS_HUMAN_REVIEW table
 - [ ] `docs/MY_GUIDE.md`
 
 ## Log
@@ -240,3 +240,60 @@ Assumptions
 
 Needs human review
 - R3 and R12 now point at real placeholder content. R23 and R24 added.
+
+### 2026-10-12: Phase 5 (hardening)
+
+Done
+- `tests/test_routes.py`: lists every route and fails if one is neither on the reviewed public list (20 routes) nor covered by an ownership test.
+- `tests/test_hardening.py`: production settings, required secrets, no usable secret defaults, canary strings in logs, task arguments and Sentry events.
+- `NoStoreApiMiddleware`, a partial Content-Security-Policy and other response headers on the frontend.
+- `infra/loadcheck.py` and `infra/backup-restore-rehearsal.sh`.
+- `docs/security-review.md`: seven findings fixed (F1 to F7), nine left open (S1 to S9).
+
+Verified on 2026-10-12
+- 766 backend tests pass on PostgreSQL, 98% coverage. Ruff, mypy, `makemigrations --check` and `check --deploy` clean.
+- 66 browser tests pass with no axe violations. 7 copy-rule tests pass.
+- `pip-audit` and `npm audit --omit=dev`: no known vulnerabilities.
+- Backup and restore rehearsal: 32 tables restored with identical row counts, encrypted fields readable.
+- Load check on the development server: health p95 29 ms, ready 115 ms, signed-in reads 240 to 380 ms.
+
+Unfinished or not verified
+- The load figures come from a laptop and a development server. They say nothing about a real host.
+- No independent security test. No multi-factor sign-in for the admin (S1). No edge rate limiting (S2). Script policy still allows inline scripts (S3).
+- Sentry scrubbing is tested on constructed events, not against a live project (S6).
+
+Assumptions
+- Recorded as B57, B58 and B62 in `docs/decisions.md`.
+
+### 2026-10-12: Phase 6 (deployment)
+
+Done
+- `Dockerfile.backend` and `frontend/Dockerfile`: pinned base images, non-root users, health checks, graceful stop.
+- `infra/docker-compose.production.yml`, `infra/deploy.sh`, `infra/smoke-test.sh`.
+- Workflows: `ci.yml` (tests, lint, types, browser tests), `release.yml` (build, scan, publish to GHCR as `sha-<commit>`), `deploy.yml` (manual, by commit, with approval for production), `scheduled.yml` (weekly audit, helpline and restore reminders), and `dependabot.yml`.
+- `docs/runbook.md`.
+
+Staging rehearsal on one machine, 2026-10-12
+1. Built both images and tagged them `sha-<commit>`. Neither is tagged `latest`; both run as a non-root user.
+2. Wrote a throwaway environment file with freshly generated secrets, `config.settings.production` and the mock chat provider.
+3. Started PostgreSQL and Redis from `infra/docker-compose.production.yml` plus `infra/docker-compose.staging-local.yml`.
+4. Ran migrations with the new image (`--profile migrate run --rm migrate`).
+5. Ran `manage.py check --deploy --fail-level WARNING` inside the image: no issues.
+6. Started the API, worker, scheduler and frontend and waited for their health checks.
+7. Ran `infra/smoke-test.sh`: 18 of 18 passed.
+8. Stopped the API and worker: both exited cleanly in about 10 seconds.
+9. Removed the containers, the volume and the environment file.
+
+Unfinished or not verified
+- **No workflow has run.** The repository has no remote, so CI, the image scan, publishing and the deploy workflow are untested. This is the one FAIL in the final review.
+- No hosted environment exists (question Q3). The runbook has been rehearsed locally only.
+- No real email provider is connected; the bounce webhook is a generic shape awaiting a provider (R22).
+- Re-encrypting old rows after a key rotation has no command yet.
+
+Assumptions
+- Recorded as B59 to B61 in `docs/decisions.md`.
+
+### 2026-10-12: Final review
+
+- `docs/final-review.md`: 10 Definition of Done items and the 8 non-negotiables, each with evidence. One FAIL (nothing published, because nothing has been pushed). The rest pass in code; helplines, all wording and the chat need human sign-off before any student uses the app.
+- `docs/MY_GUIDE.md`: the owner's guide to how everything works.
