@@ -2,7 +2,7 @@
 
 > **NEEDS_HUMAN_REVIEW.** This is an engineering description of how the software behaves today. It is not a privacy notice and not legal advice. Before any real student uses the app, an India-qualified privacy lawyer must review it against the DPDP Act and Rules, and the student-facing notices must be written from it (docs/review-needed.md R6, R7, R8, R13).
 
-This file is updated with every phase. It describes Phases 1 to 3.
+This file is updated with every phase. It describes Phases 1 to 4.
 
 ## Principles the code enforces
 
@@ -30,6 +30,8 @@ This file is updated with every phase. It describes Phases 1 to 3.
 | Notifications: purpose, status, dates, provider reference | `notifications_notification` | No message body is kept. An SOS message's approved text is held encrypted only until it is sent. |
 | Do-not-email list | `sharing_suppressedaddress` | Keyed fingerprints only. It contains no addresses. |
 | Audit events: action, object type, codes | `audit_auditevent` | No message bodies, names or addresses. See retention below. |
+| Chat conversations | `chat_chatsession`, `chat_chatmessage` | Nothing is stored unless the student turns saving on. Saved messages are **encrypted at rest**, kept at most 30 days, and deleted when saving is turned off. |
+| Chat ratings and daily reply counts | `chat_chatfeedback`, `chat_chatusage` | A thumbs up or down and a number. No text. |
 | Sign-in sessions | `django_session` | `HttpOnly`, `Secure`, `SameSite=Lax` cookie; 7-day idle timeout. |
 
 Not stored at all: free-text notes on check-ins, location, device identifiers, contacts lists, analytics or advertising identifiers, any assessment or risk label about a student.
@@ -78,7 +80,7 @@ Email confirmation, password reset and "you already have an account" go to the s
 |---|---|---|
 | Email provider | Recipient address, subject and body of the emails above | Not chosen yet (decisions.md Q1). Its retention and data-use terms need review (R13). |
 | Error tracking (Sentry), if enabled | Error type, code location, request method and path | Request bodies, cookies, headers, user details and local variables are stripped before sending. Off unless `SENTRY_DSN` is set. |
-| AI provider | Nothing yet | Phase 4. |
+| AI provider (chat) | Fixed instructions, up to three reviewed passages, the chat message and at most six earlier turns. Never a name, email, user id or any record. Crisis-like messages are answered in code and are not sent at all. | Anthropic by default (decisions.md B54). Its retention and data-use terms need review (R13). Passages are embedded locally; no embedding provider is used. |
 
 Nothing is sent to analytics or advertising services. There are none in the product.
 
@@ -107,6 +109,7 @@ A permanently bouncing address, or a spam complaint reported by the email provid
 | Everything a student owns | The student deletes it, or deletes the account. |
 | An account that never confirmed its email | 7 days, then removed automatically. |
 | An SOS message's approved text | It is sent, cancelled or fails. Then it is blanked. |
+| Saved chat conversations | The retention the student chose (at most 30 days), or until they delete them. Unsaved conversations leave nothing. |
 | Expired sign-in sessions | Cleared nightly. |
 | Audit events | 12 months from the event, then purged (`AUDIT_RETENTION_DAYS`). |
 | Do-not-email fingerprints | Indefinitely, so a person who asked not to be emailed stays un-emailed. They identify no one without the server secret. |

@@ -10,7 +10,7 @@ Nothing on this list may reach real students until its "Signed off by" column is
 |---|---|---|---|---|---|
 | R1 | Exercise content (grounding, paced breathing, journaling, planning, movement, wind-down) | Qualified mental-health professional | `backend/apps/wellbeing/seed/exercises.json` (6 placeholders, loaded as `needs_review`) | Placeholder written in Phase 2 | |
 | R2 | Helpline and emergency resource entries, including Tele-MANAS 14416: number, hours, languages, region. Must be re-verified before every release. | Named human owner (unassigned, see Q7 in decisions.md) | `backend/apps/safety/seed/resources.json` (Tele-MANAS 14416 and 112, both unverified, hidden until approved). Check with `python manage.py flag_stale_resources` | Placeholder written in Phase 3 | |
-| R3 | Crisis workflow: trigger terms, the fixed safety message, and what is offered | Mental-health and safeguarding professionals | Chat safety module, Phase 4 | Not yet written | |
+| R3 | Crisis workflow: trigger terms, the fixed safety message, and what is offered | Mental-health and safeguarding professionals | `backend/apps/chat/safety.py`: the phrase patterns, `CRISIS_REPLY`, `DISTRESS_REPLY` and `ACTIONS`. False positives and negatives must be measured on real wording. | Placeholder written in Phase 4 | |
 | R4 | SOS screen wording and the default SOS message text | Safeguarding professional | `SOS_SUBJECT`, `SOS_BODY` in `backend/apps/sharing/sos.py`; reply and limit wording in `apps/sharing/views.py` | Placeholder written in Phase 3 | |
 | R5 | Weekly email wording, including the fixed neutral line | Safeguarding professional | `WEEKLY_SUBJECT`, `WEEKLY_BODY` in `backend/apps/sharing/weekly.py`; `WEEKLY_NEUTRAL_LINE` and `WEEKLY_NOTICE` in `apps/sharing/notices.py` | Placeholder written in Phase 3 | |
 | R6 | Privacy notice, consent notices and their versions | India-qualified privacy lawyer (DPDP Act and Rules) | `docs/privacy.md` (engineering description); notice versions in `backend/apps/sharing/notices.py` | Engineering description written in Phase 3; student-facing notices not yet written | |
@@ -19,7 +19,7 @@ Nothing on this list may reach real students until its "Signed off by" column is
 | R9 | "What this app is and is not" statement and every "not therapy, not monitored" disclaimer | Mental-health professional and lawyer | Landing page, onboarding, SOS, chat | Not yet written | |
 | R10 | Pattern observation sentences (correlation-only wording) | Mental-health professional | `OBSERVATION_TEMPLATES` and `NOTE` in `backend/apps/checkins/patterns.py`; also the thresholds in B19 | Placeholder written in Phase 2 | |
 | R11 | Hindi and any other translations | Fluent speakers with wellbeing-content experience | `next-intl` message files, Prompt 6 | Not yet written | |
-| R12 | AI chat system policy, curated knowledge documents, and evaluation-set review | Clinician | Chat app, Phase 4 | Not yet written | |
+| R12 | AI chat system policy, curated knowledge documents, and evaluation-set review | Clinician | `backend/apps/chat/policy.py` (`SYSTEM_PROMPT`, fixed replies, forbidden-output patterns), `apps/chat/seed/knowledge.json` (4 placeholder documents), `apps/chat/evaluation/cases.json` (59 cases) | Placeholder written in Phase 4 | |
 | R13 | AI and email provider data-processing, retention and training terms | Privacy lawyer | Provider choice (Q1, Q2) | Provider not chosen | |
 | R14 | Overall safeguarding review before any real student use | Safeguarding lead | Whole product | Not started | |
 | R15 | Account email wording (confirm email, password reset, "you already have an account"), including the line "It is not therapy and it is not monitored by anyone." | Lawyer for the disclaimer; owner for tone | `backend/apps/accounts/templates/accounts/email/` | Placeholder written in Phase 1 | |
@@ -30,6 +30,8 @@ Nothing on this list may reach real students until its "Signed off by" column is
 | R20 | Whether trusted contacts need their own privacy notice (their name and email are stored at the student's request) | India-qualified privacy lawyer | `docs/privacy.md` "Open items" | Open | |
 | R21 | Safeguarding review of the sharing rules: 3 contacts, 90-day re-confirmation, SOS limits (3 an hour, 6 a day), fixed SOS text | Safeguarding lead | decisions B22, B25, B29, B30 | Built in Phase 3 | |
 | R22 | The email provider's bounce/complaint webhook mapping, once a provider is chosen | Engineer + owner | `backend/apps/notifications/views.py` `EmailWebhookView` | Generic endpoint built; provider adapter not written | |
+| R23 | Whether "no reviewed material, no model call" (B50) is the right balance, or whether ungrounded reflective replies should be allowed | Clinician and owner | `backend/apps/chat/services.py` | Built conservative in Phase 4 | |
+| R24 | A run of the evaluation set against the real model, with a clinician reading the answers | Clinician | `backend/apps/chat/evaluation/cases.json` | Not done: only the mocked provider has run | |
 
 ## String checklists
 
@@ -289,5 +291,45 @@ NEEDS_HUMAN_REVIEW. Generated by `frontend/scripts/string-checklist.mjs`. Do not
 | `unsubscribe.done` | You are unsubscribed. No more messages will be sent to you. | |
 | `unsubscribe.invalid` | This link is not valid. If you keep receiving messages, reply to the sender directly. | |
 | `unsubscribe.missing` | This page needs the link from one of the emails. | |
+
+### Chat screen (`frontend/messages/en/chat.json`)
+
+| Key | Text | Reviewed by / date |
+|---|---|---|
+| `title` | Chat | |
+| `banner` | I am an AI, not a therapist. | |
+| `can` | What I can do | |
+| `cannot` | What I cannot do | |
+| `retentionTitle` | What happens to what you write | |
+| `limits` | Replies are short and drawn from reviewed material. There is a daily limit on AI replies. | |
+| `supportHint` | If things feel urgent, use Support. It is always at the top of the screen. | |
+| `openSupport` | Open Support | |
+| `empty` | Ask about sleep, stress, steadying your breathing, or finding one small step. | |
+| `you` | You | |
+| `ai` | AI reply | |
+| `fixed` | Fixed reply, not written by AI | |
+| `sources` | Based on | |
+| `input` | Your message | |
+| `inputHint` | Up to {max} characters. Please do not include names or details that identify other people. | |
+| `send` | Send message | |
+| `sending` | Waiting for a reply | |
+| `tooLong` | Shorten your message to {max} characters or fewer. | |
+| `helpful` | Helpful | |
+| `notHelpful` | Not helpful | |
+| `helpfulLabel` | Mark this reply as helpful | |
+| `notHelpfulLabel` | Mark this reply as not helpful | |
+| `feedbackThanks` | Thank you. | |
+| `actions.support` | Open Support | |
+| `actions.safety_plan` | My safety plan | |
+| `actions.helplines` | Call a helpline | |
+| `actions.trusted_contact` | Message a trusted person | |
+| `save.title` | Saving | |
+| `save.toggle` | Save this conversation | |
+| `save.off` | Off. Nothing is stored. The conversation disappears when you leave this screen. | |
+| `save.on` | On. Saved to your account, encrypted, for {days} days. Then deleted. | |
+| `save.delete` | Delete the saved conversation | |
+| `save.deleted` | Saved conversation deleted. | |
+| `save.startOver` | Start a new conversation | |
+| `error` | The chat could not be started. | |
 
 <!-- string-checklist:end -->

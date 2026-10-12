@@ -1,4 +1,5 @@
 import auth from "./auth.json";
+import chat from "./chat.json";
 import checkin from "./checkin.json";
 import common from "./common.json";
 import contact from "./contact.json";
@@ -16,6 +17,6 @@ import sharing from "./sharing.json";
 import shell from "./shell.json";
 import support from "./support.json";
 
-const messages = { auth, checkin, common, contact, episodes, exercises, home, landing, offline, onboarding, patterns, plan, resources, settings, sharing, shell, support };
+const messages = { auth, chat, checkin, common, contact, episodes, exercises, home, landing, offline, onboarding, patterns, plan, resources, settings, sharing, shell, support };
 
 export default messages;

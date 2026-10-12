@@ -1,0 +1,42 @@
+{
+  "_review": "NEEDS_HUMAN_REVIEW: placeholder wording for the chat screen. The banner and limits must be reviewed by a clinician and a lawyer (docs/review-needed.md R9, R12).",
+  "title": "Chat",
+  "banner": "I am an AI, not a therapist.",
+  "can": "What I can do",
+  "cannot": "What I cannot do",
+  "retentionTitle": "What happens to what you write",
+  "limits": "Replies are short and drawn from reviewed material. There is a daily limit on AI replies.",
+  "supportHint": "If things feel urgent, use Support. It is always at the top of the screen.",
+  "openSupport": "Open Support",
+  "empty": "Ask about sleep, stress, steadying your breathing, or finding one small step.",
+  "you": "You",
+  "ai": "AI reply",
+  "fixed": "Fixed reply, not written by AI",
+  "sources": "Based on",
+  "input": "Your message",
+  "inputHint": "Up to {max} characters. Please do not include names or details that identify other people.",
+  "send": "Send message",
+  "sending": "Waiting for a reply",
+  "tooLong": "Shorten your message to {max} characters or fewer.",
+  "helpful": "Helpful",
+  "notHelpful": "Not helpful",
+  "helpfulLabel": "Mark this reply as helpful",
+  "notHelpfulLabel": "Mark this reply as not helpful",
+  "feedbackThanks": "Thank you.",
+  "actions": {
+    "support": "Open Support",
+    "safety_plan": "My safety plan",
+    "helplines": "Call a helpline",
+    "trusted_contact": "Message a trusted person"
+  },
+  "save": {
+    "title": "Saving",
+    "toggle": "Save this conversation",
+    "off": "Off. Nothing is stored. The conversation disappears when you leave this screen.",
+    "on": "On. Saved to your account, encrypted, for {days} days. Then deleted.",
+    "delete": "Delete the saved conversation",
+    "deleted": "Saved conversation deleted.",
+    "startOver": "Start a new conversation"
+  },
+  "error": "The chat could not be started."
+}

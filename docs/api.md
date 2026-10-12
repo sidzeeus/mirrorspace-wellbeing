@@ -2,7 +2,7 @@
 
 Base path: `/api/v1`. The machine-readable description is at `GET /api/v1/schema` (OpenAPI 3; staff only in production).
 
-This file documents the routes that exist today (Phases 1 to 3). It is updated with each phase.
+This file documents the routes that exist today (Phases 1 to 4). It is updated with each phase.
 
 ## Rules that apply to every route
 
@@ -673,3 +673,85 @@ For the email provider, not for the frontend. Requires the header `X-Webhook-Sec
 ```
 
 `event` is `bounced` or `complained`. `200` `{"handled": true}`, or `false` when the reference is unknown.
+
+## Chat
+
+An AI companion for reflection and reviewed self-help material. It is not a therapist, and nobody monitors it. Every message passes a safety check in code before it can reach an AI provider.
+
+### GET /chat/info (public)
+What the chat is and is not, shown before the first message.
+
+```json
+{
+  "disclosure": {
+    "identity": "I am an AI, not a therapist, a counsellor or a doctor.",
+    "can": "I can reflect back what you say, share short pieces of reviewed material, and help you find one small next step.",
+    "cannot": "I cannot diagnose, advise on medication or treatment, or help in an emergency. Nobody monitors this chat, and I cannot contact anyone for you.",
+    "retention": "Nothing you write here is saved unless you turn on saving. Your message is sent to an AI provider to produce a reply, without your name or any of your records."
+  },
+  "max_message_length": 1000,
+  "max_retention_days": 30,
+  "transcripts_saved_by_default": false,
+  "signed_in": true
+}
+```
+
+### POST /chat/sessions
+Starts a conversation. Body is optional: `{"save_transcript": false, "retention_days": 30}`. Saving is off unless asked for; `retention_days` is 1 to 30.
+
+`201` `{"id": "...", "save_transcript": false, "retention_days": 30, "expires_at": null, "created_at": "...", "messages": []}`
+
+### GET /chat/sessions, GET /chat/sessions/{id}
+The person's own conversations. `messages` is empty unless saving is on.
+
+### PATCH /chat/sessions/{id}
+`{"save_transcript": true}` turns saving on (and sets `expires_at`). `{"save_transcript": false}` turns it off **and deletes what was saved**.
+
+### DELETE /chat/sessions/{id}
+Deletes the conversation and any saved messages. `204`.
+
+### POST /chat/sessions/{id}/messages
+Limit: 10 a minute, plus a daily number of AI replies per person.
+
+```json
+{
+  "text": "How many hours of sleep do students usually need?",
+  "history": [
+    {"role": "user", "content": "an earlier message"},
+    {"role": "assistant", "content": "an earlier AI reply"}
+  ]
+}
+```
+
+`text` is required, up to 1000 characters. `history` is optional: with saving off, the browser holds the conversation and sends the last few turns back (at most 6 are used). With saving on, the server uses its own saved turns and ignores `history`.
+
+`200`:
+
+```json
+{
+  "kind": "answer",
+  "text": "From the reviewed material: ...",
+  "sources": [{"title": "Sleep basics for students", "source": "..."}],
+  "actions": [],
+  "level": null
+}
+```
+
+| `kind` | Meaning | Written by |
+|---|---|---|
+| `answer` | A reply grounded in reviewed passages. `sources` lists them. | The AI |
+| `safety` | The message suggested a crisis (`level: "crisis"`) or acute distress (`level: "distress"`). `actions` lists routes the person can choose: Support, their safety plan, helplines, a trusted contact. | People (fixed text) |
+| `unsupported` | No reviewed material covers the question. No model was asked. | People (fixed text) |
+| `unavailable` | The AI provider did not respond. | People (fixed text) |
+| `limit` | Today's AI replies are used up. | People (fixed text) |
+| `off_policy` | The provider declined, or the model's reply broke the rules (a diagnosis, medication advice, a claim of monitoring) and was discarded. | People (fixed text) |
+
+A `safety` reply is produced before any budget or provider check, so it is returned even when the limit is reached or the provider is down. Nothing is sent to anyone because of it.
+
+`400` for an empty or over-long `text`. `404` for a conversation that does not exist or belongs to someone else. `429` over the per-minute limit.
+
+### POST /chat/feedback
+`{"session": "<id or null>", "kind": "answer", "helpful": false}`. A rating only; there is no text field. `201`.
+
+### GET /chat/feedback, GET and DELETE /chat/feedback/{id}
+The person's own ratings.
