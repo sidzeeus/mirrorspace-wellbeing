@@ -4,6 +4,7 @@ import {
   cleanUp,
   createUser,
   expectAccessible,
+  lastLine,
   manage,
   resetThrottles,
   setPrefs,
@@ -110,7 +111,7 @@ test("an empty check-in is not saved, and skipping stores nothing", async ({ pag
 from apps.checkins.models import CheckIn
 print(CheckIn.objects.filter(user__email=${JSON.stringify(email)}).count())
 `);
-  expect(count.split(String.fromCharCode(10)).pop()!.trim()).toBe("0");
+  expect(lastLine(count)).toBe("0");
 });
 
 test("check-in has no free-text field", async ({ page }) => {

@@ -61,7 +61,7 @@
   --color-warm: var(--warm);
   --color-care: var(--care);
   --color-on-care: var(--on-care);
-  --font-sans: var(--font-display), "Noto Sans Devanagari", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-display), var(--font-devanagari), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-data), ui-monospace, "SFMono-Regular", Menlo, monospace;
   --radius-control: 14px;
 }
@@ -82,6 +82,7 @@ html[data-text="large"] {
 html[data-bandwidth="low"] {
   --font-display: ui-sans-serif, system-ui, sans-serif;
   --font-data: ui-monospace, monospace;
+  --font-devanagari: ui-sans-serif, system-ui, sans-serif;
 }
 
 body {

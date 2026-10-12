@@ -1,0 +1,13 @@
+{
+  "_review": "NEEDS_HUMAN_REVIEW: placeholder Hindi written by an engineer. Not reviewed by a fluent speaker. Not for release. See docs/localization.md.",
+  "title": "सहायता",
+  "close": "सहायता बंद करें",
+  "limits": "इस ऐप की निगरानी कोई नहीं करता। आपने यह स्क्रीन खोली है, इसकी जानकारी किसी को नहीं दी जाती, और ऐप यह भरोसा नहीं दे सकता कि कोई जवाब देगा।",
+  "emergency": "यदि आप या कोई और तुरंत खतरे में है, तो अपने स्थानीय आपातकालीन नंबर पर कॉल करें।",
+  "options": {
+    "calm": "शांत करने वाला अभ्यास",
+    "plan": "मेरी सुरक्षा योजना",
+    "message": "किसी भरोसेमंद व्यक्ति को संदेश भेजें",
+    "call": "हेल्पलाइन पर कॉल करें"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "_review": "NEEDS_HUMAN_REVIEW: placeholder Hindi written by an engineer. Not reviewed by a fluent speaker. Not for release. See docs/localization.md.",
+  "nav": {
+    "helplines": "हेल्पलाइन",
+    "signIn": "साइन इन"
+  },
+  "hero": {
+    "lineOne": "अपने पैटर्न पहचानें। एक छोटा कदम चुनें।",
+    "lineTwo": "ज़रूरत पड़ने पर असली मदद तक पहुँचें।",
+    "create": "खाता बनाएँ",
+    "helplines": "हेल्पलाइन देखें",
+    "limits": "18 वर्ष और उससे अधिक उम्र के विद्यार्थियों के लिए। यह थेरेपी नहीं है, और आपातकालीन सेवा भी नहीं है।"
+  }
+}

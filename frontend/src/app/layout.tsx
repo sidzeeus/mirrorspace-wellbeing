@@ -15,6 +15,8 @@ const display = Hanken_Grotesk({
   weight: ["300", "400", "500"],
   variable: "--font-display",
   display: "swap",
+  // Not preloaded, so low-bandwidth mode (which never uses it) downloads no font.
+  preload: false,
 });
 // Used for small data labels only, so it is not preloaded.
 const data = IBM_Plex_Mono({

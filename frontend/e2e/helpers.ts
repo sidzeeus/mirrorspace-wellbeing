@@ -9,12 +9,19 @@ export const PASSWORD = "correct-horse-battery-staple";
 
 /** Run Python inside the API container. Used only to set up and inspect test data. */
 export function manage(code: string): string {
-  return execFileSync(
+  const output = execFileSync(
     "docker",
     ["compose", "exec", "-T", "web", "python", "manage.py", "shell", "-c", code],
     { cwd: REPO_ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] },
-  ).trim();
+  );
+  // The Django shell prints a banner about automatic imports. Drop it.
+  return output
+    .split(NEWLINE)
+    .filter((line) => !line.includes("objects imported automatically"))
+    .join(NEWLINE);
 }
+
+const NEWLINE = String.fromCharCode(10);
 
 let counter = 0;
 export function uniqueEmail(prefix = "e2e"): string {
@@ -39,15 +46,13 @@ ${onboarded ? "record_privacy_notice(u, PRIVACY_NOTICE_VERSION)" : ""}
 }
 
 export function verificationToken(email: string): string {
-  // The Django shell prints a banner line first; the token is the last line.
-  return manage(`
+  return lastLine(
+    manage(`
 from apps.accounts.models import User
 from apps.accounts.tokens import make_email_verification_token
 print(make_email_verification_token(User.objects.get(email=${JSON.stringify(email)})))
-`)
-    .split(String.fromCharCode(10))
-    .pop()!
-    .trim();
+`),
+  );
 }
 
 /** Remove every account the browser tests created. */
@@ -110,9 +115,12 @@ export function watchConsole(page: Page): string[] {
   return problems;
 }
 
-/** The Django shell prints a banner first; the value a script printed is the last line. */
+/** The last line a script printed (empty if it printed an empty line). */
 export function lastLine(output: string): string {
-  return output.split(String.fromCharCode(10)).pop()!.trim();
+  const lines = output.split(NEWLINE);
+  // Output ends with a newline, so the value is the line before the final empty one.
+  if (lines.length > 1 && lines[lines.length - 1] === "") lines.pop();
+  return (lines.pop() ?? "").trim();
 }
 
 type ContactOptions = { name: string; contactEmail: string; status?: string };

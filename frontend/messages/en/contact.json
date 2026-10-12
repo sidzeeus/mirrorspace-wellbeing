@@ -1,0 +1,26 @@
+{
+  "_review": "NEEDS_HUMAN_REVIEW: placeholder wording for the pages a trusted contact sees (docs/review-needed.md R19, R20).",
+  "invitation": {
+    "title": "An invitation",
+    "from": "{name} would like to add you as a trusted contact.",
+    "fromUnknown": "Someone would like to add you as a trusted contact.",
+    "what": "If you agree, you may receive",
+    "accept": "I agree to receive these",
+    "decline": "No, thank you",
+    "accepted": "You have agreed. You can unsubscribe at any time from any email.",
+    "declined": "You have declined. You will not receive any messages.",
+    "alreadyAccepted": "You have already accepted this invitation.",
+    "closed": "This invitation is no longer open.",
+    "invalid": "This link is not valid or has expired. Ask the person who invited you to send it again.",
+    "missing": "This page needs the link from the invitation email."
+  },
+  "unsubscribe": {
+    "title": "Unsubscribe",
+    "body": "Stop receiving messages sent through this app.",
+    "blockAll": "Also stop every message from this app to my address, from anyone",
+    "submit": "Unsubscribe",
+    "done": "You are unsubscribed. No more messages will be sent to you.",
+    "invalid": "This link is not valid. If you keep receiving messages, reply to the sender directly.",
+    "missing": "This page needs the link from one of the emails."
+  }
+}
