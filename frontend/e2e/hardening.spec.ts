@@ -137,6 +137,8 @@ test.describe("installable app", () => {
     expect(headers["x-frame-options"]).toBe("DENY");
     expect(headers["referrer-policy"]).toBe("same-origin");
     expect(headers["x-powered-by"]).toBeUndefined();
+    expect(headers["content-security-policy"]).toContain("frame-ancestors 'none'");
+    expect(headers["content-security-policy"]).toContain("object-src 'none'");
   });
 });
 

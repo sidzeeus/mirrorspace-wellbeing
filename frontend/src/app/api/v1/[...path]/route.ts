@@ -38,7 +38,12 @@ async function proxy(request: NextRequest, path: string[]): Promise<Response> {
   // Lets the API rate-limit by the real client address (see NUM_PROXIES).
   const forwardedFor = request.headers.get("x-forwarded-for");
   if (forwardedFor) headers.set("x-forwarded-for", forwardedFor);
-  headers.set("x-forwarded-proto", request.nextUrl.protocol.replace(":", ""));
+  // Pass on the scheme the visitor actually used. Behind a TLS-terminating proxy this
+  // server sees plain HTTP, so the proxy's own header is the truth when present.
+  headers.set(
+    "x-forwarded-proto",
+    request.headers.get("x-forwarded-proto") ?? request.nextUrl.protocol.replace(":", ""),
+  );
 
   const hasBody = !["GET", "HEAD"].includes(request.method);
   let upstream: Response;

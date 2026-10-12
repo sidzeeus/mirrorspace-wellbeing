@@ -21,3 +21,8 @@ ALLOWED_HOSTS = env.list(
 # through the logger, where the redaction filter (correctly) strips the address and the
 # link token, which would make local sign-up impossible. Locally only, let it print raw.
 CELERY_WORKER_REDIRECT_STDOUTS = False
+
+# The development server starts a new thread per request. Persistent connections would
+# pile up one per thread until PostgreSQL refuses new ones (seen as /ready answering 503
+# under a burst), so they are off here. Production's worker processes reuse them safely.
+DATABASES["default"]["CONN_MAX_AGE"] = 0  # noqa: F405

@@ -93,7 +93,7 @@ test("every exercise offers Not helpful and Hide this, and hiding can be undone"
   await expect(page.locator("[data-exercise='three-lines']")).toBeVisible();
 
   await page.getByRole("button", { name: "Mark Screens down as not helpful" }).click();
-  await expect(page.getByText("Noted. Thank you.")).toBeVisible();
+  await expect(page.getByText("Noted. Thank you.", { exact: true })).toBeVisible();
   await expect.poll(() => eventKinds(email)).toBe("hidden,unhidden,not_helpful");
 
   // Filters only offer groups that have something in them.

@@ -8,6 +8,13 @@ const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "same-origin" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+  {
+    // A partial policy: no framing, no plugins, forms and <base> stay on this site.
+    // It does not restrict scripts yet; a nonce-based script policy is listed as open
+    // work in docs/security-review.md.
+    key: "Content-Security-Policy",
+    value: "frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'",
+  },
 ];
 
 const nextConfig: NextConfig = {
