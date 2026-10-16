@@ -6,6 +6,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 
 import { Lumen, type LumenProps } from "@/components/lumen/Lumen";
+import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import { Toggle, useToast } from "@/components/ui/controls";
 import { Button, Notice, buttonClass } from "@/components/ui/primitives";
 import { api } from "@/lib/api";
@@ -52,6 +53,21 @@ const NEXT: Record<Kind, readonly { key: string; href: string }[]> = {
     { key: "helplines", href: "/support#call" },
   ],
 };
+
+/**
+ * The light behind the figure, tinted for each reaction. Translucent, so it works on
+ * both themes. Never red: even anger gets a warm violet, not an alarm colour.
+ */
+const GLOWS: Record<Kind, { colors: string[]; speed: number }> = {
+  listening: { colors: ["rgb(124 116 242 / 0.32)", "rgb(124 116 242 / 0.1)", "transparent"], speed: 0.02 },
+  heavy: { colors: ["rgb(72 82 170 / 0.3)", "rgb(40 46 110 / 0.12)", "transparent"], speed: 0.01 },
+  racing: { colors: ["rgb(96 196 200 / 0.3)", "rgb(96 150 220 / 0.1)", "transparent"], speed: 0.03 },
+  storm: { colors: ["rgb(176 110 236 / 0.34)", "rgb(140 90 210 / 0.12)", "transparent"], speed: 0.04 },
+  alone: { colors: ["rgb(110 160 240 / 0.3)", "rgb(124 116 242 / 0.12)", "transparent"], speed: 0.02 },
+  lighter: { colors: ["rgb(127 214 194 / 0.36)", "rgb(185 180 255 / 0.12)", "transparent"], speed: 0.02 },
+  steady: { colors: ["rgb(185 180 255 / 0.3)", "rgb(124 116 242 / 0.1)", "transparent"], speed: 0.008 },
+};
+const GLOW_STOPS = [0, 45, 100];
 
 /** The figure: a Lumen whose agitation eases over a few seconds after each reaction. */
 function Figure({ pose, typing, label }: { pose: Pose; typing: boolean; label: string }) {
@@ -217,7 +233,20 @@ export default function VentPage() {
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-start">
         <div className="marks mx-auto w-48 border border-line sm:w-56 lg:order-last lg:sticky lg:top-8 lg:w-full">
-          <Figure pose={pose} typing={typing} label={`${t("figure")}. ${t(`reactions.${kind}.figure`)}`} />
+          <div className="relative isolate">
+            <AnimatedGradientBackground
+              key={kind}
+              Breathing
+              startingGap={70}
+              breathingRange={8}
+              topOffset={10}
+              animationSpeed={GLOWS[kind].speed}
+              gradientColors={GLOWS[kind].colors}
+              gradientStops={GLOW_STOPS}
+              containerClassName="-z-10"
+            />
+            <Figure pose={pose} typing={typing} label={`${t("figure")}. ${t(`reactions.${kind}.figure`)}`} />
+          </div>
           <p className="label border-t border-line px-3 py-2 text-center text-dim" aria-hidden="true">
             {t(`reactions.${kind}.figure`)}
           </p>

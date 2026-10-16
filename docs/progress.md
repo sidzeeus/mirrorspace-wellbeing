@@ -339,3 +339,13 @@ Unfinished or not verified
 
 Assumptions
 - Recorded as B68 and B69. Review items R26 and R27.
+
+### 2026-10-17: Animated gradient background
+
+Done
+- `frontend/src/components/ui/animated-gradient-background.tsx`, adapted from the owner's component: still under reduced motion and low-data mode, no animation loop unless breathing, hidden from screen readers.
+- Used behind the Vent figure, tinted for each reaction (decision B70). The Lottie player from the demo was not installed (B71).
+- Vent, landing and hardening browser tests pass on a production build, including the size budgets.
+
+Noticed, not caused by this change
+- `npm audit` (including development tools) reports 5 high-severity findings in `fast-glob` through `eslint-config-next`. The production audit is clean. Needs a lint-tooling update.
