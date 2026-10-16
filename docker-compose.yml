@@ -7,7 +7,10 @@
 #
 #   API        http://localhost:8000/api/v1/health
 #   Frontend   http://localhost:3000
-#   Emails     printed in the logs of the `worker` service
+#   Emails     http://localhost:8025 (Mailpit, a local inbox that catches every email)
+#
+# Emails are sent over real SMTP to Mailpit, which keeps them and never delivers them.
+# To deliver to real inboxes instead, put your provider's SMTP settings in .env.
 
 name: mirrorspace
 
@@ -27,8 +30,18 @@ x-backend: &backend
       condition: service_healthy
     redis:
       condition: service_healthy
+    mailpit:
+      condition: service_started
 
 services:
+  mailpit:
+    # A local SMTP server with a web inbox. Nothing it receives leaves this machine.
+    image: axllent/mailpit:v1.27.11
+    ports:
+      - "127.0.0.1:8025:8025"
+    environment:
+      MP_MAX_MESSAGES: 500
+
   db:
     # PostgreSQL 16 with the pgvector extension available (used from Phase 4).
     image: pgvector/pgvector:0.8.7-pg16

@@ -4,23 +4,13 @@
   "checkIn": "Check in",
   "exercises": "Exercises",
   "plan": "Plan",
-  "more": "More",
   "loading": "Opening your space.",
-  "more_page": {
-    "title": "More",
-    "patterns": "Patterns",
-    "patternsHint": "What your check-ins show over time.",
-    "episodes": "Episodes and triggers",
-    "episodesHint": "Log a hard moment and what helped.",
-    "sharing": "Sharing",
-    "sharingHint": "Off unless you turn it on. Trusted contacts and the weekly note.",
-    "chat": "Chat",
-    "chatHint": "An AI companion for reflection. Not a therapist.",
-    "resources": "Helplines",
-    "resourcesHint": "Checked numbers you can call.",
-    "settings": "Settings and privacy",
-    "settingsHint": "Theme, text size, language, your data.",
-    "signOut": "Sign out",
-    "signedInAs": "Signed in as {email}"
-  }
+  "patterns": "Patterns",
+  "episodes": "Episodes",
+  "sharing": "Sharing",
+  "chat": "Chat",
+  "resources": "Helplines",
+  "settings": "Settings",
+  "signOut": "Sign out",
+  "signedInAs": "Signed in as {email}"
 }

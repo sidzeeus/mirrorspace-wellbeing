@@ -113,7 +113,7 @@ test.describe("dashboard", () => {
 
   test("Support is one tap away on every screen, on phone and desktop", async ({ page }) => {
     await signIn(page, createUser());
-    for (const path of ["/home", "/more"]) {
+    for (const path of ["/home", "/settings"]) {
       await page.goto(path);
       const support = page.locator("[data-support-link]:visible");
       await expect(support).toHaveCount(1);
@@ -131,7 +131,9 @@ test.describe("dashboard", () => {
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await page.keyboard.press("Tab");
     await expect(page.getByRole("link", { name: "Skip to main content" })).toBeFocused();
-    for (const name of ["Home", "Check in", "Exercises", "Plan", "More"]) {
+    // Every section is in the navigation itself; nothing is hidden behind a menu.
+    const sections = ["Home", "Check in", "Patterns", "Episodes", "Exercises", "Plan"];
+    for (const name of [...sections, "Sharing", "Chat", "Helplines", "Settings"]) {
       const link = page.getByRole("navigation", { name: "Main" }).getByRole("link", { name, exact: true });
       await expect(link).toBeVisible();
       const box = await link.boundingBox();
@@ -159,7 +161,7 @@ test.describe("dashboard", () => {
 
   test("signing out returns to the public page and clears the session", async ({ page }) => {
     await signIn(page, createUser());
-    await page.goto("/more");
+    await page.goto("/settings");
     await page.getByRole("button", { name: "Sign out" }).click();
     await expect(page).toHaveURL(/\/$/);
     await page.goto("/home");

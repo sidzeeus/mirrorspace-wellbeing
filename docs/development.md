@@ -14,7 +14,7 @@ This works from a clean clone with the values in `.env.example`. To change a val
 | API readiness (database + Redis) | http://localhost:8000/api/v1/ready |
 | OpenAPI schema | http://localhost:8000/api/v1/schema |
 | Frontend | http://localhost:3000 |
-| Emails (verification, password reset) | printed in the logs: `docker compose logs -f worker` |
+| Emails (all of them) | the local inbox at http://localhost:8025 (Mailpit). Nothing is delivered to real addresses. |
 
 Create an admin user:
 

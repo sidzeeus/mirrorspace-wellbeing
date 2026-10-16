@@ -313,3 +313,16 @@ Unfinished or not verified
 Explained to the owner, not changed
 - Email is not "broken": locally it is printed to the worker log because no email provider is configured (question Q1).
 - Chat answers come from the built-in mock because no AI key is configured, and it only answers questions covered by the four placeholder knowledge documents.
+
+### 2026-10-17: Email, SOS button, navigation
+
+Done
+- Email works over SMTP. Locally every email goes to Mailpit (http://localhost:8025); real delivery needs only SMTP settings in `.env`. New `send_test_email` command with tests. Checked end to end: registering through the app put the confirmation email in the Mailpit inbox.
+- The button on every screen now reads "SOS Support" and sits at the top on desktop as well as phones.
+- All ten sections are in the navigation; the More page is gone and Sign out is on Settings.
+
+Unfinished or not verified
+- Delivery to real inboxes has not been tried: no provider credentials are configured (the owner adds them to `.env`).
+
+Assumptions
+- Recorded as B65 to B67. The SOS label is listed for review as R25.

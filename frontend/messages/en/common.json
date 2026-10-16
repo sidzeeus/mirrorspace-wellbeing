@@ -28,5 +28,7 @@
   "update": {
     "available": "A new version is ready.",
     "reload": "Reload"
-  }
+  },
+  "sos": "SOS",
+  "_review_sos": "NEEDS_HUMAN_REVIEW: the SOS button label (common.sos + common.support) needs safeguarding sign-off, see docs/review-needed.md."
 }

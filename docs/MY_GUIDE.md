@@ -621,10 +621,10 @@ docker compose exec web python manage.py seed_knowledge
 docker compose exec web python manage.py index_knowledge
 ```
 
-Read emails (locally they are printed, not sent). Account emails and contact emails both appear in the worker's log:
+Read emails: every email the app sends locally lands in the Mailpit inbox at http://localhost:8025. Nothing reaches a real address. To deliver for real, put your provider's SMTP settings in `.env` (see the email section of `.env.example`), restart, and check them with:
 
 ```bash
-docker compose logs -f worker
+docker compose exec web python manage.py send_test_email you@example.com
 ```
 
 Run the backend tests. The test tools are not in the container image, so this runs on your machine from `backend/`, with the database container up and a virtual environment set up as in `docs/development.md`:

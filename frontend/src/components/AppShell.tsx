@@ -1,13 +1,16 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useEffect } from "react";
 
-import { ApiError } from "@/lib/api";
+import { Button } from "@/components/ui/primitives";
+import { ApiError, api, forgetCsrfToken } from "@/lib/api";
 import { PRIVACY_PURPOSE } from "@/lib/constants";
 import { useConsents, useMe, useNotices } from "@/lib/hooks";
+import { clearOfflineCopies } from "@/lib/offline";
 
 const ICONS: Record<string, ReactNode> = {
   home: <path d="M4 11 12 4l8 7v8h-5v-5H9v5H4z" />,
@@ -15,6 +18,13 @@ const ICONS: Record<string, ReactNode> = {
     <>
       <circle cx="12" cy="12" r="8" />
       <path d="m8.5 12 2.5 2.5 4.5-5" />
+    </>
+  ),
+  patterns: <path d="M4 4v16h16M7 15l4-4 3 3 5-6" />,
+  episodes: (
+    <>
+      <path d="M5 5h14v14H5z" />
+      <path d="M8 9h8M8 13h5" />
     </>
   ),
   exercises: (
@@ -29,26 +39,43 @@ const ICONS: Record<string, ReactNode> = {
       <path d="M10 9h4M10 13h4" />
     </>
   ),
-  more: (
+  sharing: (
     <>
-      <circle cx="6" cy="12" r="1" />
-      <circle cx="12" cy="12" r="1" />
-      <circle cx="18" cy="12" r="1" />
+      <circle cx="8" cy="9" r="3" />
+      <circle cx="16" cy="9" r="3" />
+      <path d="M3 19c.8-3 2.7-4.5 5-4.5s4.2 1.5 5 4.5M14 15c.6-.3 1.3-.5 2-.5 2.3 0 4.2 1.5 5 4.5" />
+    </>
+  ),
+  chat: <path d="M5 5h14v10h-7l-4 4v-4H5z" />,
+  resources: (
+    <path d="M7 4h3l1 4-2 1.5a10 10 0 0 0 5.5 5.5L16 13l4 1v3a2 2 0 0 1-2 2A14 14 0 0 1 5 6a2 2 0 0 1 2-2Z" />
+  ),
+  settings: (
+    <>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4" />
     </>
   ),
 };
 
+/** Every part of the app, always in view. Nothing is tucked away in a menu. */
 const NAV = [
   { key: "home", href: "/home" },
   { key: "checkIn", href: "/check-in" },
+  { key: "patterns", href: "/patterns" },
+  { key: "episodes", href: "/episodes" },
   { key: "exercises", href: "/exercises" },
   { key: "plan", href: "/plan" },
-  { key: "more", href: "/more" },
+  { key: "sharing", href: "/sharing" },
+  { key: "chat", href: "/chat" },
+  { key: "resources", href: "/resources" },
+  { key: "settings", href: "/settings" },
 ] as const;
 
 /**
- * Support is a plain link, present on every screen, never inside a menu. Because it is
- * a link and not a script-driven dialog, it works offline and before scripts load.
+ * The SOS button: a plain link to Support, present on every screen, never inside a
+ * menu. Because it is a link and not a script-driven dialog, it works offline and
+ * before scripts load. Pressing it sends nothing; Support shows the choices.
  */
 export function SupportLink({ className = "" }: { className?: string }) {
   const t = useTranslations("common");
@@ -62,8 +89,31 @@ export function SupportLink({ className = "" }: { className?: string }) {
           strokeLinejoin="round"
         />
       </svg>
-      {t("support")}
+      <span className="font-semibold tracking-[0.16em]">{t("sos")}</span>
+      <span>{t("support")}</span>
     </a>
+  );
+}
+
+/** Signing out leaves nothing of this person on the device. */
+export function SignOut({ className = "" }: { className?: string }) {
+  const t = useTranslations("shell");
+  const queryClient = useQueryClient();
+  const signOut = useMutation({
+    mutationFn: () => api("/auth/logout", { method: "POST" }),
+    onSettled: () => {
+      clearOfflineCopies();
+      forgetCsrfToken();
+      queryClient.clear();
+      // A full page load, on purpose: it drops everything held in memory.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+      window.location.assign("/");
+    },
+  });
+  return (
+    <Button variant="quiet" className={className} busy={signOut.isPending} onClick={() => signOut.mutate()}>
+      {t("signOut")}
+    </Button>
   );
 }
 
@@ -75,13 +125,15 @@ function NavLink({ item, vertical }: { item: (typeof NAV)[number]; vertical: boo
     <Link
       href={item.href}
       aria-current={current ? "page" : undefined}
-      className={`flex min-h-12 items-center gap-3 rounded-[14px] ${
-        vertical ? "px-3" : "grow flex-col justify-center gap-0.5 px-1 py-1.5 text-xs"
-      } ${current ? "bg-raised text-moon" : "text-dim hover:text-moon"}`}
+      className={`flex min-h-11 items-center ${
+        vertical
+          ? "gap-3 border-l-2 px-3 text-sm"
+          : "flex-col justify-center gap-0.5 border-t-2 px-0.5 py-1 text-center text-[0.6875rem] leading-tight"
+      } ${current ? "border-moon bg-raised text-moon" : "border-transparent text-dim hover:text-moon"}`}
     >
       <svg
-        width="22"
-        height="22"
+        width={vertical ? 20 : 18}
+        height={vertical ? 20 : 18}
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -98,9 +150,10 @@ function NavLink({ item, vertical }: { item: (typeof NAV)[number]; vertical: boo
 }
 
 /**
- * The signed-in frame: bottom navigation on phones, a slim left rail on desktop.
- * It also sends people who are signed out to sign in, and people who have not yet
- * accepted the current notice to onboarding.
+ * The signed-in frame: every section in a two-row bar on phones and in a left rail on
+ * desktop, with the SOS button at the top of every screen. It also sends people who
+ * are signed out to sign in, and people who have not yet accepted the current notice
+ * to onboarding.
  */
 export function AppShell({ children }: { children: ReactNode }) {
   const t = useTranslations("shell");
@@ -136,29 +189,38 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="lg:grid lg:min-h-dvh lg:grid-cols-[15rem_minmax(0,1fr)]">
-      <aside className="no-print hidden border-r border-line lg:flex lg:flex-col lg:p-5">
-        <Link href="/home" className="mb-8 inline-flex min-h-11 items-center px-3 text-lg font-medium">
+      <aside className="no-print hidden border-r border-line lg:sticky lg:top-0 lg:flex lg:h-dvh lg:flex-col lg:overflow-y-auto lg:p-5">
+        <Link
+          href="/home"
+          className="label mb-6 inline-flex min-h-11 items-center self-start border-x border-line-strong px-3 text-[0.8125rem] text-moon"
+        >
           {common("appName")}
         </Link>
+        <SupportLink className="mb-6 w-full" />
         {onboarding ? null : (
-          <nav aria-label={t("navLabel")} className="flex flex-col gap-1">
+          <nav aria-label={t("navLabel")} className="flex flex-col gap-0.5">
             {NAV.map((item) => (
               <NavLink key={item.key} item={item} vertical />
             ))}
           </nav>
         )}
-        <SupportLink className="mt-auto" />
       </aside>
 
       <div className="flex min-h-dvh flex-col">
-        <header className="glass no-print sticky top-0 z-30 flex h-16 items-center justify-between border-x-0 border-t-0 px-5 lg:hidden">
-          <Link href="/home" className="inline-flex min-h-11 items-center text-lg font-medium">
+        <header className="glass no-print sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-x-0 border-t-0 px-5 lg:hidden">
+          <Link
+            href="/home"
+            className="label inline-flex min-h-11 items-center border-x border-line-strong px-3 text-[0.8125rem] text-moon"
+          >
             {common("appName")}
           </Link>
           <SupportLink />
         </header>
 
-        <main id="main" className="page-fade mx-auto w-full max-w-3xl grow px-5 pb-28 pt-8 lg:pb-16 lg:pt-12">
+        <main
+          id="main"
+          className="page-fade mx-auto w-full max-w-3xl grow px-5 pb-40 pt-8 lg:pb-16 lg:pt-12"
+        >
           {ready ? (
             children
           ) : (
@@ -171,7 +233,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         {onboarding ? null : (
           <nav
             aria-label={t("navLabel")}
-            className="glass no-print fixed inset-x-0 bottom-0 z-30 flex border-x-0 border-b-0 px-2 pb-[env(safe-area-inset-bottom)] lg:hidden"
+            className="glass no-print fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-x-0 border-b-0 pb-[env(safe-area-inset-bottom)] lg:hidden"
           >
             {NAV.map((item) => (
               <NavLink key={item.key} item={item} vertical={false} />

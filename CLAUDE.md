@@ -51,7 +51,7 @@ Rationale and dates are in `docs/decisions.md`. Change decisions there first, th
 | Database | PostgreSQL (pgvector for Phase 4 retrieval) |
 | Auth | Django sessions + CSRF, custom user model (UUID pk, email login) |
 | Background jobs | Celery + Redis, Celery Beat |
-| Email | Transactional provider behind an adapter; console backend locally |
+| Email | Transactional provider over SMTP behind an adapter; Mailpit catches everything locally |
 | AI (Phase 4) | Hosted LLM behind a provider adapter; mocked in tests |
 | Containers | Docker + Docker Compose (web, worker, beat, db, redis, frontend) |
 | CI/CD | GitHub Actions, images published to GHCR with immutable Git SHA tags |

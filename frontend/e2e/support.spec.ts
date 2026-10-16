@@ -232,7 +232,7 @@ test("signing out removes the saved plan from the device", async ({ page }) => {
   await expect(page.locator("[data-plan-view]")).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem("offline.safetyPlan"))).toContain("Private line");
 
-  await page.goto("/more");
+  await page.goto("/settings");
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page).toHaveURL(/\/$/);
   expect(await page.evaluate(() => localStorage.getItem("offline.safetyPlan"))).toBeNull();

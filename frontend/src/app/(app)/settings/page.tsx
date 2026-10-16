@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { type FormEvent, useState } from "react";
 
+import { SignOut } from "@/components/AppShell";
 import { PreferenceControls } from "@/components/PreferenceControls";
 import { Dialog, useToast } from "@/components/ui/controls";
 import { Button, Field, Notice, buttonClass } from "@/components/ui/primitives";
@@ -72,6 +73,7 @@ function AccountForm({ me }: { me: Me }) {
 
 export default function SettingsPage() {
   const t = useTranslations("settings");
+  const shell = useTranslations("shell");
   const errorText = useErrorText();
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -122,6 +124,14 @@ export default function SettingsPage() {
           {t("account")}
         </h2>
         {me.data ? <AccountForm key={me.data.id} me={me.data} /> : null}
+      </section>
+
+      <section aria-labelledby="signout-title">
+        <h2 id="signout-title" className="h2 mb-4">
+          {shell("signOut")}
+        </h2>
+        {me.data ? <p className="mb-3 text-sm text-dim">{shell("signedInAs", { email: me.data.email })}</p> : null}
+        <SignOut />
       </section>
 
       <section aria-labelledby="data-title">

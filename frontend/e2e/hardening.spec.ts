@@ -19,7 +19,7 @@ const APP_SCREENS = [
   "/plan",
   "/sharing",
   "/settings",
-  "/more",
+  "/chat",
   "/support",
 ];
 
