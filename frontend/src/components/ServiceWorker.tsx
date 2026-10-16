@@ -6,16 +6,28 @@ import { useEffect } from "react";
 import { useToast } from "@/components/ui/controls";
 
 /**
- * Registers the service worker (production builds only) and handles updates: when a
- * new version is waiting, the person is told and chooses when to reload. Nothing is
- * swapped underneath them mid-task.
+ * Registers the service worker (production builds only; in development it removes any
+ * left behind) and handles updates: when a new version is waiting, the person is told
+ * and chooses when to reload. Nothing is swapped underneath them mid-task.
  */
 export function ServiceWorker() {
   const t = useTranslations("common.update");
   const toast = useToast();
 
   useEffect(() => {
-    if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) return;
+    if (!("serviceWorker" in navigator)) return;
+    if (process.env.NODE_ENV !== "production") {
+      // A production build served from this same address may have left a worker
+      // behind. In development it would keep serving stale scripts and styles, because
+      // development file names do not change when their content does. Remove it.
+      void navigator.serviceWorker.getRegistrations().then(async (registrations) => {
+        if (registrations.length === 0) return;
+        await Promise.all(registrations.map((registration) => registration.unregister()));
+        await Promise.all((await caches.keys()).map((name) => caches.delete(name)));
+        window.location.reload();
+      });
+      return;
+    }
     let reloading = false;
     const onControllerChange = () => {
       if (reloading) window.location.reload();

@@ -12,7 +12,7 @@
  *
  * Bump VERSION to release a new shell; old caches are deleted on activation.
  */
-const VERSION = "v1";
+const VERSION = "v2";
 const SHELL = `shell-${VERSION}`;
 const ASSETS = `assets-${VERSION}`;
 const OFFLINE_URL = "/offline";
