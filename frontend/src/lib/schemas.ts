@@ -112,6 +112,20 @@ export const episodeSchema = z.object({
 });
 export type Episode = z.infer<typeof episodeSchema>;
 
+export const ventEntrySchema = z.object({
+  id: z.string(),
+  body: z.string(),
+  created_at: z.string(),
+});
+export type VentEntry = z.infer<typeof ventEntrySchema>;
+
+export const REACTIONS = ["listening", "heavy", "racing", "storm", "alone", "lighter", "steady"] as const;
+export const reflectionSchema = z.object({
+  reaction: z.enum(REACTIONS),
+  level: z.enum(["crisis", "distress"]).nullable(),
+});
+export type Reflection = z.infer<typeof reflectionSchema>;
+
 export const safetyPlanSchema = z.object({
   warning_signs: z.array(z.string()),
   coping_steps: z.array(z.string()),

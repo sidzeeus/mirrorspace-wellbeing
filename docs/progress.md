@@ -326,3 +326,16 @@ Unfinished or not verified
 
 Assumptions
 - Recorded as B65 to B67. The SOS label is listed for review as R25.
+
+### 2026-10-17: Vent
+
+Done
+- `backend/apps/vent`: `VentEntry` (encrypted, kept only on request), `reactions.react` (word lists, crisis check first), `POST /vent/reflect` and `/vent-entries`. 38 tests, including cross-user, encryption, canary and export/erasure.
+- `frontend/src/app/(app)/vent/page.tsx`: the writing space, the keep switch, the reacting figure (the Lumen gained `agitation`, `lift` and `spread`), and kept entries. Linked from the check-in screen and the navigation.
+- Browser tests `e2e/vent.spec.ts`: release, keep, delete, crisis panel, and axe in both themes.
+
+Unfinished or not verified
+- The word lists are short and English-heavy, with a little Hinglish. They will miss many ways people write.
+
+Assumptions
+- Recorded as B68 and B69. Review items R26 and R27.

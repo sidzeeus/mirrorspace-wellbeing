@@ -48,5 +48,7 @@
     "open": "Open this exercise",
     "notNow": "Not now",
     "none": "That is everything. You can change today's check-in any time."
-  }
+  },
+  "ventPrompt": "Need to say more than a few taps can?",
+  "ventLink": "Write it out in Vent"
 }

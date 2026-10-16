@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "apps.sharing",
     "apps.notifications",
     "apps.chat",
+    "apps.vent",
 ]
 
 MIDDLEWARE = [
@@ -283,6 +284,7 @@ REST_FRAMEWORK = {
         "contact_add": "10/day",
         "sos": "3/hour",
         "chat": "10/min",
+        "vent": "30/min",
         "public_token": "30/hour",
     },
     "DEFAULT_PAGINATION_CLASS": "config.api.DefaultPagination",

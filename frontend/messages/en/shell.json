@@ -12,5 +12,6 @@
   "resources": "Helplines",
   "settings": "Settings",
   "signOut": "Sign out",
-  "signedInAs": "Signed in as {email}"
+  "signedInAs": "Signed in as {email}",
+  "vent": "Vent"
 }

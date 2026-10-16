@@ -1,0 +1,66 @@
+{
+  "_review": "NEEDS_HUMAN_REVIEW (docs/review-needed.md R26, R27): every reaction line, the crisis panel and the privacy wording on the Vent screen are placeholders written by an engineer.",
+  "title": "Vent",
+  "intro": "Write whatever you need to, as messy as it comes. Nobody reads this.",
+  "how": "The figure reacts to the words you use. It does not understand you, judge you, or tell anyone anything.",
+  "label": "What is on your mind",
+  "hint": "Up to {max} characters.",
+  "tooLong": "That is more than {max} characters. Let some of it out now, and write the rest after.",
+  "keep": "Keep this entry",
+  "keepHint": "Off: it is gone once you let it out. On: saved and encrypted, only for you, until you delete it.",
+  "submit": "Let it out",
+  "submitting": "Letting it out",
+  "released": "Released. Nothing was saved.",
+  "kept": "Kept. Only you can read it.",
+  "unavailable": "The figure could not react just now. What you wrote is still here.",
+  "again": "Write more",
+  "figure": "A figure made of light",
+  "reactions": {
+    "listening": {
+      "figure": "The figure leans in, listening.",
+      "line": "Thank you for putting it into words."
+    },
+    "heavy": {
+      "figure": "The figure sinks low and dims, staying with you.",
+      "line": "That sounds heavy. You do not have to carry all of it at once."
+    },
+    "racing": {
+      "figure": "The scattered light gathers and starts to breathe slowly.",
+      "line": "A lot is racing. If it helps, breathe with the figure: in as it grows, out as it settles."
+    },
+    "storm": {
+      "figure": "The light flares and churns, then slowly settles.",
+      "line": "That sounds really frustrating. Anger is allowed. Let it settle in its own time."
+    },
+    "alone": {
+      "figure": "A second light comes to sit beside the figure.",
+      "line": "Feeling alone is hard. Reaching one person, even with a short message, can help."
+    },
+    "lighter": {
+      "figure": "The figure lifts and brightens.",
+      "line": "It sounds like something eased a little. Notice what helped."
+    },
+    "steady": {
+      "figure": "The figure stays steady and close.",
+      "line": "What you wrote sounds really serious. Nobody has been told, and this app cannot respond to an emergency. You do not have to handle this alone."
+    }
+  },
+  "distress": "If this keeps building, Support has a breathing aid and people you can reach.",
+  "emergency": "If you or someone else is in immediate danger, call your local emergency number now.",
+  "next": {
+    "support": "Open Support",
+    "plan": "Open your safety plan",
+    "helplines": "Call a helpline",
+    "breathe": "Try slow breathing",
+    "message": "Message someone you trust",
+    "checkIn": "Check in"
+  },
+  "entries": {
+    "title": "Kept entries",
+    "empty": "Nothing kept. Entries you choose to keep appear here, only for you.",
+    "delete": "Delete",
+    "deleteNamed": "Delete the entry from {date}",
+    "deleted": "Entry deleted.",
+    "show": "Read"
+  }
+}

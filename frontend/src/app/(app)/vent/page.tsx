@@ -1,0 +1,303 @@
+"use client";
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
+import { useFormatter, useTranslations } from "next-intl";
+import { type FormEvent, useEffect, useId, useRef, useState } from "react";
+
+import { Lumen, type LumenProps } from "@/components/lumen/Lumen";
+import { Toggle, useToast } from "@/components/ui/controls";
+import { Button, Notice, buttonClass } from "@/components/ui/primitives";
+import { api } from "@/lib/api";
+import { keys, useErrorText } from "@/lib/hooks";
+import { type Reflection, page, reflectionSchema, ventEntrySchema } from "@/lib/schemas";
+
+const MAX = 5000;
+
+type Kind = Reflection["reaction"];
+type Pose = Required<Pick<LumenProps, "mode" | "hue" | "intensity" | "density" | "lift">> & {
+  /** Restlessness at the moment of reacting; it eases toward `settle`. */
+  agitation: number;
+  settle: number;
+  spread: number;
+  /** Breathe in and out, inviting the student to breathe along. */
+  breathe?: boolean;
+};
+
+/**
+ * How the figure answers each reaction. The light only ever does gentle things: it
+ * sinks, gathers, settles, lifts, or is joined by a second light. It never turns red,
+ * never shakes for long, and never stops being there.
+ */
+const POSES: Record<Kind, Pose> = {
+  listening: { mode: "figure", hue: 0.3, intensity: 0.75, density: 0.85, lift: 0, agitation: 0.05, settle: 0.05, spread: 0 },
+  heavy: { mode: "figure", hue: 0.05, intensity: 0.5, density: 0.75, lift: 0.14, agitation: 0, settle: 0, spread: 0 },
+  racing: { mode: "figure", hue: 0.45, intensity: 0.8, density: 0.9, lift: 0, agitation: 0.6, settle: 0.04, spread: 0.4, breathe: true },
+  storm: { mode: "figure", hue: 0.15, intensity: 0.95, density: 1, lift: 0, agitation: 1, settle: 0.08, spread: 0.3 },
+  alone: { mode: "pair", hue: 0.6, intensity: 0.85, density: 0.9, lift: 0, agitation: 0.05, settle: 0.05, spread: 0 },
+  lighter: { mode: "figure", hue: 0.85, intensity: 1, density: 1, lift: -0.1, agitation: 0.05, settle: 0.05, spread: 0 },
+  steady: { mode: "figure", hue: 0.3, intensity: 0.85, density: 0.95, lift: 0, agitation: 0, settle: 0, spread: 0 },
+};
+
+const NEXT: Record<Kind, readonly { key: string; href: string }[]> = {
+  listening: [],
+  heavy: [{ key: "plan", href: "/plan" }],
+  racing: [{ key: "breathe", href: "/support#calm" }],
+  storm: [{ key: "breathe", href: "/support#calm" }],
+  alone: [{ key: "message", href: "/support#message" }],
+  lighter: [{ key: "checkIn", href: "/check-in" }],
+  steady: [
+    { key: "support", href: "/support" },
+    { key: "plan", href: "/support#plan" },
+    { key: "helplines", href: "/support#call" },
+  ],
+};
+
+/** The figure: a Lumen whose agitation eases over a few seconds after each reaction. */
+function Figure({ pose, typing, label }: { pose: Pose; typing: boolean; label: string }) {
+  const [agitation, setAgitation] = useState(pose.agitation);
+  const [spread, setSpread] = useState(pose.spread);
+  const [breath, setBreath] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    let current = pose.agitation;
+    let scatter = pose.spread;
+    const started = performance.now();
+    const timer = window.setInterval(() => {
+      current += (pose.settle - current) * 0.08;
+      scatter *= 0.93;
+      setAgitation(current);
+      setSpread(scatter);
+      if (pose.breathe) {
+        // Four seconds in, six out.
+        const t = ((performance.now() - started) / 1000) % 10;
+        setBreath(t < 4 ? t / 4 : 1 - (t - 4) / 6);
+      }
+    }, 120);
+    return () => {
+      window.clearInterval(timer);
+      setBreath(undefined);
+    };
+  }, [pose]);
+
+  return (
+    <Lumen
+      label={label}
+      mode={pose.mode}
+      hue={pose.hue}
+      intensity={pose.intensity}
+      density={pose.density}
+      lift={pose.lift - (typing ? 0.03 : 0)}
+      agitation={Math.max(agitation, typing ? 0.15 : 0)}
+      spread={spread}
+      breathPhase={breath}
+    />
+  );
+}
+
+function KeptEntries() {
+  const t = useTranslations("vent.entries");
+  const format = useFormatter();
+  const toast = useToast();
+  const errorText = useErrorText();
+  const queryClient = useQueryClient();
+  const entries = useQuery({
+    queryKey: keys.vent,
+    queryFn: () => api("/vent-entries?page_size=50", { schema: page(ventEntrySchema) }),
+  });
+  const remove = useMutation({
+    mutationFn: (id: string) => api(`/vent-entries/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      toast(t("deleted"));
+      void queryClient.invalidateQueries({ queryKey: keys.vent });
+    },
+    onError: (error) => toast(errorText(error)),
+  });
+
+  return (
+    <section aria-labelledby="kept-title">
+      <h2 id="kept-title" className="h2 mb-4">
+        {t("title")}
+      </h2>
+      {entries.isError ? (
+        <Notice tone="attention">{errorText(entries.error)}</Notice>
+      ) : entries.data?.results.length ? (
+        <ul className="frame divide-y divide-line">
+          {entries.data.results.map((entry) => {
+            const date = format.dateTime(new Date(entry.created_at), {
+              dateStyle: "medium",
+              timeStyle: "short",
+            });
+            return (
+              <li key={entry.id} className="p-4" data-vent-entry>
+                <details>
+                  <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-3">
+                    <span className="data text-dim">{date}</span>
+                    <span className="text-sm">{t("show")}</span>
+                  </summary>
+                  <p className="mt-3 whitespace-pre-wrap">{entry.body}</p>
+                </details>
+                <Button
+                  variant="quiet"
+                  className="mt-3"
+                  aria-label={t("deleteNamed", { date })}
+                  busy={remove.isPending && remove.variables === entry.id}
+                  onClick={() => remove.mutate(entry.id)}
+                >
+                  {t("delete")}
+                </Button>
+              </li>
+            );
+          })}
+        </ul>
+      ) : entries.isPending ? null : (
+        <p className="text-dim">{t("empty")}</p>
+      )}
+    </section>
+  );
+}
+
+export default function VentPage() {
+  const t = useTranslations("vent");
+  const errorText = useErrorText();
+  const queryClient = useQueryClient();
+  const inputId = useId();
+  const resultRef = useRef<HTMLDivElement>(null);
+  const [text, setText] = useState("");
+  const [keep, setKeep] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const [result, setResult] = useState<{ reflection: Reflection; kept: boolean } | null>(null);
+  const tooLong = text.length > MAX;
+
+  useEffect(() => {
+    if (!typing) return;
+    const timer = window.setTimeout(() => setTyping(false), 1200);
+    return () => window.clearTimeout(timer);
+  }, [typing, text]);
+
+  const letItOut = useMutation({
+    mutationFn: async () => {
+      const body = text.trim();
+      // The reaction first: if the student asked to keep the entry, it is saved only
+      // after the reaction worked, so a failure never leaves half of a step done.
+      const reflection = await api("/vent/reflect", {
+        method: "POST",
+        body: { text: body },
+        schema: reflectionSchema,
+      });
+      if (keep) await api("/vent-entries", { method: "POST", body: { body } });
+      return { reflection, kept: keep };
+    },
+    onSuccess: (outcome) => {
+      setResult(outcome);
+      setText("");
+      if (outcome.kept) void queryClient.invalidateQueries({ queryKey: keys.vent });
+      // Move focus to the reaction so a screen reader hears it, and nothing is lost.
+      window.setTimeout(() => resultRef.current?.focus(), 50);
+    },
+  });
+
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    if (!text.trim() || tooLong) return;
+    letItOut.mutate();
+  };
+
+  const kind: Kind = result?.reflection.reaction ?? "listening";
+  const level = result?.reflection.level ?? null;
+  const pose = POSES[kind];
+
+  return (
+    <div className="space-y-12">
+      <div>
+        <h1 className="h1 mb-3">{t("title")}</h1>
+        <p className="mb-1 text-lg">{t("intro")}</p>
+        <p className="prose-width text-dim">{t("how")}</p>
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-start">
+        <div className="marks mx-auto w-48 border border-line sm:w-56 lg:order-last lg:sticky lg:top-8 lg:w-full">
+          <Figure pose={pose} typing={typing} label={`${t("figure")}. ${t(`reactions.${kind}.figure`)}`} />
+          <p className="label border-t border-line px-3 py-2 text-center text-dim" aria-hidden="true">
+            {t(`reactions.${kind}.figure`)}
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          <form onSubmit={submit} noValidate className="space-y-4" data-vent-form>
+            <div>
+              <label htmlFor={inputId} className="mb-1.5 block font-medium">
+                {t("label")}
+              </label>
+              <p id={`${inputId}-hint`} className="mb-1.5 text-sm text-dim">
+                {t("hint", { max: MAX })}
+              </p>
+              <textarea
+                id={inputId}
+                aria-describedby={`${inputId}-hint`}
+                aria-invalid={tooLong || undefined}
+                rows={9}
+                className="control min-h-56 resize-y leading-relaxed"
+                value={text}
+                onChange={(event) => {
+                  setText(event.target.value);
+                  setTyping(true);
+                }}
+              />
+              {tooLong ? (
+                <p role="alert" className="mt-2 text-sm text-warm">
+                  {t("tooLong", { max: MAX })}
+                </p>
+              ) : null}
+            </div>
+            <Toggle label={t("keep")} hint={t("keepHint")} checked={keep} onChange={setKeep} />
+            <Button type="submit" busy={letItOut.isPending} disabled={!text.trim() || tooLong}>
+              {letItOut.isPending ? t("submitting") : t("submit")}
+            </Button>
+            {letItOut.isError ? (
+              <Notice tone="attention" role="alert">
+                {t("unavailable")} {errorText(letItOut.error)}
+              </Notice>
+            ) : null}
+          </form>
+
+          {result ? (
+            <div
+              ref={resultRef}
+              tabIndex={-1}
+              role="status"
+              className="space-y-4 border-t border-line pt-6 outline-none"
+              data-vent-reaction={kind}
+            >
+              <p className="label text-dim">{result.kept ? t("kept") : t("released")}</p>
+              {level === "crisis" ? (
+                <Notice tone="attention">
+                  <span className="block">{t("reactions.steady.line")}</span>
+                  <span className="mt-2 block">{t("emergency")}</span>
+                </Notice>
+              ) : (
+                <p className="text-lg">{t(`reactions.${kind}.line`)}</p>
+              )}
+              {level === "distress" ? <p className="text-dim">{t("distress")}</p> : null}
+              <div className="flex flex-wrap gap-3">
+                {(level === "distress" ? [...NEXT[kind], { key: "support", href: "/support" }] : NEXT[kind]).map(
+                  (next) => (
+                    <Link
+                      key={next.key}
+                      href={next.href}
+                      className={buttonClass(level === "crisis" && next.key === "support" ? "care" : "quiet")}
+                    >
+                      {t(`next.${next.key}`)}
+                    </Link>
+                  ),
+                )}
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <KeptEntries />
+    </div>
+  );
+}

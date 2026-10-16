@@ -113,7 +113,13 @@ def populate_chat(user):
     ChatMessage.objects.create(session=session, role="user", content=f"{CANARY}-chat")
     ChatFeedback.objects.create(user=user, session=session, kind="answer", helpful=True)
     ChatUsage.objects.create(user=user, day=timezone.localdate(), replies=2)
-    return {"chat_session": session}
+    return {"chat_session": session, **populate_vent(user)}
+
+
+def populate_vent(user):
+    from apps.vent.models import VentEntry
+
+    return {"vent_entry": VentEntry.objects.create(user=user, body=f"{CANARY}-vent")}
 
 
 class TestCoverageByIntrospection:
@@ -163,6 +169,7 @@ class TestExport:
             "consents",
             "notifications",
             "audit_events",
+            "vent_entries",
             "chat",
         }
         assert body["chat"]["sessions"][0]["messages"][0]["content"] == f"{CANARY}-chat"

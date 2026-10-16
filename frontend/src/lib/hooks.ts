@@ -24,6 +24,7 @@ export const keys = {
   exercises: (hidden: boolean) => ["exercises", hidden] as const,
   triggers: ["triggers"] as const,
   episodes: ["episodes"] as const,
+  vent: ["vent-entries"] as const,
   plan: ["safety-plan"] as const,
   resources: ["resources"] as const,
   contacts: ["contacts"] as const,

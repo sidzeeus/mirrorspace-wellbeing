@@ -11,6 +11,7 @@ from apps.episodes.views import EpisodeViewSet, TriggerViewSet
 from apps.notifications.views import EmailWebhookView, NotificationViewSet
 from apps.safety.views import ResourceViewSet, SafetyPlanView
 from apps.sharing import views as sharing
+from apps.vent.views import VentEntryViewSet, VentReflectView
 from apps.wellbeing.views import ExerciseEventViewSet, ExerciseViewSet
 from config import schema  # noqa: F401 - registers the OpenAPI auth scheme
 from config.health import HealthView, ReadyView
@@ -27,6 +28,7 @@ router.register("sharing/consent", sharing.ConsentViewSet, basename="consent")
 router.register("notifications", NotificationViewSet, basename="notification")
 router.register("chat/sessions", ChatSessionViewSet, basename="chat-session")
 router.register("chat/feedback", ChatFeedbackViewSet, basename="chat-feedback")
+router.register("vent-entries", VentEntryViewSet, basename="vent-entry")
 
 api_v1: list[URLPattern | URLResolver] = [
     path("health", HealthView.as_view(), name="health"),
@@ -37,6 +39,7 @@ api_v1: list[URLPattern | URLResolver] = [
     path("export", ExportView.as_view(), name="export"),
     path("patterns", PatternsView.as_view(), name="patterns"),
     path("chat/info", ChatInfoView.as_view(), name="chat-info"),
+    path("vent/reflect", VentReflectView.as_view(), name="vent-reflect"),
     path("safety-plan", SafetyPlanView.as_view(), name="safety-plan"),
     path("sharing/preview", sharing.WeeklyPreviewView.as_view(), name="sharing-preview"),
     path("sharing/notices", sharing.NoticeVersionsView.as_view(), name="sharing-notices"),

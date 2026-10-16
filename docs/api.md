@@ -755,3 +755,19 @@ A `safety` reply is produced before any budget or provider check, so it is retur
 
 ### GET /chat/feedback, GET and DELETE /chat/feedback/{id}
 The person's own ratings.
+
+## Vent
+
+Free writing. Nothing is stored unless the student keeps an entry.
+
+### POST /vent/reflect
+Limit: 30 a minute. Body `{"text": "..."}`, 1 to 5000 characters. Stores nothing and logs nothing.
+
+```json
+{"reaction": "heavy", "level": null}
+```
+
+`reaction` is one of `listening`, `heavy`, `racing`, `storm`, `alone`, `lighter`, `steady`. `level` is `"crisis"` (reaction `steady`), `"distress"` or `null`. Crisis and distress come from the same check as the chat. Nothing is sent to anyone because of either.
+
+### GET, POST /vent-entries; GET, DELETE /vent-entries/{id}
+Entries the student chose to keep: `{"id", "body", "created_at"}`, newest first. `body` is 1 to 5000 characters and encrypted at rest. Entries cannot be edited (`405`). They are included in `GET /export` as `vent_entries`.

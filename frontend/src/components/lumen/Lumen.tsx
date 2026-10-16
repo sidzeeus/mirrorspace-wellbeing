@@ -36,6 +36,12 @@ export type LumenProps = {
   lit?: readonly boolean[];
   /** Gather from scattered points on first appearance. */
   assemble?: boolean;
+  /** Restlessness of the points, 0 (calm) to 1 (a storm). */
+  agitation?: number;
+  /** Vertical shift: positive sinks the shape, negative lifts it. About -1 to 1. */
+  lift?: number;
+  /** How far the points scatter from the shape, 0 to 1. */
+  spread?: number;
   className?: string;
 };
 
@@ -44,7 +50,9 @@ const MIN_PARTICLES = 210;
 const LEVELS = 4;
 
 type Renderer = "static" | "webgl" | "canvas2d";
-type Live = Required<Pick<LumenProps, "mode" | "intensity" | "density" | "hue">> & {
+type Live = Required<
+  Pick<LumenProps, "mode" | "intensity" | "density" | "hue" | "agitation" | "lift" | "spread">
+> & {
   breathPhase: number | undefined;
   lit: readonly boolean[];
 };
@@ -115,6 +123,9 @@ export function Lumen({
   breathPhase,
   lit = [],
   assemble = false,
+  agitation = 0,
+  lift = 0,
+  spread = 0,
   className = "",
 }: LumenProps) {
   const reducedMotion = useReducedMotion();
@@ -122,9 +133,9 @@ export function Lumen({
   const [gaveUp, setGaveUp] = useState(false);
   const [renderer, setRenderer] = useState<Renderer>("static");
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const live = useRef<Live>({ mode, intensity, density, hue, breathPhase, lit });
+  const live = useRef<Live>({ mode, intensity, density, hue, breathPhase, lit, agitation, lift, spread });
   useEffect(() => {
-    live.current = { mode, intensity, density, hue, breathPhase, lit };
+    live.current = { mode, intensity, density, hue, breathPhase, lit, agitation, lift, spread };
   });
 
   const animate = !reducedMotion && !lowBandwidth && !gaveUp;
@@ -221,10 +232,14 @@ export function Lumen({
       const [h, s, l] = lumenColor(state.hue, light);
       const half = size / 2;
 
+      const restless = clamp01(state.agitation);
+      const wobble = 0.011 * (1 + restless * 7);
+      const scatter = 1 + clamp01(state.spread) * 0.55;
+      const shift = state.lift * 0.18;
       for (let i = 0; i < count; i += 1) {
-        const drift = now * 0.0005 + i * 1.7;
-        const tx = target[i * 3]! * scale + Math.sin(drift) * 0.011;
-        const ty = target[i * 3 + 1]! * scale + Math.cos(drift * 1.3) * 0.011;
+        const drift = now * 0.0005 * (1 + restless * 5) + i * 1.7;
+        const tx = target[i * 3]! * scale * scatter + Math.sin(drift) * wobble;
+        const ty = target[i * 3 + 1]! * scale * scatter + shift + Math.cos(drift * 1.3) * wobble;
         position[i * 2]! += (tx - position[i * 2]!) * ease;
         position[i * 2 + 1]! += (ty - position[i * 2 + 1]!) * ease;
         const alpha = level(target[i * 3 + 2]!, clamp01(state.intensity), i);
@@ -276,19 +291,20 @@ export function Lumen({
   // The static image: the same shape, fewer dots, no script needed.
   const dots = useMemo(() => {
     const target = targets(mode, lit, STATIC_DOTS);
-    const scale = breathScale(breathPhase);
+    const scale = breathScale(breathPhase) * (1 + clamp01(spread) * 0.55);
+    const shift = lift * 0.18;
     const shown = Math.round(STATIC_DOTS * (0.35 + 0.65 * clamp01(density)));
     return Array.from({ length: shown }, (_, i) => {
       const alpha = level(target[i * 3 + 2]!, clamp01(intensity), i);
       return {
         key: i,
         cx: (target[i * 3]! * scale).toFixed(3),
-        cy: (target[i * 3 + 1]! * scale).toFixed(3),
+        cy: (target[i * 3 + 1]! * scale + shift).toFixed(3),
         r: (0.0085 + alpha * 0.0135).toFixed(4),
         opacity: alpha,
       };
     });
-  }, [mode, lit, intensity, density, breathPhase]);
+  }, [mode, lit, intensity, density, breathPhase, spread, lift]);
   const [h, s] = lumenColor(hue, false);
   const showCanvas = animate && renderer !== "static";
 

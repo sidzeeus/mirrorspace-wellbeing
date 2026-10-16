@@ -16,7 +16,8 @@ import settings from "./settings.json";
 import sharing from "./sharing.json";
 import shell from "./shell.json";
 import support from "./support.json";
+import vent from "./vent.json";
 
-const messages = { auth, chat, checkin, common, contact, episodes, exercises, home, landing, offline, onboarding, patterns, plan, resources, settings, sharing, shell, support };
+const messages = { auth, chat, checkin, common, contact, episodes, exercises, home, landing, offline, onboarding, patterns, plan, resources, settings, sharing, shell, support, vent };
 
 export default messages;

@@ -46,6 +46,7 @@ const ICONS: Record<string, ReactNode> = {
       <path d="M3 19c.8-3 2.7-4.5 5-4.5s4.2 1.5 5 4.5M14 15c.6-.3 1.3-.5 2-.5 2.3 0 4.2 1.5 5 4.5" />
     </>
   ),
+  vent: <path d="M4 17c3-1 4-4 4-7a4 4 0 0 1 8 0c0 3 1 6 4 7M7 20h10" />,
   chat: <path d="M5 5h14v10h-7l-4 4v-4H5z" />,
   resources: (
     <path d="M7 4h3l1 4-2 1.5a10 10 0 0 0 5.5 5.5L16 13l4 1v3a2 2 0 0 1-2 2A14 14 0 0 1 5 6a2 2 0 0 1 2-2Z" />
@@ -62,6 +63,7 @@ const ICONS: Record<string, ReactNode> = {
 const NAV = [
   { key: "home", href: "/home" },
   { key: "checkIn", href: "/check-in" },
+  { key: "vent", href: "/vent" },
   { key: "patterns", href: "/patterns" },
   { key: "episodes", href: "/episodes" },
   { key: "exercises", href: "/exercises" },
@@ -233,7 +235,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         {onboarding ? null : (
           <nav
             aria-label={t("navLabel")}
-            className="glass no-print fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-x-0 border-b-0 pb-[env(safe-area-inset-bottom)] lg:hidden"
+            className="glass no-print fixed inset-x-0 bottom-0 z-30 grid grid-cols-6 border-x-0 border-b-0 pb-[env(safe-area-inset-bottom)] lg:hidden"
           >
             {NAV.map((item) => (
               <NavLink key={item.key} item={item} vertical={false} />

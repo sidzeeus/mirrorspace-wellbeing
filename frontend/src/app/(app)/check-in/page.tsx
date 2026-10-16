@@ -37,6 +37,19 @@ function fromCheckIn(row: CheckIn): Answers {
  * seconds. The Lumen shows the mood answer as it changes, with the same information
  * in words for anyone who cannot see it. Skipping is always possible and saves nothing.
  */
+/** The check-in stays taps only; anything longer has its own private place. */
+function VentPrompt() {
+  const t = useTranslations("checkin");
+  return (
+    <p className="mt-6 text-dim">
+      {t("ventPrompt")}{" "}
+      <Link href="/vent" className="link inline-flex min-h-11 items-center">
+        {t("ventLink")}
+      </Link>
+    </p>
+  );
+}
+
 export default function CheckInPage() {
   const common = useTranslations("common");
   const me = useMe();
@@ -104,6 +117,7 @@ function CheckInForm({ saved }: { saved: CheckIn | null }) {
         <Notice tone="saved" role="status">
           {t("saved")}
         </Notice>
+        <VentPrompt />
         {suggestion ? (
           <section aria-labelledby="after-title" className="mt-8">
             <h2 id="after-title" className="h2 mb-2">
@@ -259,6 +273,7 @@ function CheckInForm({ saved }: { saved: CheckIn | null }) {
             {t("skip")}
           </Link>
         </div>
+        <VentPrompt />
       </div>
     </form>
   );
