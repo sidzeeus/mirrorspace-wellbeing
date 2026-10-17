@@ -25,6 +25,9 @@ x-backend: &backend
       required: false
   volumes:
     - ./backend:/app
+  # Lets the API reach Ollama on your computer (needed on Linux; built in elsewhere).
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
   depends_on:
     db:
       condition: service_healthy

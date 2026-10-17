@@ -54,20 +54,20 @@ test("chat says it is an AI, answers from reviewed material, and shows its sourc
   await page.getByLabel("Your message").fill("How many hours of sleep do students usually need?");
   await page.getByRole("button", { name: "Send message" }).click();
 
-  const answer = page.locator("[data-turn='answer']");
-  await expect(answer).toContainText("AI reply");
+  // A real local model can take a while, especially the first reply.
+  const answer = page.locator("[data-turn='answer']").first();
+  await expect(answer).toContainText("AI reply", { timeout: 90_000 });
   await expect(answer.locator("[data-sources]")).toContainText("Sleep basics for students");
   await expect(answer.getByRole("button", { name: "Mark this reply as helpful" })).toBeVisible();
   await answer.getByRole("button", { name: "Mark this reply as not helpful" }).click();
   await expect(answer.getByText("Thank you.")).toBeVisible();
   expect(savedMessages(email), "nothing is stored while saving is off").toBe("0");
 
-  // Something outside the reviewed material gets a fixed reply, clearly labelled.
-  await page.getByLabel("Your message").fill("What is the capital of France?");
+  // Ordinary conversation outside the reviewed material is answered by the AI too.
+  await page.getByLabel("Your message").fill("hey, how are you doing?");
   await page.getByRole("button", { name: "Send message" }).click();
-  const fixed = page.locator("[data-turn='unsupported']");
-  await expect(fixed).toContainText("Fixed reply, not written by AI");
-  await expect(fixed).toContainText("I do not have reviewed material on that");
+  await expect(page.locator("[data-turn='answer']")).toHaveCount(2, { timeout: 90_000 });
+  await expect(page.locator("[data-turn='answer']").last()).toContainText("AI reply");
   await expectAccessible(page);
   expect(problems).toEqual([]);
 });
@@ -140,5 +140,54 @@ test("chat is accessible in the light theme and on desktop", async ({ page }) =>
   await expect(page.locator("[data-turn='answer']")).toBeVisible();
   await expectAccessible(page);
   await page.setViewportSize({ width: 1440, height: 900 });
+  await expectAccessible(page);
+});
+
+test("voice: Talk sends what was said, and the reply is read aloud", async ({ page }) => {
+  // A stand-in microphone and speaker: the browser's speech services are not available
+  // to automated tests, so these play their part.
+  await page.addInitScript(() => {
+    const scope = window as unknown as Record<string, unknown>;
+    scope.__spoken = [] as string[];
+    class FakeRecognition {
+      lang = "";
+      interimResults = false;
+      continuous = false;
+      onresult: ((event: unknown) => void) | null = null;
+      onerror: ((event: unknown) => void) | null = null;
+      onend: (() => void) | null = null;
+      start() {
+        setTimeout(() => {
+          const said = "How many hours of sleep do students usually need?";
+          this.onresult?.({ resultIndex: 0, results: [{ isFinal: true, 0: { transcript: said } }] });
+          this.onend?.();
+        }, 300);
+      }
+      stop() {}
+      abort() {}
+    }
+    // Newer browsers have the unprefixed name, older ones only the prefixed one.
+    scope.SpeechRecognition = FakeRecognition;
+    scope.webkitSpeechRecognition = FakeRecognition;
+    Object.defineProperty(window, "speechSynthesis", {
+      configurable: true,
+      value: {
+        speak: (utterance: { text: string }) => (scope.__spoken as string[]).push(utterance.text),
+        cancel: () => undefined,
+        getVoices: () => [],
+      },
+    });
+  });
+  await signIn(page, createUser());
+  await page.goto("/chat");
+
+  await expect(page.locator("[data-voice-settings]")).toContainText("This app never records or keeps audio");
+  await page.locator("[data-voice-talk]").click();
+  const answer = page.locator("[data-turn='answer']").first();
+  await expect(answer).toContainText("AI reply", { timeout: 90_000 });
+  await expect(page.locator("[data-turn='user']")).toContainText("How many hours of sleep");
+  await expect
+    .poll(() => page.evaluate(() => ((window as unknown as Record<string, string[]>).__spoken ?? []).join(" ")))
+    .not.toBe("");
   await expectAccessible(page);
 });

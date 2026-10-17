@@ -1,14 +1,14 @@
 {
-  "_review": "NEEDS_HUMAN_REVIEW: placeholder wording for the chat screen. The banner and limits must be reviewed by a clinician and a lawyer (docs/review-needed.md R9, R12).",
+  "_review": "NEEDS_HUMAN_REVIEW: placeholder wording for the chat screen, including the voice privacy note. The banner, limits and voice notice must be reviewed by a clinician and a lawyer (docs/review-needed.md R9, R12, R28).",
   "title": "Chat",
   "banner": "I am an AI, not a therapist.",
   "can": "What I can do",
   "cannot": "What I cannot do",
   "retentionTitle": "What happens to what you write",
-  "limits": "Replies are short and drawn from reviewed material. There is a daily limit on AI replies.",
+  "limits": "Replies are short. It can talk things through with you, but it is an AI and can get things wrong. There is a daily limit on AI replies.",
   "supportHint": "If things feel urgent, use Support. It is always at the top of the screen.",
   "openSupport": "Open Support",
-  "empty": "Ask about sleep, stress, steadying your breathing, or finding one small step.",
+  "empty": "Say hello, or tell me what is on your mind. You can type or tap Talk.",
   "you": "You",
   "ai": "AI reply",
   "fixed": "Fixed reply, not written by AI",
@@ -38,5 +38,22 @@
     "deleted": "Saved conversation deleted.",
     "startOver": "Start a new conversation"
   },
-  "error": "The chat could not be started."
+  "error": "The chat could not be started.",
+  "voice": {
+    "title": "Voice",
+    "talk": "Talk",
+    "stopListening": "Stop listening",
+    "listening": "Listening. Speak, then pause; your words are sent when you stop.",
+    "stopSpeaking": "Stop speaking",
+    "readAloud": "Read every reply aloud",
+    "readAloudHint": "Replies to anything you say with Talk are always read aloud. Every reply is also shown as text.",
+    "privacy": "Talk uses your browser's speech service. In Chrome or Edge, what you say is sent to Google or Microsoft to be turned into text. This app never records or keeps audio. Replies are spoken by your device.",
+    "unsupported": "Talking needs Chrome or Edge. You can still type, and replies can be read aloud.",
+    "errors": {
+      "not-allowed": "The microphone is blocked. Allow it in your browser's site settings to use Talk.",
+      "no-speech": "Nothing was heard. Tap Talk and try again.",
+      "network": "The speech service could not be reached. You can type instead.",
+      "other": "Talk stopped unexpectedly. You can try again or type instead."
+    }
+  }
 }

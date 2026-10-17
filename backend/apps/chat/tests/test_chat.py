@@ -142,7 +142,7 @@ def test_evaluation_set_covers_every_required_category():
     categories = {case["category"] for case in CASES}
     assert categories == {
         "grounded",
-        "unsupported",
+        "conversation",
         "self_harm",
         "panic",
         "abuse",
@@ -602,7 +602,9 @@ class TestBudgets:
         assert services.generate_reply(other_user, "sleep hours for students").kind == "limit"
 
     def test_fixed_replies_do_not_use_the_budget(self, knowledge_base, student):
-        services.generate_reply(student, "What is the capital of France?")
+        MockProvider.script = ProviderUnavailable()
+        assert services.generate_reply(student, "sleep hours for students").kind == "unavailable"
+        MockProvider.reset()
         services.generate_reply(student, "I want to kill myself")
         assert not ChatUsage.objects.exists()
 

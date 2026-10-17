@@ -349,3 +349,37 @@ Done
 
 Noticed, not caused by this change
 - `npm audit` (including development tools) reports 5 high-severity findings in `fast-glob` through `eslint-config-next`. The production audit is clean. Needs a lint-tooling update.
+
+### 2026-10-17: Aurora redesign
+
+Done
+- New look for every screen, chosen with the owner: the owner's animated gradient as a calm aurora behind the whole app, frosted-glass panels, pill buttons, a centred landing hero, floating glass navigation (decision B72).
+- Removed the dithered scenes (`components/scene`, `public/scenes`, `scripts/make-scenes.mjs`).
+- The aurora is still on Support and the offline page; a browser test checks that it breathes on the landing page and not on Support.
+
+Unfinished or not verified
+- Not looked at on a real phone. Blur effects can be slow on low-end Android; where `backdrop-filter` is unsupported the panels are solid.
+
+### 2026-10-17: Pets
+
+Done
+- Animated pets replace every Lumen figure, after the cat in the owner's reference video (decision B73): landing hero and story, sign-in pages, Home greeting, check-in, breathing exercise, Vent. The week on Home is paw prints.
+- Pure SVG and CSS; no Lottie and no third-party requests. Frozen under reduced motion; present without JavaScript.
+- `components/lumen` deleted; `docs/lumen.md` marked retired.
+
+Unfinished or not verified
+- The pets are simple shapes. A designer could give them more character; the component is built so the drawings can be swapped without touching the screens.
+
+### 2026-10-17: Conversational AI and voice
+
+Done
+- The chat talks freely as a supportive listener (B74): new instructions, 20-turn memory, reviewed passages when they match. Crisis check before the model and output check after it are unchanged; evaluation cases updated.
+- `OllamaProvider` (B75): a free model on this computer. Local default `llama3.1:8b`; the Docker stack reaches it at `host.docker.internal`. CI keeps the deterministic stand-in.
+- Voice (B76): Talk button (speech recognition in Chrome and Edge), replies read aloud by the device, stop button, "read every reply aloud" switch, privacy note. `frontend/src/lib/voice.ts`.
+- Tests: free conversation, Ollama adapter (request contents, failures, no logging of text), and a browser test of the voice loop with a stand-in microphone and speaker.
+
+Unfinished or not verified
+- Replies are not streamed; a reply appears, and is spoken, once it is complete.
+- Voice has been tested with stand-ins, not with a real microphone in this session.
+- A local model is weaker than a large hosted one at following every rule. The output check still discards replies that diagnose or mention medication, but real replies need clinical review (R24).
+- Ollama does not run on Vercel or other serverless hosts.

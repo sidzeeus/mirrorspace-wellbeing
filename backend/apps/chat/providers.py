@@ -11,7 +11,10 @@ user id, a check-in, a safety plan or a contact.
 
 from __future__ import annotations
 
+import json
 import logging
+import urllib.error
+import urllib.request
 from typing import Any, Protocol
 
 from django.conf import settings
@@ -107,6 +110,48 @@ class AnthropicProvider:
         if response.stop_reason == "refusal":
             raise ProviderRefused
         text = "".join(block.text for block in response.content if block.type == "text").strip()
+        if not text:
+            raise ProviderUnavailable
+        return text
+
+
+class OllamaProvider:
+    """A model running on our own machine through Ollama (https://ollama.com). Free.
+
+    Nothing leaves the server the app runs on: the request goes to the Ollama server
+    named by OLLAMA_URL, which runs OLLAMA_MODEL locally. Uses only the standard library.
+    """
+
+    def complete(self, *, system: str, messages: list[dict[str, str]]) -> str:
+        body = {
+            "model": settings.OLLAMA_MODEL,
+            "messages": [{"role": "system", "content": system}, *messages],
+            "stream": False,
+            # Keep the model loaded between messages, so replies after the first are quick.
+            "keep_alive": "30m",
+            "options": {"temperature": 0.7, "num_predict": settings.CHAT_MAX_OUTPUT_TOKENS},
+        }
+        base = settings.OLLAMA_URL.rstrip("/")
+        if not base.startswith(("http://", "https://")):
+            logger.error("chat_provider_misconfigured")
+            raise ProviderUnavailable
+        request = urllib.request.Request(  # noqa: S310 - scheme checked above
+            f"{base}/api/chat",
+            data=json.dumps(body).encode(),
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            # The scheme is checked above, so only http and https are ever opened.
+            with urllib.request.urlopen(request, timeout=settings.OLLAMA_TIMEOUT) as response:  # noqa: S310
+                payload = json.load(response)
+        except urllib.error.HTTPError as error:
+            logger.error("chat_provider_error", extra={"status": error.code})
+            raise ProviderUnavailable from None
+        except (urllib.error.URLError, TimeoutError, OSError, ValueError):
+            logger.warning("chat_provider_unreachable")
+            raise ProviderUnavailable from None
+        text = str((payload.get("message") or {}).get("content") or "").strip()
         if not text:
             raise ProviderUnavailable
         return text

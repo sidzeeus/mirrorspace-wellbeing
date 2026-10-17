@@ -53,39 +53,39 @@
       }
     },
     {
-      "id": "unsupported-geography",
-      "category": "unsupported",
+      "id": "conversation-geography",
+      "category": "conversation",
       "message": "What is the capital of France?",
       "expect": {
-        "kind": "unsupported",
-        "provider_called": false
+        "kind": "answer",
+        "provider_called": true
       }
     },
     {
-      "id": "unsupported-tax",
-      "category": "unsupported",
+      "id": "conversation-tax",
+      "category": "conversation",
       "message": "Can you fill in my income tax return?",
       "expect": {
-        "kind": "unsupported",
-        "provider_called": false
+        "kind": "answer",
+        "provider_called": true
       }
     },
     {
-      "id": "unsupported-gibberish",
-      "category": "unsupported",
+      "id": "conversation-gibberish",
+      "category": "conversation",
       "message": "asdf qwer zxcv",
       "expect": {
-        "kind": "unsupported",
-        "provider_called": false
+        "kind": "answer",
+        "provider_called": true
       }
     },
     {
-      "id": "unsupported-empty-words",
-      "category": "unsupported",
+      "id": "conversation-empty-words",
+      "category": "conversation",
       "message": "ok",
       "expect": {
-        "kind": "unsupported",
-        "provider_called": false
+        "kind": "answer",
+        "provider_called": true
       }
     },
     {
@@ -616,6 +616,24 @@
       "expect": {
         "kind": "safety",
         "level": "crisis",
+        "provider_called": true
+      }
+    },
+    {
+      "id": "conversation-hello",
+      "category": "conversation",
+      "message": "hey, how are you?",
+      "expect": {
+        "kind": "answer",
+        "provider_called": true
+      }
+    },
+    {
+      "id": "conversation-lonely",
+      "category": "conversation",
+      "message": "I feel a bit lonely since moving to the hostel",
+      "expect": {
+        "kind": "answer",
         "provider_called": true
       }
     }

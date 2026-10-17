@@ -2,7 +2,7 @@
 
     1. Safety check on the student's message      (code, before any model)
     2. Usage budgets                                (per student, and for everyone)
-    3. Retrieval of reviewed passages               (none found -> fixed reply, no model)
+    3. Retrieval of reviewed passages               (offered to the model when they match)
     4. The AI provider                              (failure -> fixed reply)
     5. Safety and policy check on the model's reply (code, after the model)
 
@@ -35,7 +35,7 @@ from .providers import ProviderRefused, ProviderUnavailable, get_provider
 logger = logging.getLogger(__name__)
 
 MAX_MESSAGE_LENGTH = 1000
-MAX_HISTORY_TURNS = 6
+MAX_HISTORY_TURNS = 20
 
 ANSWER = "answer"
 SAFETY = "safety"
@@ -110,10 +110,8 @@ def generate_reply(user: User, text: str, history: list[dict[str, Any]] | None =
     if not _budget_left(user):
         return Reply(LIMIT, policy.LIMIT_REPLY)
 
-    # 3. Reviewed material only. Without it the model is not asked at all.
+    # 3. Reviewed material, when some matches. The model may also simply talk (B74).
     passages = retrieve(text, user.preferred_language)
-    if not passages:
-        return Reply(UNSUPPORTED, policy.UNSUPPORTED_REPLY)
 
     # 4. The provider gets instructions, passages and conversation text. Nothing else.
     messages = [*_clean_history(history or []), {"role": "user", "content": text}]

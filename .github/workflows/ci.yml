@@ -87,6 +87,9 @@ jobs:
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
       - uses: actions/checkout@v4
+      # CI has no local model: the chat uses the deterministic stand-in.
+      - name: Use the stand-in chat model
+        run: echo "CHAT_PROVIDER=apps.chat.providers.MockProvider" > .env
       - name: Start the API stack
         run: docker compose up -d --build --wait db redis web worker
       - name: Load placeholder content

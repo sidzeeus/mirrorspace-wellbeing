@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { type FormEvent, useId, useRef, useState } from "react";
 import { z } from "zod";
 
@@ -9,6 +9,7 @@ import { Toggle, useToast } from "@/components/ui/controls";
 import { Button, Notice, buttonClass } from "@/components/ui/primitives";
 import { api } from "@/lib/api";
 import { useErrorText } from "@/lib/hooks";
+import { speechLang, useSpeechRecognition, useSpeechSynthesis } from "@/lib/voice";
 
 const infoSchema = z.object({
   disclosure: z.object({
@@ -42,6 +43,10 @@ type Turn =
  * The AI chat. The banner says what it is and is not before anything is typed. The
  * conversation lives in this screen's memory only, unless the person turns saving on.
  * Support stays in the shell above the whole time.
+ *
+ * Voice is optional: "Talk" listens once and sends what was said; a reply to a spoken
+ * message is read aloud, as is every reply when "Read replies aloud" is on. The text
+ * is always on screen as well.
  */
 export default function ChatPage() {
   const t = useTranslations("chat");
@@ -55,6 +60,12 @@ export default function ChatPage() {
   const [saving, setSaving] = useState(false);
   const counter = useRef(0);
   const nextId = () => (counter.current += 1);
+  const lang = speechLang(useLocale());
+  const listen = useSpeechRecognition(lang);
+  const voice = useSpeechSynthesis(lang);
+  const [readAloud, setReadAloud] = useState(false);
+  // The last message was spoken, so its reply is spoken back.
+  const spokenTurn = useRef(false);
 
   const info = useQuery({
     queryKey: ["chat-info"],
@@ -81,7 +92,7 @@ export default function ChatPage() {
       // With saving off, the earlier turns are sent from this screen's memory.
       const history = turns
         .filter((turn) => turn.role === "user" || turn.reply.kind === "answer")
-        .slice(-6)
+        .slice(-20)
         .map((turn) =>
           turn.role === "user"
             ? { role: "user", content: turn.text }
@@ -97,9 +108,33 @@ export default function ChatPage() {
       setTurns((current) => [...current, { id: nextId(), role: "user", text: message }]);
       setText("");
     },
-    onSuccess: (reply) =>
-      setTurns((current) => [...current, { id: nextId(), role: "reply", reply }]),
+    onSuccess: (reply) => {
+      setTurns((current) => [...current, { id: nextId(), role: "reply", reply }]);
+      if (spokenTurn.current || readAloud) voice.speak(reply.text);
+      spokenTurn.current = false;
+    },
+    onError: () => {
+      spokenTurn.current = false;
+    },
   });
+
+  const talk = () => {
+    if (listen.listening) {
+      listen.stop();
+      return;
+    }
+    voice.stop();
+    listen.start({
+      onInterim: (heard) => setText(heard),
+      onFinal: (heard) => {
+        const message = heard.trim();
+        if (!message || message.length > max || send.isPending) return;
+        spokenTurn.current = true;
+        send.mutate(message);
+      },
+      onError: (code) => toast(t(`voice.errors.${code}`)),
+    });
+  };
 
   const setSave = useMutation({
     mutationFn: async (on: boolean) => {
@@ -138,7 +173,10 @@ export default function ChatPage() {
   const submit = (event: FormEvent) => {
     event.preventDefault();
     const message = text.trim();
-    if (message && !tooLong && !send.isPending) send.mutate(message);
+    if (message && !tooLong && !send.isPending) {
+      spokenTurn.current = false;
+      send.mutate(message);
+    }
   };
 
   return (
@@ -292,10 +330,55 @@ export default function ChatPage() {
             {t("tooLong", { max })}
           </p>
         ) : null}
-        <Button type="submit" busy={send.isPending} disabled={!text.trim() || tooLong}>
-          {send.isPending ? common("loading") : t("send")}
-        </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button type="submit" busy={send.isPending} disabled={!text.trim() || tooLong}>
+            {send.isPending ? common("loading") : t("send")}
+          </Button>
+          {listen.supported ? (
+            <Button
+              type="button"
+              variant={listen.listening ? "care" : "quiet"}
+              aria-pressed={listen.listening}
+              disabled={send.isPending}
+              onClick={talk}
+              data-voice-talk
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="9" y="3" width="6" height="12" rx="3" stroke="currentColor" strokeWidth="1.8" />
+                <path d="M5 11a7 7 0 0 0 14 0M12 18v3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+              {listen.listening ? t("voice.stopListening") : t("voice.talk")}
+            </Button>
+          ) : null}
+          {voice.speaking ? (
+            <Button type="button" variant="quiet" onClick={voice.stop} data-voice-stop>
+              {t("voice.stopSpeaking")}
+            </Button>
+          ) : null}
+        </div>
+        {listen.listening ? (
+          <p role="status" className="mt-3 text-sm text-dim">
+            {t("voice.listening")}
+          </p>
+        ) : null}
       </form>
+
+      <section aria-label={t("voice.title")} className="mt-8 space-y-2" data-voice-settings>
+        {voice.supported ? (
+          <Toggle
+            label={t("voice.readAloud")}
+            hint={t("voice.readAloudHint")}
+            checked={readAloud}
+            onChange={(on) => {
+              setReadAloud(on);
+              if (!on) voice.stop();
+            }}
+          />
+        ) : null}
+        <p className="text-sm text-dim">
+          {listen.supported ? t("voice.privacy") : t("voice.unsupported")}
+        </p>
+      </section>
     </div>
   );
 }
