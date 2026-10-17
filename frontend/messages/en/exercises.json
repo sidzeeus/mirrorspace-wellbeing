@@ -53,7 +53,7 @@
     "start": "Start",
     "pause": "Pause",
     "resume": "Resume",
-    "lumen": "A bunny that grows as you breathe in and settles as you breathe out. {state}",
+    "pet": "A bunny that grows as you breathe in and settles as you breathe out. {state}",
     "ring": "{state}, {seconds} seconds left",
     "pace": "Pace",
     "inSeconds": "Breathe in for {seconds} seconds",

@@ -14,7 +14,7 @@ export default async function LandingPage() {
   const steps = (["one", "two", "three"] as const).map((key) => ({
     title: t(`story.${key}.title`),
     body: t(`story.${key}.body`),
-    lumen: t(`story.${key}.lumen`),
+    pet: t(`story.${key}.pet`),
   }));
 
   return (
@@ -24,7 +24,7 @@ export default async function LandingPage() {
       <main id="main">
         {/* The stage: one gathering light, and the promise beneath it. */}
         <section className="mx-auto flex min-h-[calc(100svh-6rem)] max-w-4xl flex-col items-center justify-center px-5 pb-16 pt-4 text-center">
-          <MascotCycle label={t("hero.lumen")} className="mb-4 w-32 sm:w-40" />
+          <MascotCycle label={t("hero.sushi")} className="mb-4 w-32 sm:w-40" />
           <p className="pill mb-5 text-dim">{t("hero.eyebrow")}</p>
           <h1 className="display mb-6">
             <span className="block">{t("hero.lineOne")}</span>

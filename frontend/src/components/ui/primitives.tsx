@@ -131,7 +131,7 @@ export function Field({ label, hint, error, id, className = "", ref, ...props }:
   );
 }
 
-/** A circular progress indicator: the reduced-motion stand-in for the breathing Lumen. */
+/** A circular progress indicator: the reduced-motion stand-in for the breathing pet. */
 export function ProgressRing({
   value,
   label,
@@ -164,7 +164,7 @@ export function ProgressRing({
           cy="50"
           r={radius}
           fill="none"
-          stroke="var(--lumen)"
+          stroke="var(--accent)"
           strokeWidth="3"
           strokeLinecap="round"
           strokeDasharray={circumference}

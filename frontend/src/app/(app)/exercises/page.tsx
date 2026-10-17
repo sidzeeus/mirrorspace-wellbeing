@@ -76,7 +76,7 @@ export default function ExercisesPage() {
                   onClick={() => setFilter(option)}
                   className={`min-h-11 rounded-[14px] border px-4 ${
                     filter === option
-                      ? "border-lumen-hi bg-lumen-hi text-on-lumen"
+                      ? "border-accent-hi bg-accent-hi text-on-accent"
                       : "border-line-strong bg-surface hover:bg-raised"
                   }`}
                 >

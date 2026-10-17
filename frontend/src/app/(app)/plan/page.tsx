@@ -103,7 +103,7 @@ function PlanEditor({
             <label key={resource.id} className="flex min-h-11 cursor-pointer items-center gap-3">
               <input
                 type="checkbox"
-                className="h-5 w-5 accent-(--lumen-hi)"
+                className="h-5 w-5 accent-(--accent-hi)"
                 checked={chosen.includes(resource.id)}
                 onChange={(event) =>
                   setChosen(

@@ -11,7 +11,7 @@
   },
   "week": {
     "title": "The last seven days",
-    "lumen": "Seven paw prints, one for each of the last seven days. {count, plural, =0 {None are filled in.} one {One is filled in: {days}.} other {# are filled in: {days}.}}",
+    "paws": "Seven paw prints, one for each of the last seven days. {count, plural, =0 {None are filled in.} one {One is filled in: {days}.} other {# are filled in: {days}.}}",
     "summary": "{count, plural, =0 {No check-ins in the last seven days.} one {A check-in on one day: {days}.} other {Check-ins on # days: {days}.}}",
     "note": "A filled paw print means you checked in that day. It is not a score, and an empty one is not a problem.",
     "patterns": "See patterns"
