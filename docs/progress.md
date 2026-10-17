@@ -2,7 +2,7 @@
 
 Updated at the end of every phase. Each entry says what is done, what is unfinished, and what was assumed.
 
-Current phase: **All build phases complete (Phases 1 to 6 and the final review). Not ready for real students: see `docs/final-review.md`.**
+Current phase: **All build phases complete, and the repository is prepared for a public demo (Render). Not ready for real students: clinical, legal and safety content still needs sign-off (`docs/review-needed.md`).**
 
 ## Phase checklist
 
@@ -436,3 +436,30 @@ Unfinished or not verified
 - Home opens with "Hello, {name}", "Welcome to" and a large MIRRORSPACE across about three quarters of the width, with full-body Sushi (knitting, after the owner's reference) beside it. Sizes scale with the screen width.
 - Fixed: the week's paw prints now sit over the right day letters.
 - On the narrowest phones the header shows Sushi's face as the logo and the button reads "SOS" (full name kept for screen readers), so nothing scrolls sideways.
+
+### 2026-10-17: Repository clean-up and public-demo preparation
+Done:
+- Secrets scan of the working tree and the full history: clean. Only development and test placeholders were found; `.env` was never committed.
+- `.gitignore` tidied.
+- The retired Lumen naming was replaced in colour tokens, message keys and tests (accent, face, pet, paws).
+- Removed `docs/lumen.md`, `docs/final-review.md` and the `/more` redirect. `MY_GUIDE.md` was renamed `docs/guide.md`.
+- One OpenAI-compatible AI adapter (B86), with an optional `ollama` compose profile.
+- Brevo HTTPS email backend and a daily email cap (B87).
+- Render Blueprint and single-container start script (B88), rehearsed locally with production settings behind the frontend proxy.
+- A recruiter-facing `README.md`. The build spec moved to `docs/spec.md`. MIT `LICENSE` added.
+- Work was done on one branch per stage and merged into `main` with merge commits.
+
+Checks: 859 backend tests; ruff, format, mypy and migrations clean; ESLint, tsc and copy tests clean; full Playwright suite on the production build: 78 of 78 (one offline test hung once while the machine slept and passed on rerun).
+
+Unfinished:
+- The repository has no remote yet.
+- The Render deploy has not been run: it needs the owner's Render, Groq and Brevo accounts.
+- Helplines and exercises stay hidden in production until a reviewer approves them.
+- The privacy notice must name Groq and Brevo before the demo is shared (R32).
+
+Assumptions:
+- The model stays Llama 3.1 8B (local) and Llama 3.1 8B Instant on Groq (demo).
+- Render, in the Singapore region.
+- Brevo for email.
+- The MIT license.
+
