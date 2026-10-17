@@ -1,6 +1,6 @@
 # Mirrorspace
 
-[![CI](https://github.com/siddistudy/mirrorspace/actions/workflows/ci.yml/badge.svg)](https://github.com/siddistudy/mirrorspace/actions/workflows/ci.yml)
+[![CI](https://github.com/sidzeeus/mirrorspace/actions/workflows/ci.yml/badge.svg)](https://github.com/sidzeeus/mirrorspace/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A privacy-first wellbeing companion for university students: daily check-ins, a place to vent, patterns over time, a personal safety plan, and Sushi, an AI companion you can talk or type to.
@@ -87,7 +87,7 @@ ollama pull llama3.1:8b
 Then start the app:
 
 ```bash
-git clone https://github.com/siddistudy/mirrorspace.git
+git clone https://github.com/sidzeeus/mirrorspace.git
 cd mirrorspace
 docker compose up --build
 ```
