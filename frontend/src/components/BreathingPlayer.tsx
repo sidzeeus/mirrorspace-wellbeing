@@ -148,7 +148,7 @@ export function BreathingPlayer({
         </ProgressRing>
       ) : (
         <Panel className="w-full max-w-[16rem] p-6">
-          <Pet label={t("lumen", { state })} species="bunny" breathPhase={started ? phase : 0.2} />
+          <Pet label={t("pet", { state })} species="bunny" breathPhase={started ? phase : 0.2} />
         </Panel>
       )}
       {useRing ? null : (

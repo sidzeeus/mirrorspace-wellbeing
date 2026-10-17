@@ -142,10 +142,10 @@ test("breathing: with motion allowed the pet carries the breath", async ({ page 
   await signIn(page, createUser());
   await page.goto("/exercises");
   await page.getByRole("link", { name: "Start Slow breathing" }).click();
-  const lumen = page.locator("[data-player] [data-pet]");
-  await expect(lumen).toHaveAttribute("aria-label", /grows as you breathe in/);
+  const figure = page.locator("[data-player] [data-pet]");
+  await expect(figure).toHaveAttribute("aria-label", /grows as you breathe in/);
   await page.locator("[data-player]").getByRole("button", { name: "Start" }).click();
-  await expect(lumen).toHaveAttribute("aria-label", /Breathe (in|out)/);
+  await expect(figure).toHaveAttribute("aria-label", /Breathe (in|out)/);
 });
 
 test("an exercise opened once still opens offline", async ({ page, context }) => {

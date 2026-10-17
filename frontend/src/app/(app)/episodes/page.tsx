@@ -340,7 +340,7 @@ function TriggerManager({ triggers, exercises }: { triggers: Trigger[]; exercise
                             <label key={exercise.id} className="flex min-h-11 cursor-pointer items-center gap-2">
                               <input
                                 type="checkbox"
-                                className="h-5 w-5 accent-(--lumen-hi)"
+                                className="h-5 w-5 accent-(--accent-hi)"
                                 checked={chosen}
                                 onChange={() =>
                                   update.mutate({

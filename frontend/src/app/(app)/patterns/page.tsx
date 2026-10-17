@@ -38,7 +38,7 @@ function Choice<T extends string | number>({
             onClick={() => onChange(option)}
             className={`min-h-11 rounded-[14px] border px-4 ${
               option === value
-                ? "border-lumen-hi bg-lumen-hi text-on-lumen"
+                ? "border-accent-hi bg-accent-hi text-on-accent"
                 : "border-line-strong bg-surface hover:bg-raised"
             }`}
           >

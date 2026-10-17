@@ -6,8 +6,8 @@
   "mood": "Mood",
   "moodUnset": "Move the slider to answer",
   "moodClear": "Leave mood blank",
-  "lumen": "Sushi, whose face changes as you move the mood slider. {state}",
-  "lumenStates": {
+  "face": "Sushi, whose face changes as you move the mood slider. {state}",
+  "faceStates": {
     "unset": "Sushi waits quietly.",
     "1": "Sushi looks a little sad with you.",
     "2": "Sushi is calm and still.",

@@ -81,7 +81,7 @@ export default function OnboardingPage() {
               <label key={name} className="flex min-h-11 cursor-pointer items-center gap-3">
                 <input
                   type="checkbox"
-                  className="h-6 w-6 shrink-0 accent-(--lumen-hi)"
+                  className="h-6 w-6 shrink-0 accent-(--accent-hi)"
                   checked={value}
                   onChange={(event) => {
                     set(event.target.checked);

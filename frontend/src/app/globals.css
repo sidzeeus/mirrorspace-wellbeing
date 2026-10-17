@@ -15,9 +15,9 @@
   --line-strong: rgb(255 255 255 / 0.26);
   --moon: #f5f3ff;
   --moon-dim: #b6b2d2;
-  --lumen: #9a90ff;
-  --lumen-hi: #c6c1ff;
-  --on-lumen: #120f2e;
+  --accent: #9a90ff;
+  --accent-hi: #c6c1ff;
+  --on-accent: #120f2e;
   --calm: #86dcc8;
   --warm: #f2c078;
   --care: #f4a7b6;
@@ -37,16 +37,16 @@
   --line-strong: rgb(24 22 46 / 0.3);
   --moon: #18162e;
   --moon-dim: #52506c;
-  --lumen: #4a41c9;
-  --lumen-hi: #2b2670;
-  --on-lumen: #ffffff;
+  --accent: #4a41c9;
+  --accent-hi: #2b2670;
+  --on-accent: #ffffff;
   --calm: #0f6f60;
   --warm: #8a5a00;
   --care: #a8324a;
   --on-care: #ffffff;
   --glow: rgb(74 65 201 / 0.14);
   --dot: 43 38 112;
-  --lumen-l: 38%;
+  --accent-l: 38%;
   --aurora: #f7f5fc 32%, #ece6ff 46%, #d9ceff 57%, #ecd2f5 68%, #f8d8e6 78%, #cdeee7 89%, #dcd8ff 100%;
 }
 
@@ -58,9 +58,9 @@
   --color-line-strong: var(--line-strong);
   --color-moon: var(--moon);
   --color-dim: var(--moon-dim);
-  --color-lumen: var(--lumen);
-  --color-lumen-hi: var(--lumen-hi);
-  --color-on-lumen: var(--on-lumen);
+  --color-accent: var(--accent);
+  --color-accent-hi: var(--accent-hi);
+  --color-on-accent: var(--on-accent);
   --color-calm: var(--calm);
   --color-warm: var(--warm);
   --color-care: var(--care);
@@ -108,14 +108,14 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid var(--lumen-hi);
+  outline: 2px solid var(--accent-hi);
   outline-offset: 3px;
   border-radius: 8px;
 }
 
 ::selection {
-  background: var(--lumen);
-  color: var(--on-lumen);
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 @layer components {
@@ -155,7 +155,7 @@ body {
     background: color-mix(in srgb, var(--moon) 8%, transparent);
   }
   .footer-link:hover {
-    color: var(--lumen-hi);
+    color: var(--accent-hi);
     text-decoration: underline;
     text-underline-offset: 4px;
   }
@@ -241,8 +241,8 @@ body {
     color: var(--ink);
   }
   .btn-primary:hover:not(:disabled) {
-    background: var(--lumen-hi);
-    color: var(--on-lumen);
+    background: var(--accent-hi);
+    color: var(--on-accent);
   }
   .btn-quiet {
     border: 1px solid var(--line-strong);
@@ -261,7 +261,7 @@ body {
     min-height: 44px;
     padding: 0.5rem 0.25rem;
     border-radius: 6px;
-    color: var(--lumen-hi);
+    color: var(--accent-hi);
     text-decoration: underline;
     text-underline-offset: 4px;
   }
@@ -283,7 +283,7 @@ body {
   }
 
   .link {
-    color: var(--lumen-hi);
+    color: var(--accent-hi);
     text-decoration: underline;
     text-underline-offset: 4px;
   }

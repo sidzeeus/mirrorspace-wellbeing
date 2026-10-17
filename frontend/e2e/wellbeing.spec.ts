@@ -42,17 +42,17 @@ test("sign in, check in, see the trend", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Skip for now" })).toBeVisible();
 
   // The mood slider changes Sushi's face, with the same information in words.
-  const lumen = page.locator("main [data-cat-face][role='img']");
-  await expect(lumen).toHaveAttribute("aria-label", /waits quietly/);
+  const figure = page.locator("main [data-cat-face][role='img']");
+  await expect(figure).toHaveAttribute("aria-label", /waits quietly/);
   const slider = page.getByRole("slider", { name: "Mood" });
   await slider.focus();
   await page.keyboard.press("End");
   await expect(slider).toHaveAttribute("aria-valuetext", "5: Very high");
-  await expect(lumen).toHaveAttribute("aria-label", /smiles and hops/);
-  await expect(lumen).toHaveAttribute("data-expression", "happy");
+  await expect(figure).toHaveAttribute("aria-label", /smiles and hops/);
+  await expect(figure).toHaveAttribute("data-expression", "happy");
   await page.keyboard.press("Home");
-  await expect(lumen).toHaveAttribute("aria-label", /a little sad/);
-  await expect(lumen).toHaveAttribute("data-expression", "sad");
+  await expect(figure).toHaveAttribute("aria-label", /a little sad/);
+  await expect(figure).toHaveAttribute("data-expression", "sad");
   await page.keyboard.press("ArrowRight");
   await page.keyboard.press("ArrowRight");
   await page.keyboard.press("ArrowRight");

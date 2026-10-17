@@ -203,13 +203,13 @@ function CheckInForm({ saved }: { saved: CheckIn | null }) {
 
       <Panel className="mx-auto mb-6 w-44 p-4 sm:w-52">
         <CatFace
-          label={t("lumen", { state: t(`lumenStates.${mood ?? "unset"}`) })}
+          label={t("face", { state: t(`faceStates.${mood ?? "unset"}`) })}
           expression={MOOD_FACES[mood ?? 0] ?? "neutral"}
           hop={mood === 5}
         />
       </Panel>
       <p className="sr-only" aria-live="polite">
-        {mood === null ? "" : t(`lumenStates.${mood}`)}
+        {mood === null ? "" : t(`faceStates.${mood}`)}
       </p>
 
       <div className="space-y-8">

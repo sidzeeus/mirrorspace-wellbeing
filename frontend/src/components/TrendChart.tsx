@@ -70,7 +70,7 @@ export function TrendChart({
         <polyline
           points={points.map((point) => `${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" ")}
           fill="none"
-          stroke="var(--lumen)"
+          stroke="var(--accent)"
           strokeOpacity="0.45"
           strokeWidth="1.5"
           strokeLinejoin="round"
@@ -79,7 +79,7 @@ export function TrendChart({
       {points.map((point) => (
         <g key={point.date}>
           <circle cx={point.x} cy={point.y} r="9" fill="var(--glow)" />
-          <circle cx={point.x} cy={point.y} r="4" fill="var(--lumen-hi)" />
+          <circle cx={point.x} cy={point.y} r="4" fill="var(--accent-hi)" />
         </g>
       ))}
     </svg>

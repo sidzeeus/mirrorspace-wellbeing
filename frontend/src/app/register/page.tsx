@@ -105,7 +105,7 @@ export default function RegisterPage() {
           <label className="flex min-h-11 cursor-pointer items-start gap-3">
             <input
               type="checkbox"
-              className="mt-1 h-6 w-6 shrink-0 accent-(--lumen-hi)"
+              className="mt-1 h-6 w-6 shrink-0 accent-(--accent-hi)"
               aria-describedby="age-hint"
               aria-invalid={errors.age_confirmed ? true : undefined}
               {...form.register("age_confirmed")}

@@ -103,7 +103,7 @@ export default function HomePage() {
           {t("week.title")}
         </h2>
         <Panel className="mb-4 overflow-hidden">
-          <PawWeek lit={lit} label={t("week.lumen", { count, days })} />
+          <PawWeek lit={lit} label={t("week.paws", { count, days })} />
           <ol className="data grid grid-cols-7 gap-1 border-t border-line px-2 text-center text-dim" aria-hidden="true">
             {dates.map((date) => (
               <li key={date} className="py-2">

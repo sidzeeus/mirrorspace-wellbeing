@@ -67,12 +67,12 @@ export function Slider({
         onValueChange={([next]) => next !== undefined && onChange(next)}
       >
         <RadixSlider.Track className="relative h-1 grow rounded-full bg-line-strong">
-          <RadixSlider.Range className="absolute h-full rounded-full bg-lumen" />
+          <RadixSlider.Range className="absolute h-full rounded-full bg-accent" />
         </RadixSlider.Track>
         <RadixSlider.Thumb
           aria-labelledby={id}
           aria-valuetext={valueText}
-          className="block h-7 w-7 rounded-full border-2 border-ink bg-lumen-hi"
+          className="block h-7 w-7 rounded-full border-2 border-ink bg-accent-hi"
         />
       </RadixSlider.Root>
       {minLabel || maxLabel ? (
@@ -107,9 +107,9 @@ export function Toggle({
         id={id}
         checked={checked}
         onCheckedChange={onChange}
-        className="relative h-8 w-14 shrink-0 rounded-full border border-line-strong bg-surface data-[state=checked]:border-lumen-hi data-[state=checked]:bg-lumen-hi"
+        className="relative h-8 w-14 shrink-0 rounded-full border border-line-strong bg-surface data-[state=checked]:border-accent-hi data-[state=checked]:bg-accent-hi"
       >
-        <RadixSwitch.Thumb className="block h-6 w-6 translate-x-1 rounded-full bg-dim transition-transform data-[state=checked]:translate-x-7 data-[state=checked]:bg-on-lumen" />
+        <RadixSwitch.Thumb className="block h-6 w-6 translate-x-1 rounded-full bg-dim transition-transform data-[state=checked]:translate-x-7 data-[state=checked]:bg-on-accent" />
       </RadixSwitch.Root>
     </div>
   );
@@ -152,7 +152,7 @@ export function ScaleControl({
               onClick={() => onChange(selected ? null : option.value)}
               className={`data h-12 grow rounded-[14px] border ${
                 selected
-                  ? "border-lumen-hi bg-lumen-hi text-on-lumen"
+                  ? "border-accent-hi bg-accent-hi text-on-accent"
                   : "border-line-strong bg-surface text-moon hover:bg-raised"
               }`}
             >
@@ -220,7 +220,7 @@ export function Tabs({
           <RadixTabs.Trigger
             key={tab.id}
             value={tab.id}
-            className="-mb-px min-h-11 border-b-2 border-transparent px-4 text-dim data-[state=active]:border-lumen-hi data-[state=active]:text-moon"
+            className="-mb-px min-h-11 border-b-2 border-transparent px-4 text-dim data-[state=active]:border-accent-hi data-[state=active]:text-moon"
           >
             {tab.title}
           </RadixTabs.Trigger>

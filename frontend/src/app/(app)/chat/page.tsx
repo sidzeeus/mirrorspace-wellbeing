@@ -423,7 +423,7 @@ export default function ChatPage() {
         {turns.map((turn) =>
           turn.role === "user" ? (
             <div key={turn.id} className="flex justify-end" data-turn="user">
-              <div className="max-w-[85%] rounded-3xl rounded-br-lg bg-lumen-hi px-4 py-2.5 text-on-lumen">
+              <div className="max-w-[85%] rounded-3xl rounded-br-lg bg-accent-hi px-4 py-2.5 text-on-accent">
                 <span className="sr-only">{t("you")}: </span>
                 <p className="whitespace-pre-wrap">{turn.text}</p>
               </div>
@@ -548,7 +548,7 @@ export default function ChatPage() {
         noValidate
         className="sticky bottom-[8.5rem] z-20 lg:bottom-4"
       >
-        <div className="glass flex items-end gap-1 rounded-3xl p-1.5 pl-4 focus-within:ring-2 focus-within:ring-lumen-hi">
+        <div className="glass flex items-end gap-1 rounded-3xl p-1.5 pl-4 focus-within:ring-2 focus-within:ring-accent-hi">
           <label htmlFor={inputId} className="sr-only">
             {t("input")}
           </label>

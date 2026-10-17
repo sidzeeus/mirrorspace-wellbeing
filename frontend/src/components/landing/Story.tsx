@@ -1,6 +1,6 @@
 import { Pet, type PetMood, type Species } from "@/components/pet/Pet";
 
-export type StoryStep = { title: string; body: string; lumen: string };
+export type StoryStep = { title: string; body: string; pet: string };
 
 const PETS: readonly { species: Species; mood: PetMood; companion?: boolean }[] = [
   { species: "cat", mood: "listening" },
@@ -20,7 +20,7 @@ export function Story({ steps }: { steps: readonly StoryStep[] }) {
         return (
           <li key={step.title} className="frame flex flex-col p-6">
             <Pet
-              label={step.lumen}
+              label={step.pet}
               species={pet.species}
               mood={pet.mood}
               companion={pet.companion}
