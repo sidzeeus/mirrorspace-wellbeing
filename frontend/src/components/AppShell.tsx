@@ -67,7 +67,6 @@ const ICONS: Record<string, ReactNode> = {
 const NAV = [
   { key: "home", href: "/home" },
   { key: "checkIn", href: "/check-in" },
-  { key: "vent", href: "/vent" },
   { key: "chat", href: "/chat" },
   { key: "patterns", href: "/patterns" },
   { key: "episodes", href: "/episodes" },

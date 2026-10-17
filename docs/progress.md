@@ -426,3 +426,7 @@ Unfinished or not verified
 - Sushi is the logo and mascot, with seven expressions; on Vent and check-in the face follows the reaction or mood; on the sign-in cards Sushi reacts to which field you are in (B84).
 - Small animal pairs above each section heading (a mouse joins the cat, bunny and fox).
 - Light theme: rising, popping bubbles. Night theme: larger stars.
+
+### 2026-10-17: Check in and Vent in one section
+
+- Check in now has two tabs, Quick check-in and Vent (B85). Vent is out of the navigation; old links redirect.

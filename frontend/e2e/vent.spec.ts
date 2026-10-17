@@ -72,7 +72,7 @@ test("the check-in links to Vent but stays taps only", async ({ page }) => {
   await signIn(page, createUser());
   await page.goto("/check-in");
   await page.getByRole("link", { name: "Write it out in Vent" }).click();
-  await expect(page).toHaveURL(/\/vent$/);
+  await expect(page).toHaveURL(/\/check-in\?tab=vent$/);
 });
 
 for (const theme of ["night", "daybreak"] as const) {

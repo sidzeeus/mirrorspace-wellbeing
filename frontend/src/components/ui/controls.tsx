@@ -202,12 +202,19 @@ export function Dialog({
 export function Tabs({
   label,
   tabs,
+  value,
+  onValueChange,
 }: {
   label: string;
   tabs: readonly { id: string; title: string; content: ReactNode }[];
+  /** The open tab, when the page keeps track of it (for example in the address). */
+  value?: string;
+  onValueChange?: (value: string) => void;
 }) {
   return (
-    <RadixTabs.Root defaultValue={tabs[0]?.id}>
+    <RadixTabs.Root
+      {...(value !== undefined ? { value, onValueChange } : { defaultValue: tabs[0]?.id })}
+    >
       <RadixTabs.List aria-label={label} className="mb-6 flex gap-1 border-b border-line">
         {tabs.map((tab) => (
           <RadixTabs.Trigger

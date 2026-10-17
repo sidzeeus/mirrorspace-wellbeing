@@ -2,11 +2,13 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
 import { CatFace, type Expression } from "@/components/pet/CatFace";
-import { ScaleControl, Slider } from "@/components/ui/controls";
+import { ScaleControl, Slider, Tabs } from "@/components/ui/controls";
+import { VentPanel } from "@/components/vent/VentPanel";
 import { Button, Notice, Panel, buttonClass } from "@/components/ui/primitives";
 import { api } from "@/lib/api";
 import { SCALE } from "@/lib/constants";
@@ -46,14 +48,46 @@ function VentPrompt() {
   return (
     <p className="mt-6 text-dim">
       {t("ventPrompt")}{" "}
-      <Link href="/vent" className="link inline-flex min-h-11 items-center">
+      <Link href="/check-in?tab=vent" className="link inline-flex min-h-11 items-center">
         {t("ventLink")}
       </Link>
     </p>
   );
 }
 
+/**
+ * Check in: two tabs. "Quick check-in" is the four optional taps; "Vent" is the free
+ * writing space with Sushi. The open tab is kept in the address (?tab=vent), so links,
+ * reloads and the back button land on the right one.
+ */
 export default function CheckInPage() {
+  return (
+    <Suspense>
+      <CheckInTabs />
+    </Suspense>
+  );
+}
+
+function CheckInTabs() {
+  const t = useTranslations("checkin");
+  const router = useRouter();
+  const tab = useSearchParams().get("tab") === "vent" ? "vent" : "quick";
+  return (
+    <Tabs
+      label={t("tabs.label")}
+      value={tab}
+      onValueChange={(next) =>
+        router.replace(next === "vent" ? "/check-in?tab=vent" : "/check-in", { scroll: false })
+      }
+      tabs={[
+        { id: "quick", title: t("tabs.quick"), content: <QuickCheckIn /> },
+        { id: "vent", title: t("tabs.vent"), content: <VentPanel /> },
+      ]}
+    />
+  );
+}
+
+function QuickCheckIn() {
   const common = useTranslations("common");
   const me = useMe();
   const today = localDate(me.data?.timezone ?? "UTC");
