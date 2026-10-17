@@ -67,7 +67,8 @@ CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS")
 
 # --- Email ------------------------------------------------------------------------
 
-EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
+EMAIL_BACKEND = env("EMAIL_BACKEND", default="apps.notifications.backends.CappedSMTPBackend")
+EMAIL_DAILY_LIMIT = env.int("EMAIL_DAILY_LIMIT", default=200)
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 
 # --- API --------------------------------------------------------------------------

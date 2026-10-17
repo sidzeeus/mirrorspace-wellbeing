@@ -265,6 +265,10 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
 EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
 EMAIL_TIMEOUT = 10
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="no-reply@localhost")
+# For apps.notifications.backends.BrevoBackend (email over HTTPS). A real secret.
+BREVO_API_KEY = env("BREVO_API_KEY", default="")
+# Most emails sent in one day across the whole app, by the capped backends. 0: no limit.
+EMAIL_DAILY_LIMIT = env.int("EMAIL_DAILY_LIMIT", default=0)
 
 # --- Django REST Framework --------------------------------------------------------
 
