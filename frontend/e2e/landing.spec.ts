@@ -144,7 +144,7 @@ test.describe("landing page", () => {
     // The pets are plain SVG drawn on the server, so they are there without JavaScript.
     expect(await page.locator("[data-pet] svg").count()).toBeGreaterThanOrEqual(4);
     // The still aurora is plain CSS, so it is there without JavaScript too.
-    expect(await page.evaluate(() => getComputedStyle(document.body).backgroundImage)).toContain(
+    expect(await page.evaluate(() => getComputedStyle(document.documentElement).backgroundImage)).toContain(
       "radial-gradient",
     );
     await expect(page.getByRole("heading", { name: "Real help", exact: true })).toBeVisible();

@@ -71,7 +71,11 @@
 }
 
 html {
-  background: var(--ink);
+  /* The still aurora: what people see without JavaScript, in low-data mode, and for
+     the moment before the breathing one fades in. It is painted on the root element
+     so that the moving aurora and the stars (z-index -10) sit above it, not under the
+     body. */
+  background: radial-gradient(105% 115% at 50% 20%, var(--aurora)) fixed, var(--ink);
   color: var(--moon);
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
@@ -96,9 +100,6 @@ body {
   text-rendering: optimizeLegibility;
   /* Long names and long words wrap instead of pushing the page sideways. */
   overflow-wrap: anywhere;
-  /* The still aurora: what people see without JavaScript, in low-data mode, and for
-     the moment before the breathing one fades in on top. */
-  background: radial-gradient(105% 115% at 50% 20%, var(--aurora)) fixed;
 }
 
 /* Indian scripts need more vertical room and must never be clipped. */
@@ -289,6 +290,41 @@ body {
 
   .page-fade {
     animation: page-fade 260ms ease both;
+  }
+}
+
+/*
+  Stars (components/AuroraBackground.tsx): only in the dark sky at the top, fading out
+  where the aurora begins. Night theme only. They hold still with reduced motion
+  (the global rule below) and on Support.
+*/
+.stars {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 38%, transparent 66%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 38%, transparent 66%);
+}
+:root[data-theme="daybreak"] .stars {
+  display: none;
+}
+.star {
+  position: absolute;
+  border-radius: 999px;
+  background: #fffaf0;
+  box-shadow: 0 0 4px 1px rgb(255 250 240 / 0.35);
+  opacity: var(--star-dim, 0.6);
+  animation: star-twinkle ease-in-out infinite;
+}
+.stars-still .star {
+  animation: none;
+}
+@keyframes star-twinkle {
+  0%,
+  100% {
+    opacity: var(--star-dim, 0.6);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.12;
+    transform: scale(0.7);
   }
 }
 

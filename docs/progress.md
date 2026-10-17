@@ -415,3 +415,8 @@ Done
 
 Unfinished or not verified
 - Trigger matching is exact words, case-insensitive; it will miss misspellings and synonyms.
+
+### 2026-10-17: Stars
+
+- Small twinkling stars in the dark upper sky on every page (night theme only), fading out where the aurora begins; still on Support and with reduced motion.
+- Fixed: the still gradient was painted on `<body>`, which covered the breathing aurora. It is now on `<html>`, so the moving aurora and the stars show.
