@@ -1,6 +1,6 @@
 {
   "_review": "NEEDS_HUMAN_REVIEW: placeholder wording for the chat screen, including the voice privacy note. The banner, limits and voice notice must be reviewed by a clinician and a lawyer (docs/review-needed.md R9, R12, R28).",
-  "title": "Chat",
+  "title": "Mira",
   "banner": "I am an AI, not a therapist.",
   "can": "What I can do",
   "cannot": "What I cannot do",
@@ -8,15 +8,15 @@
   "limits": "Replies are short. It can talk things through with you, but it is an AI and can get things wrong. There is a daily limit on AI replies.",
   "supportHint": "If things feel urgent, use Support. It is always at the top of the screen.",
   "openSupport": "Open Support",
-  "empty": "Say hello, or tell me what is on your mind. You can type or tap Talk.",
+  "empty": "What's on your mind? Type, tap the mic, or pick one of these.",
   "you": "You",
   "ai": "AI reply",
   "fixed": "Fixed reply, not written by AI",
   "sources": "Based on",
   "input": "Your message",
-  "inputHint": "Up to {max} characters. Please do not include names or details that identify other people.",
+  "inputHint": "Enter to send, Shift+Enter for a new line.",
   "send": "Send message",
-  "sending": "Waiting for a reply",
+  "sending": "Mira is typing",
   "tooLong": "Shorten your message to {max} characters or fewer.",
   "helpful": "Helpful",
   "notHelpful": "Not helpful",
@@ -43,7 +43,7 @@
     "title": "Voice",
     "talk": "Talk",
     "stopListening": "Stop listening",
-    "listening": "Listening. Speak, then pause; your words are sent when you stop.",
+    "listening": "Listening… pause when you're done",
     "stopSpeaking": "Stop speaking",
     "readAloud": "Read every reply aloud",
     "readAloudHint": "Replies to anything you say with Talk are always read aloud. Every reply is also shown as text.",
@@ -55,5 +55,17 @@
       "network": "The speech service could not be reached. You can type instead.",
       "other": "Talk stopped unexpectedly. You can try again or type instead."
     }
-  }
+  },
+  "subtitle": "Your AI companion",
+  "aiLine": "Mira is an AI, not a therapist. Nobody monitors this chat. In an emergency, use SOS Support.",
+  "about": "About this chat",
+  "settings": "Chat settings",
+  "greeting": "Hi, I'm Mira.",
+  "suggestions": {
+    "stressed": "I'm feeling stressed",
+    "sleep": "I can't sleep",
+    "lonely": "I feel a bit lonely",
+    "talk": "I just want to talk"
+  },
+  "placeholder": "Message Mira"
 }

@@ -473,6 +473,23 @@ body {
   }
 }
 
+/* The three dots while Mira is typing. */
+.typing-dot {
+  animation: typing-dot 1.2s ease-in-out infinite;
+}
+@keyframes typing-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
 @keyframes page-fade {
   from {
     opacity: 0;

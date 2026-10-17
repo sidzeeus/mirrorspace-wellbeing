@@ -38,16 +38,19 @@ test("chat says it is an AI, answers from reviewed material, and shows its sourc
   await signIn(page, email);
   await page.goto("/chat");
 
-  // The banner comes before any message.
+  // One line says it is an AI before any message; the full disclosure is one tap away.
   const banner = page.locator("[data-chat-banner]");
+  await expect(banner).toContainText("Mira is an AI, not a therapist. Nobody monitors this chat.");
+  await banner.getByRole("button", { name: "About this chat" }).click();
   await expect(banner.getByText("I am an AI, not a therapist, a counsellor or a doctor.")).toBeVisible();
   await expect(banner.getByText("I cannot diagnose, advise on medication or treatment")).toBeVisible();
-  await expect(banner.getByText("Nobody monitors this chat")).toBeVisible();
+  await expect(banner.locator("dd").getByText("Nobody monitors this chat")).toBeVisible();
   await expect(banner.getByText("Nothing you write here is saved unless you turn on saving.")).toBeVisible();
   await expect(banner.getByText("There is a daily limit on AI replies.")).toBeVisible();
   // Support never goes away.
   await expect(page.locator("[data-support-link]:visible")).toHaveCount(1);
   // Saving is off unless the person turns it on.
+  await page.getByRole("button", { name: "Chat settings" }).click();
   await expect(page.getByRole("switch", { name: "Save this conversation" })).not.toBeChecked();
   await expectAccessible(page);
 
@@ -117,6 +120,7 @@ test("saving is opt-in and can be deleted", async ({ page }) => {
   const email = createUser();
   await signIn(page, email);
   await page.goto("/chat");
+  await page.getByRole("button", { name: "Chat settings" }).click();
   await page.getByRole("switch", { name: "Save this conversation" }).click();
   await expect(page.getByText("Saved to your account, encrypted, for 30 days.")).toBeVisible();
 
@@ -181,6 +185,7 @@ test("voice: Talk sends what was said, and the reply is read aloud", async ({ pa
   await signIn(page, createUser());
   await page.goto("/chat");
 
+  await page.getByRole("button", { name: "Chat settings" }).click();
   await expect(page.locator("[data-voice-settings]")).toContainText("This app never records or keeps audio");
   await page.locator("[data-voice-talk]").click();
   const answer = page.locator("[data-turn='answer']").first();
@@ -190,4 +195,19 @@ test("voice: Talk sends what was said, and the reply is read aloud", async ({ pa
     .poll(() => page.evaluate(() => ((window as unknown as Record<string, string[]>).__spoken ?? []).join(" ")))
     .not.toBe("");
   await expectAccessible(page);
+});
+
+test("Enter sends a message and Shift+Enter starts a new line", async ({ page }) => {
+  await signIn(page, createUser());
+  await page.goto("/chat");
+  await expect(page.getByText("Hi, I'm Mira.")).toBeVisible();
+  const box = page.getByLabel("Your message");
+  await box.fill("first line");
+  await box.press("Shift+Enter");
+  await box.pressSequentially("second line");
+  await expect(box).toHaveValue(/^first line\nsecond line$/);
+  await box.press("Enter");
+  await expect(box).toHaveValue("");
+  await expect(page.locator("[data-turn='user']")).toContainText("second line");
+  await expect(page.locator("[data-turn='answer']").first()).toBeVisible({ timeout: 90_000 });
 });

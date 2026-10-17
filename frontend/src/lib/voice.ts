@@ -119,6 +119,59 @@ function sentences(text: string): string[] {
   return (text.match(/[^.!?\n]+[.!?]*/g) ?? [text]).map((part) => part.trim()).filter(Boolean);
 }
 
+/*
+  Mira's voice: soft and feminine. Devices offer different voices, so these are tried
+  in order, natural-sounding ones first; the first one this device has is used.
+*/
+const PREFERRED_VOICES = [
+  // Microsoft natural voices (Edge, Windows 11)
+  "Neerja",
+  "Swara",
+  "Aria",
+  "Jenny",
+  "Ava",
+  "Emma",
+  "Sonia",
+  "Libby",
+  // Google voices (Chrome)
+  "Google UK English Female",
+  "Google US English",
+  "Google हिन्दी",
+  // Apple voices (Safari, iOS, macOS)
+  "Samantha",
+  "Veena",
+  "Lekha",
+  "Karen",
+  "Moira",
+  "Tessa",
+  // Older Windows voices
+  "Heera",
+  "Kalpana",
+  "Zira",
+  "Hazel",
+  "Susan",
+];
+const FEMALE_HINT = /female|woman|girl/i;
+
+function pickVoice(voices: SpeechSynthesisVoice[], lang: string): SpeechSynthesisVoice | null {
+  const base = lang.split("-")[0]!;
+  const inLanguage = voices.filter((voice) => voice.lang.replace("_", "-").startsWith(base));
+  for (const name of PREFERRED_VOICES) {
+    const exact = inLanguage.find((voice) => voice.lang === lang && voice.name.includes(name));
+    if (exact) return exact;
+  }
+  for (const name of PREFERRED_VOICES) {
+    const found = inLanguage.find((voice) => voice.name.includes(name));
+    if (found) return found;
+  }
+  return (
+    inLanguage.find((voice) => FEMALE_HINT.test(voice.name)) ??
+    inLanguage.find((voice) => voice.lang === lang) ??
+    inLanguage[0] ??
+    null
+  );
+}
+
 export function useSpeechSynthesis(lang: string) {
   const mounted = useMounted();
   const supported = mounted && typeof window !== "undefined" && "speechSynthesis" in window;
@@ -135,18 +188,16 @@ export function useSpeechSynthesis(lang: string) {
       if (!supported || !text.trim()) return;
       const synth = window.speechSynthesis;
       synth.cancel();
-      const voices = synth.getVoices();
-      const base = lang.split("-")[0]!;
-      const voice =
-        voices.find((v) => v.lang === lang) ?? voices.find((v) => v.lang.startsWith(base)) ?? null;
+      const voice = pickVoice(synth.getVoices(), lang);
       const parts = sentences(text);
       parts.forEach((part, index) => {
         const utterance = new SpeechSynthesisUtterance(part);
         utterance.lang = voice?.lang ?? lang;
         if (voice) utterance.voice = voice;
-        // A little slower and lower than the default: calmer to listen to.
-        utterance.rate = 0.95;
-        utterance.pitch = 0.95;
+        // Unhurried and soft: a touch slower, a touch higher, a little quieter.
+        utterance.rate = 0.92;
+        utterance.pitch = 1.08;
+        utterance.volume = 0.9;
         if (index === 0) utterance.onstart = () => setSpeaking(true);
         if (index === parts.length - 1) {
           utterance.onend = () => setSpeaking(false);
@@ -157,6 +208,16 @@ export function useSpeechSynthesis(lang: string) {
     },
     [lang, supported],
   );
+
+  // Chrome fills the voice list a moment after load; asking once warms it up, so the
+  // chosen voice is ready by the first reply.
+  useEffect(() => {
+    if (!supported) return;
+    window.speechSynthesis.getVoices();
+    const ready = () => window.speechSynthesis.getVoices();
+    window.speechSynthesis.addEventListener?.("voiceschanged", ready);
+    return () => window.speechSynthesis.removeEventListener?.("voiceschanged", ready);
+  }, [supported]);
 
   // Stop talking when the person leaves the screen.
   useEffect(() => () => (supported ? window.speechSynthesis.cancel() : undefined), [supported]);

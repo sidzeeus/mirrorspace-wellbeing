@@ -129,7 +129,7 @@ class OllamaProvider:
             "stream": False,
             # Keep the model loaded between messages, so replies after the first are quick.
             "keep_alive": "30m",
-            "options": {"temperature": 0.7, "num_predict": settings.CHAT_MAX_OUTPUT_TOKENS},
+            "options": {"temperature": 0.8, "num_predict": settings.CHAT_MAX_OUTPUT_TOKENS},
         }
         base = settings.OLLAMA_URL.rstrip("/")
         if not base.startswith(("http://", "https://")):

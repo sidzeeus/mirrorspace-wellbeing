@@ -383,3 +383,14 @@ Unfinished or not verified
 - Voice has been tested with stand-ins, not with a real microphone in this session.
 - A local model is weaker than a large hosted one at following every rule. The output check still discards replies that diagnose or mention medication, but real replies need clinical review (R24).
 - Ollama does not run on Vercel or other serverless hosts.
+
+### 2026-10-17: Cleaner, friendlier chat
+
+Done
+- Chat screen rebuilt like a messaging app (B77): Mira's bubbles on the left with a cat avatar, yours on the right, typing dots, suggestion chips, one message box (Enter sends, Shift+Enter new line, mic inside). Disclosure is one line plus "About this chat"; saving and voice options behind a settings button.
+- Mira's instructions rewritten for a warm, casual tone with examples; she no longer invents a day of her own. Checked with the real local model.
+- Soft feminine voice chosen from a ranked list (B78).
+- Chat browser tests updated, plus a new test for Enter and Shift+Enter: 6 pass.
+
+Unfinished or not verified
+- Which voice is used depends on the device; not listened to on real devices in this session.
