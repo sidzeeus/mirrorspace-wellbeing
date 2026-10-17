@@ -145,3 +145,28 @@ The owner asked for the public pages to follow the reference images much more cl
 - **Headline** sits low and left on the stage, with the actions low and right.
 
 What did not change: both themes are first-class, text contrast meets WCAG 2.2 AA, touch targets are 44px, and motion is optional. A scene is a still image first. The canvas shimmer starts only when motion is allowed, pauses off screen, and stops itself on a slow device. Low-bandwidth mode downloads no scene image at all. The Lumen is unchanged inside the app, where it still carries meaning (a breath, a week).
+
+## Revision, 2026-10-17: Aurora
+
+Replaces the "Scenes" revision above, at the owner's request (decision B72).
+
+- **Background.** A deep night sky with an aurora at its edges: a radial gradient in indigo, violet, plum and teal (`--aurora` in `globals.css`). It is painted by CSS on `<body>`, and `components/AuroraBackground.tsx` fades the owner's `AnimatedGradientBackground` in on top so it slowly breathes. In daybreak it becomes pale lilac, rose and mint.
+- **Stillness.** The aurora never moves on Support or the offline page, with reduced motion, or in low-data mode. Without JavaScript the still CSS version shows.
+- **Surfaces.** Content sits on frosted glass: `.frame` and `.glass` are translucent, blurred and rounded (20px). Where the browser cannot blur they are solid.
+- **Controls.** Buttons are pills; the primary one is light on dark. Inputs are rounded (14px). The public header and the signed-in navigation float as glass, rounded bars.
+- **Landing.** A centred hero: the Lumen gathers into a sphere above a small tag, the headline, two buttons and the limits line. The story is three glass cards; the closing section is one glass panel.
+- **Typography.** Hanken Grotesk throughout; the mono face is kept only for numbers such as phone numbers and dates.
+
+What did not change: both themes are first-class, text contrast meets WCAG 2.2 AA (the gradient colours are deep enough for light text, and pale enough for dark text in daybreak), touch targets are 44px, and the Lumen still carries meaning inside the app.
+
+## Revision, 2026-10-17: Pets
+
+The Lumen is retired (decision B73). In its place are three pets seen from behind, after the cat in the owner's reference: a pink cat, a lilac bunny and an orange fox, each a few SVG shapes in `components/pet/Pet.tsx`.
+
+- **Always:** they breathe, twitch an ear now and then, and sway a tail.
+- **Moods** (`mood` prop): `listening` tilts the head; `heavy` lies low with ears down; `storm` puffs up and lashes its tail, then settles; `racing` breathes slowly and deeply; `lighter` hops with tail up; `steady` sits still and close; `alone` brings a small companion to sit beside it.
+- **Guided breathing** (`breathPhase`): the body grows and settles exactly with the exercise.
+- **Where:** landing hero (the cat) and story cards; a fox on top of the sign-in card; a cat greeting on Home; the check-in pet; the exercise bunny; the Vent cat. The week on Home is seven paw prints, filled for days with a check-in.
+- **Not on Support.** That screen stays still.
+
+Every animation is CSS, so the global reduced-motion rule freezes all of them, and the SVG renders on the server, so the pets are there without JavaScript.

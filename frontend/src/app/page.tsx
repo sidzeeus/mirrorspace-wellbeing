@@ -3,8 +3,8 @@ import { getTranslations } from "next-intl/server";
 
 import { HelplineStrip } from "@/components/landing/HelplineStrip";
 import { Story } from "@/components/landing/Story";
+import { Pet } from "@/components/pet/Pet";
 import { PublicHeader } from "@/components/PublicHeader";
-import { Scene } from "@/components/scene/Scene";
 import { buttonClass } from "@/components/ui/primitives";
 
 const ITEMS = ["a", "b", "c", "d"] as const;
@@ -22,85 +22,66 @@ export default async function LandingPage() {
       <PublicHeader />
 
       <main id="main">
-        {/* The stage: one picture of held light, with the promise set low and left. */}
-        <section className="relative isolate flex min-h-[calc(100svh-4rem)] flex-col overflow-hidden border-b border-line">
-          <Scene scene="held" label={t("hero.lumen")} className="absolute! inset-0 -z-20" />
-          <div aria-hidden="true" className="absolute inset-y-0 left-1/2 -z-10 w-px bg-line" />
-          <div aria-hidden="true" className="absolute inset-x-0 top-[58%] -z-10 h-px bg-line" />
-
-          <div className="mt-auto bg-gradient-to-t from-ink via-ink/80 to-transparent pt-16">
-            <div className="mx-auto grid max-w-7xl gap-8 px-5 pb-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-16 lg:px-10">
-              <div className="marks max-w-3xl">
-                <p className="label mb-5 text-dim">{t("hero.eyebrow")}</p>
-                <h1 className="hero-title mb-5">
-                  <span className="block">{t("hero.lineOne")}</span>
-                  <span className="block text-dim">{t("hero.lineTwo")}</span>
-                </h1>
-                <p className="prose-width text-dim">{t("hero.body")}</p>
-              </div>
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-3 lg:pb-1">
-                <Link href="/register" className={buttonClass("primary")}>
-                  {t("hero.create")}
-                </Link>
-                <Link href="/resources" className={buttonClass("quiet")}>
-                  {t("hero.helplines")}
-                </Link>
-              </div>
-            </div>
-            <div className="border-t border-line">
-              <p className="label mx-auto max-w-7xl px-5 py-4 text-dim lg:px-10">
-                {t("hero.limits")}
-              </p>
-            </div>
+        {/* The stage: one gathering light, and the promise beneath it. */}
+        <section className="mx-auto flex min-h-[calc(100svh-6rem)] max-w-4xl flex-col items-center justify-center px-5 pb-16 pt-4 text-center">
+          <Pet label={t("hero.lumen")} species="cat" className="mb-2 w-36 sm:w-44" />
+          <p className="pill mb-5 text-dim">{t("hero.eyebrow")}</p>
+          <h1 className="display mb-6">
+            <span className="block">{t("hero.lineOne")}</span>
+            <span className="block text-dim">{t("hero.lineTwo")}</span>
+          </h1>
+          <p className="prose-width mx-auto mb-8 text-lg text-dim">{t("hero.body")}</p>
+          <div className="mb-8 flex flex-wrap items-center justify-center gap-3">
+            <Link href="/register" className={buttonClass("primary")}>
+              {t("hero.create")}
+            </Link>
+            <Link href="/resources" className={buttonClass("quiet")}>
+              {t("hero.helplines")}
+            </Link>
           </div>
+          <p className="text-sm text-dim">{t("hero.limits")}</p>
         </section>
 
-        <section aria-labelledby="story-title" className="mx-auto max-w-7xl px-5 lg:px-10">
-          <h2 id="story-title" className="sr-only">
+        <section aria-labelledby="story-title" className="mx-auto max-w-6xl px-5 pb-20">
+          <h2 id="story-title" className="label mb-6 text-center text-dim">
             {t("story.title")}
           </h2>
           <Story steps={steps} />
         </section>
 
-        <section className="mx-auto max-w-7xl px-5 py-24 lg:px-10">
-          <div className="grid border border-line md:grid-cols-2">
-            {(["is", "isNot"] as const).map((column) => (
-              <div
-                key={column}
-                className="border-line p-6 max-md:[&+div]:border-t md:p-12 md:[&+div]:border-l"
-              >
-                <h2 className="label mb-8 text-moon">{t(`${column}.title`)}</h2>
-                <ul>
-                  {ITEMS.map((item) => (
-                    <li
-                      key={item}
-                      className="border-t border-line py-4 text-dim first:border-t-0 first:pt-0"
-                    >
-                      {t(`${column}.items.${item}`)}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+        <section className="mx-auto grid max-w-6xl gap-5 px-5 pb-20 md:grid-cols-2">
+          {(["is", "isNot"] as const).map((column) => (
+            <div key={column} className="frame p-6 md:p-9">
+              <h2 className="h2 mb-6">{t(`${column}.title`)}</h2>
+              <ul>
+                {ITEMS.map((item) => (
+                  <li
+                    key={item}
+                    className="border-t border-line py-4 text-dim first:border-t-0 first:pt-0 last:pb-0"
+                  >
+                    {t(`${column}.items.${item}`)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </section>
 
         <HelplineStrip />
       </main>
 
-      <footer>
-        <Scene scene="terrain" label={t("footer.scene")} className="h-56 sm:h-72" />
-        <div className="mx-auto max-w-7xl px-5 pb-12 lg:px-10">
-          <div className="grid gap-8 pb-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-            <p className="footer-title max-w-3xl">
+      <footer className="mx-auto max-w-6xl px-5 pb-10">
+        <div className="frame p-6 md:p-10">
+          <div className="mb-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <p className="h1 max-w-2xl">
               <span>{t("footer.lineOne")} </span>
               <span className="text-dim">{t("footer.lineTwo")}</span>
             </p>
-            <Link href="/register" className={buttonClass("primary")}>
+            <Link href="/register" className={`${buttonClass("primary")} self-start md:self-auto`}>
               {t("hero.create")}
             </Link>
           </div>
-          <div className="grid gap-10 border-t border-line pt-10 sm:grid-cols-3">
+          <div className="grid gap-8 border-t border-line pt-8 sm:grid-cols-3">
             <nav aria-label={t("footer.explore")}>
               <h2 className="label mb-3 text-dim">{t("footer.explore")}</h2>
               <ul>
@@ -140,7 +121,7 @@ export default async function LandingPage() {
               </ul>
             </div>
           </div>
-          <p className="label mt-12 border-t border-line pt-6 text-dim">{t("footer.prototype")}</p>
+          <p className="mt-8 border-t border-line pt-6 text-sm text-dim">{t("footer.prototype")}</p>
         </div>
       </footer>
     </>

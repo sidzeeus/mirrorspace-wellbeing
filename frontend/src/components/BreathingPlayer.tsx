@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
-import { Lumen } from "@/components/lumen/Lumen";
+import { Pet } from "@/components/pet/Pet";
 import { Toggle } from "@/components/ui/controls";
 import { Button, IconButton, Panel, ProgressRing } from "@/components/ui/primitives";
 import { useLowBandwidth, useReducedMotion } from "@/lib/prefs";
@@ -28,7 +28,7 @@ function tone(context: AudioContext, frequency: number): void {
 }
 
 /**
- * Paced breathing. The Lumen expands on the in-breath and contracts on the out-breath
+ * Paced breathing. A bunny grows on the in-breath and settles on the out-breath
  * at a pace the person can change. With reduced motion or low-bandwidth mode, a
  * progress ring and words carry the same guidance. Sound and vibration are optional
  * and off until chosen. "End" is always available.
@@ -147,14 +147,8 @@ export function BreathingPlayer({
           {started ? <p className="data text-dim">{breath.secondsLeft}</p> : null}
         </ProgressRing>
       ) : (
-        <Panel marks className="w-full max-w-[18rem]">
-          <Lumen
-            label={t("lumen", { state })}
-            breathPhase={started ? phase : 0.2}
-            intensity={0.55 + 0.4 * (started ? phase : 0.2)}
-            density={0.9}
-            hue={0.5}
-          />
+        <Panel className="w-full max-w-[16rem] p-6">
+          <Pet label={t("lumen", { state })} species="bunny" breathPhase={started ? phase : 0.2} />
         </Panel>
       )}
       {useRing ? null : (

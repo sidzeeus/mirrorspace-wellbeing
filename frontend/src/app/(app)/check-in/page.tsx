@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-import { Lumen } from "@/components/lumen/Lumen";
+import { Pet, type PetMood } from "@/components/pet/Pet";
 import { ScaleControl, Slider } from "@/components/ui/controls";
 import { Button, Notice, Panel, UnreviewedBadge, buttonClass } from "@/components/ui/primitives";
 import { api } from "@/lib/api";
@@ -34,9 +34,12 @@ function fromCheckIn(row: CheckIn): Answers {
 
 /**
  * The daily check-in: four optional answers, one screen, done in under twenty
- * seconds. The Lumen shows the mood answer as it changes, with the same information
+ * seconds. A pet shows the mood answer as it changes, with the same information
  * in words for anyone who cannot see it. Skipping is always possible and saves nothing.
  */
+/** How the pet sits for each mood answer, 1 (low) to 5 (good); 0 is unanswered. */
+const MOOD_POSES: readonly PetMood[] = ["idle", "heavy", "steady", "idle", "listening", "lighter"];
+
 /** The check-in stays taps only; anything longer has its own private place. */
 function VentPrompt() {
   const t = useTranslations("checkin");
@@ -105,7 +108,6 @@ function CheckInForm({ saved }: { saved: CheckIn | null }) {
   const levels = SCALE.map((value) => ({ value, name: t(`level.${value}`) }));
   const sleepLevels = SCALE.map((value) => ({ value, name: t(`sleepLevel.${value}`) }));
   const mood = answers.mood;
-  const share = mood === null ? 0 : (mood - 1) / 4;
 
   if (save.isSuccess) {
     const suggestion =
@@ -166,12 +168,11 @@ function CheckInForm({ saved }: { saved: CheckIn | null }) {
       <h1 className="h1 mb-3">{t("title")}</h1>
       <p className="mb-6 text-dim">{saved ? t("editing") : t("intro")}</p>
 
-      <Panel marks className="mx-auto mb-6 w-44 sm:w-56">
-        <Lumen
+      <Panel className="mx-auto mb-6 w-44 p-4 sm:w-52">
+        <Pet
           label={t("lumen", { state: t(`lumenStates.${mood ?? "unset"}`) })}
-          intensity={mood === null ? 0.25 : 0.35 + 0.65 * share}
-          density={mood === null ? 0.15 : 0.3 + 0.7 * share}
-          hue={mood === null ? 0.2 : share}
+          species="cat"
+          mood={MOOD_POSES[mood ?? 0] ?? "idle"}
         />
       </Panel>
       <p className="sr-only" aria-live="polite">

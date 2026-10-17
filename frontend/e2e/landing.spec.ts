@@ -88,12 +88,11 @@ test.describe("landing page", () => {
     await page.goto("/");
 
     await expect(page.locator("canvas")).toHaveCount(0);
-    expect(await page.locator("[data-scene]").count()).toBeGreaterThanOrEqual(5);
-    for (const scene of await page.locator("[data-scene]").all()) {
-      await expect(scene).toHaveAttribute("data-renderer", "still");
+    for (const body of await page.locator(".pet .pet-body").all()) {
+      expect(await body.evaluate((element) => getComputedStyle(element).animationIterationCount)).toBe("1");
     }
     // Each step of the story still has its own image and description.
-    await expect(page.getByRole("img", { name: "Two people made of light" })).toBeVisible();
+    await expect(page.getByRole("img", { name: "A fox joined by a small bunny" })).toBeVisible();
     await context.close();
   });
 
@@ -113,22 +112,27 @@ test.describe("landing page", () => {
     expect(family).not.toContain("Hanken");
   });
 
-  test("with motion allowed the hero scene animates or degrades cleanly", async ({ page }) => {
+  test("with motion allowed the pets breathe and sway", async ({ page }) => {
     await page.goto("/");
-    const hero = page.locator("[data-scene='held']");
-    await expect(hero).toHaveAttribute("data-renderer", /^(canvas|still)$/);
-    await expect(hero).toHaveAttribute("aria-label", /light held between two open hands/);
+    const hero = page.locator("[data-pet]").first();
+    await expect(hero).toHaveAttribute("aria-label", /pink cat/);
+    const body = hero.locator(".pet-body").first();
+    expect(await body.evaluate((element) => getComputedStyle(element).animationIterationCount)).toBe("infinite");
   });
 
-  test("low-bandwidth mode downloads no scene image", async ({ page }) => {
-    const scenes: string[] = [];
-    page.on("request", (request) => {
-      if (request.url().includes("/scenes/")) scenes.push(request.url());
-    });
-    await setPrefs(page, { bandwidth: "low" });
+  test("the aurora breathes behind public pages but stays still on Support", async ({ page }) => {
+    const breathing = async () => {
+      const layer = page.locator(".fixed.-z-10 .absolute.inset-0 > div").first();
+      await layer.waitFor({ state: "attached" });
+      const first = await layer.evaluate((element) => (element as HTMLElement).style.background);
+      await page.waitForTimeout(1500);
+      const second = await layer.evaluate((element) => (element as HTMLElement).style.background);
+      return first !== second;
+    };
     await page.goto("/");
-    await page.waitForLoadState("networkidle");
-    expect(scenes).toEqual([]);
+    expect(await breathing()).toBe(true);
+    await page.goto("/support");
+    expect(await breathing()).toBe(false);
   });
 
   test("works with JavaScript turned off", async ({ browser }) => {
@@ -137,9 +141,11 @@ test.describe("landing page", () => {
     await page.goto("/");
 
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Notice your patterns.");
-    const still = page.locator("[data-scene='held'] .scene-still");
-    expect(await still.evaluate((element) => getComputedStyle(element).backgroundImage)).toContain(
-      "/scenes/held-",
+    // The pets are plain SVG drawn on the server, so they are there without JavaScript.
+    expect(await page.locator("[data-pet] svg").count()).toBeGreaterThanOrEqual(4);
+    // The still aurora is plain CSS, so it is there without JavaScript too.
+    expect(await page.evaluate(() => getComputedStyle(document.body).backgroundImage)).toContain(
+      "radial-gradient",
     );
     await expect(page.getByRole("heading", { name: "Real help", exact: true })).toBeVisible();
     await page.getByRole("link", { name: "See helplines" }).click();

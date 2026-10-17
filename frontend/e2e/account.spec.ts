@@ -74,7 +74,7 @@ test("sign up, verify, onboarding, dashboard", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Hello, Asha" })).toBeVisible();
   await expect(page.getByText("Check in if you like.")).toBeVisible();
   await expect(page.getByText("No check-ins in the last seven days.")).toBeVisible();
-  await expect(page.getByRole("img", { name: /Seven clusters of dots.*None are lit/ })).toBeVisible();
+  await expect(page.getByRole("img", { name: /Seven paw prints.*None are filled in/ })).toBeVisible();
   const text = (await page.locator("main").innerText()).toLowerCase();
   for (const word of ["streak", "missed", "keep it up", "great job", "don't break"]) {
     expect(text).not.toContain(word);
@@ -149,7 +149,10 @@ test.describe("dashboard", () => {
     const context = await browser.newContext({ ...devices["Pixel 7"], reducedMotion: "reduce" });
     const page = await context.newPage();
     await signIn(page, email);
-    await expect(page.locator("[data-lumen='week']")).toHaveAttribute("data-renderer", "static");
+    await expect(page.locator("[data-week]")).toBeVisible();
+    // The pets hold still: every animation runs once, instantly.
+    const body = page.locator(".pet .pet-body").first();
+    expect(await body.evaluate((element) => getComputedStyle(element).animationIterationCount)).toBe("1");
     await expect(page.locator("canvas")).toHaveCount(0);
 
     await page.evaluate(() => localStorage.setItem("prefs", JSON.stringify({ bandwidth: "low" })));

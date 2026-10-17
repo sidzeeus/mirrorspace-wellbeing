@@ -130,7 +130,7 @@ frontend/
   public/sw.js            The service worker (offline support)
   messages/en, messages/hi   All interface wording
   src/app/                Pages
-  src/components/         Reusable interface parts, including the Lumen
+  src/components/         Reusable interface parts, including the pets
   src/lib/                API client, data hooks, schemas, offline copies, preferences
   e2e/                    Browser tests
   tests/copy.test.mjs     Rules the wording must obey
@@ -490,25 +490,23 @@ Not yet in place: multi-factor sign-in for the admin, edge rate limiting, a stri
 - `public/sw.js`: caches the app shell and the Support page; never caches `/api/`.
 - `messages/en/*.json`: all wording. `messages/hi/` is partial and unreviewed. The language is a cookie, not part of the URL (`src/i18n/request.ts`).
 
-### The design system ("Night Light")
+### The design system ("Aurora")
 
-Defined as CSS variables in `src/app/globals.css` and described in `docs/design-plan.md`. Two themes, `night` (default) and `daybreak`. Building blocks:
+Defined as CSS variables in `src/app/globals.css` and described in `docs/design-plan.md` (latest revision: "Aurora"). Two themes, `night` (default) and `daybreak`. Content sits on frosted-glass panels (`.frame`, `.glass`) with rounded, pill-shaped controls. Building blocks:
 
 - `components/ui/primitives.tsx`: `Button`, `IconButton`, `Panel`, `GlassPanel`, `Field`, `ProgressRing`, `Notice`, `UnreviewedBadge`, `SkipLink`, `VisuallyHidden`.
 - `components/ui/controls.tsx`: `Slider`, `Toggle`, `ScaleControl`, `Dialog`, `Tabs`, `ToastProvider` and `useToast`, built on Radix for keyboard and screen-reader behaviour.
-- Feature components: `WeeklySetup`, `BreathingPlayer`, `TrendChart`, `ResourceList`, `PreferenceControls`, `ThemeToggle`, `AuthPage`, `PublicHeader`, `landing/Story`, `landing/HelplineStrip`.
+- Feature components: `pet/Pet`, `pet/PawWeek`, `AuroraBackground`, `WeeklySetup`, `BreathingPlayer`, `TrendChart`, `ResourceList`, `PreferenceControls`, `ThemeToggle`, `AuthPage`, `PublicHeader`, `landing/Story`, `landing/HelplineStrip`.
 
 Every screen is checked with axe in the browser tests, at 320 px width and with larger text.
 
-### Scenes
+### The aurora
 
-The large pictures on the landing, sign-in and footer are "scenes": `components/scene/fields.ts` describes each picture as a brightness at every point, and `components/scene/Scene.tsx` turns that into dots. The still versions in `public/scenes/` are written by `node scripts/make-scenes.mjs`; re-run it after editing `fields.ts`. Scenes are decoration only and never show anyone's data.
+Every page sits on a slow-breathing gradient. `src/app/globals.css` paints a still version on `<body>` (the `--aurora` colours), and `components/AuroraBackground.tsx` fades `components/ui/animated-gradient-background.tsx` in on top so it breathes. It stays still on Support and the offline page, with reduced motion, and in low-data mode. If you change the colours, change them in both places.
 
-### The Lumen
+### The pets
 
-`components/lumen/Lumen.tsx` is the one decorative element: a soft cluster of up to 840 points (`MAX_PARTICLES` in `shapes.ts`) that rearranges into shapes, for example seven groups for the days of the week (`targets`).
-
-It degrades on purpose: a static SVG first; WebGL if available; plain Canvas 2D if not. It stays static when the student prefers reduced motion or low-data mode, and a frame-rate guard drops it back to static on a slow device. It is hidden from screen readers and never carries meaning. Details in `docs/lumen.md`.
+`components/pet/Pet.tsx` draws three pets seen from behind (cat, bunny, fox) as plain SVG; their movements are CSS in `globals.css` under "Pets". A pet takes a `mood` (listening, heavy, storm, racing, lighter, steady, alone), an optional `breathPhase` for guided breathing, and a `label` saying what it shows. `components/pet/PawWeek.tsx` draws the week on Home as paw prints. Nothing is downloaded and nothing about a person is stored to drive them: the check-in pet follows the slider on screen, and the Vent cat follows the reaction the server returns. Support deliberately has no pet.
 
 ---
 
@@ -711,7 +709,7 @@ Logs are one JSON object per line: an event name and ids. Search by `notificatio
 | Fingerprint, keyed hash | A one-way code computed from a value plus a secret. You can check a match but cannot recover the value. |
 | GHCR | GitHub Container Registry, where images are published. |
 | Idempotency key | A unique label on a request so that repeating it has no extra effect. |
-| Lumen | The decorative particle visual. |
+| Pets | The animated cat, bunny and fox drawn in SVG (`components/pet`). They replaced the earlier particle "Lumen". |
 | Migration | A recorded change to the database structure. |
 | pgvector | A PostgreSQL extension for storing and comparing embeddings. |
 | Pseudonymize | Replace an identity with a fingerprint so events can be kept without naming anyone. |

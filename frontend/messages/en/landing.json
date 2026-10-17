@@ -11,7 +11,7 @@
     "create": "Create an account",
     "helplines": "See helplines",
     "limits": "For students aged 18 and over. Not therapy, and not an emergency service.",
-    "lumen": "A round light held between two open hands, drawn in small dots.",
+    "lumen": "A pink cat sitting with its back to you, its tail gently swaying.",
     "eyebrow": "A private wellbeing companion for students"
   },
   "story": {
@@ -19,17 +19,17 @@
     "one": {
       "title": "Notice",
       "body": "A check-in is four taps: mood, sleep, energy, stress. Skip any of them, or all of them. After a few weeks you can see your own patterns in plain words, with no scores.",
-      "lumen": "One point of light with faint rings around it."
+      "lumen": "A cat with its head tilted, listening."
     },
     "two": {
       "title": "One small step",
       "body": "After a check-in, one short activity is offered: slow breathing, a grounding exercise, a ten-minute plan. Mark it as not helpful and it stops being suggested.",
-      "lumen": "The light takes the shape of a standing person."
+      "lumen": "A bunny breathing slowly in and out."
     },
     "three": {
       "title": "Real help",
       "body": "Your own safety plan and checked helplines stay one tap away, even offline. If you choose, someone you trust can get a short weekly note, or a message you decide to send.",
-      "lumen": "Two people made of light, holding hands on a hillside."
+      "lumen": "A fox joined by a small bunny, sitting side by side."
     }
   },
   "is": {
@@ -64,7 +64,6 @@
     "lineOne": "Built to be quiet.",
     "lineTwo": "It does not track you, score you or keep you scrolling.",
     "prototype": "This is a prototype. Its clinical, legal and safety wording is still waiting for expert review.",
-    "scene": "A dark landscape drawn in points of light.",
     "explore": "Explore",
     "account": "Account",
     "limits": "Limits",

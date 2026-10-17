@@ -41,16 +41,18 @@ test("sign in, check in, see the trend", async ({ page }) => {
   // Skipping is always on screen.
   await expect(page.getByRole("link", { name: "Skip for now" })).toBeVisible();
 
-  // The mood slider drives the Lumen, with the same information in words.
-  const lumen = page.locator("[data-lumen='orb']");
-  await expect(lumen).toHaveAttribute("aria-label", /resting until you answer/);
+  // The mood slider changes how the pet sits, with the same information in words.
+  const lumen = page.locator("main [data-pet]");
+  await expect(lumen).toHaveAttribute("aria-label", /sits quietly, waiting/);
   const slider = page.getByRole("slider", { name: "Mood" });
   await slider.focus();
   await page.keyboard.press("End");
   await expect(slider).toHaveAttribute("aria-valuetext", "5: Very high");
-  await expect(lumen).toHaveAttribute("aria-label", /brightest and fullest/);
+  await expect(lumen).toHaveAttribute("aria-label", /hops a little/);
+  await expect(lumen).toHaveAttribute("data-mood", "lighter");
   await page.keyboard.press("Home");
-  await expect(lumen).toHaveAttribute("aria-label", /small and dim/);
+  await expect(lumen).toHaveAttribute("aria-label", /lies low/);
+  await expect(lumen).toHaveAttribute("data-mood", "heavy");
   await page.keyboard.press("ArrowRight");
   await page.keyboard.press("ArrowRight");
   await page.keyboard.press("ArrowRight");

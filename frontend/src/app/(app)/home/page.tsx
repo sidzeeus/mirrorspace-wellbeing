@@ -4,7 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
 
-import { Lumen } from "@/components/lumen/Lumen";
+import { PawWeek } from "@/components/pet/PawWeek";
+import { Pet } from "@/components/pet/Pet";
 import { Notice, Panel, UnreviewedBadge, buttonClass } from "@/components/ui/primitives";
 import { api } from "@/lib/api";
 import { keys, localDate, useErrorText, useExercises, useMe } from "@/lib/hooks";
@@ -45,9 +46,12 @@ export default function HomePage() {
 
   return (
     <div className="space-y-10">
-      <h1 className="h1">
-        {me.data?.display_name ? t("hello", { name: me.data.display_name }) : t("helloPlain")}
-      </h1>
+      <div className="flex items-end justify-between gap-4">
+        <h1 className="h1">
+          {me.data?.display_name ? t("hello", { name: me.data.display_name }) : t("helloPlain")}
+        </h1>
+        <Pet species="cat" mood="listening" className="w-20 shrink-0 sm:w-24" />
+      </div>
 
       {checkIns.isError ? (
         <Notice tone="attention" role="alert">
@@ -75,18 +79,9 @@ export default function HomePage() {
         <h2 id="week-title" className="h2 mb-3">
           {t("week.title")}
         </h2>
-        <Panel marks className="mb-4 overflow-hidden">
+        <Panel className="mb-4 overflow-hidden">
           <div className="mx-auto max-w-md">
-            <div className="-my-[26%]">
-              <Lumen
-                label={t("week.lumen", { count, days })}
-                mode="week"
-                lit={lit}
-                intensity={0.95}
-                density={1}
-                hue={0.4}
-              />
-            </div>
+            <PawWeek lit={lit} label={t("week.lumen", { count, days })} />
           </div>
           <ol className="data grid grid-cols-7 border-t border-line text-center text-dim" aria-hidden="true">
             {dates.map((date) => (

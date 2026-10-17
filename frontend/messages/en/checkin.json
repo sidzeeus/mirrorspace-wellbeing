@@ -6,14 +6,14 @@
   "mood": "Mood",
   "moodUnset": "Move the slider to answer",
   "moodClear": "Leave mood blank",
-  "lumen": "A light that follows the mood slider. {state}",
+  "lumen": "A cat that changes how it sits as you move the mood slider. {state}",
   "lumenStates": {
-    "unset": "It is resting until you answer.",
-    "1": "It is small and dim.",
-    "2": "It is dim and a little fuller.",
-    "3": "It is medium in size and brightness.",
-    "4": "It is bright and full.",
-    "5": "It is at its brightest and fullest."
+    "unset": "It sits quietly, waiting.",
+    "1": "It lies low, ears down.",
+    "2": "It sits very still, breathing slowly.",
+    "3": "It sits calmly, tail swaying.",
+    "4": "It tilts its head, ears up.",
+    "5": "It hops a little, tail high."
   },
   "sleepHours": "Hours of sleep last night",
   "sleepHoursValue": "{hours, plural, =0 {0 hours} one {1 hour} other {# hours}}",

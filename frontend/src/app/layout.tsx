@@ -6,6 +6,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 
+import { AuroraBackground } from "@/components/AuroraBackground";
 import { Providers } from "@/components/Providers";
 import { SkipLink } from "@/components/ui/primitives";
 import { PREFS_BOOT_SCRIPT } from "@/lib/prefs";
@@ -46,8 +47,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#06070c" },
-    { media: "(prefers-color-scheme: light)", color: "#f5f6fb" },
+    { media: "(prefers-color-scheme: dark)", color: "#07060d" },
+    { media: "(prefers-color-scheme: light)", color: "#f7f5fc" },
   ],
 };
 
@@ -67,8 +68,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <head>
         <script dangerouslySetInnerHTML={{ __html: PREFS_BOOT_SCRIPT }} />
       </head>
-      <body className="bg-ink text-moon antialiased">
+      <body className="text-moon antialiased">
         <NextIntlClientProvider locale={locale} messages={messages} timeZone="UTC">
+          <AuroraBackground />
           <SkipLink>{t("skipToContent")}</SkipLink>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>

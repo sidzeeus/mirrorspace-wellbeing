@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 
-import { Lumen, type LumenProps } from "@/components/lumen/Lumen";
+import { Pet, type PetMood } from "@/components/pet/Pet";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import { Toggle, useToast } from "@/components/ui/controls";
 import { Button, Notice, buttonClass } from "@/components/ui/primitives";
@@ -16,28 +16,19 @@ import { type Reflection, page, reflectionSchema, ventEntrySchema } from "@/lib/
 const MAX = 5000;
 
 type Kind = Reflection["reaction"];
-type Pose = Required<Pick<LumenProps, "mode" | "hue" | "intensity" | "density" | "lift">> & {
-  /** Restlessness at the moment of reacting; it eases toward `settle`. */
-  agitation: number;
-  settle: number;
-  spread: number;
-  /** Breathe in and out, inviting the student to breathe along. */
-  breathe?: boolean;
-};
-
 /**
- * How the figure answers each reaction. The light only ever does gentle things: it
- * sinks, gathers, settles, lifts, or is joined by a second light. It never turns red,
- * never shakes for long, and never stops being there.
+ * How the pet answers each reaction. It only ever does gentle things: it leans in,
+ * lies low, breathes slowly, settles after a storm, hops, or is joined by a friend.
+ * It never looks alarmed and never leaves.
  */
-const POSES: Record<Kind, Pose> = {
-  listening: { mode: "figure", hue: 0.3, intensity: 0.75, density: 0.85, lift: 0, agitation: 0.05, settle: 0.05, spread: 0 },
-  heavy: { mode: "figure", hue: 0.05, intensity: 0.5, density: 0.75, lift: 0.14, agitation: 0, settle: 0, spread: 0 },
-  racing: { mode: "figure", hue: 0.45, intensity: 0.8, density: 0.9, lift: 0, agitation: 0.6, settle: 0.04, spread: 0.4, breathe: true },
-  storm: { mode: "figure", hue: 0.15, intensity: 0.95, density: 1, lift: 0, agitation: 1, settle: 0.08, spread: 0.3 },
-  alone: { mode: "pair", hue: 0.6, intensity: 0.85, density: 0.9, lift: 0, agitation: 0.05, settle: 0.05, spread: 0 },
-  lighter: { mode: "figure", hue: 0.85, intensity: 1, density: 1, lift: -0.1, agitation: 0.05, settle: 0.05, spread: 0 },
-  steady: { mode: "figure", hue: 0.3, intensity: 0.85, density: 0.95, lift: 0, agitation: 0, settle: 0, spread: 0 },
+const MOODS: Record<Kind, PetMood> = {
+  listening: "listening",
+  heavy: "heavy",
+  racing: "racing",
+  storm: "storm",
+  alone: "alone",
+  lighter: "lighter",
+  steady: "steady",
 };
 
 const NEXT: Record<Kind, readonly { key: string; href: string }[]> = {
@@ -68,48 +59,6 @@ const GLOWS: Record<Kind, { colors: string[]; speed: number }> = {
   steady: { colors: ["rgb(185 180 255 / 0.3)", "rgb(124 116 242 / 0.1)", "transparent"], speed: 0.008 },
 };
 const GLOW_STOPS = [0, 45, 100];
-
-/** The figure: a Lumen whose agitation eases over a few seconds after each reaction. */
-function Figure({ pose, typing, label }: { pose: Pose; typing: boolean; label: string }) {
-  const [agitation, setAgitation] = useState(pose.agitation);
-  const [spread, setSpread] = useState(pose.spread);
-  const [breath, setBreath] = useState<number | undefined>(undefined);
-
-  useEffect(() => {
-    let current = pose.agitation;
-    let scatter = pose.spread;
-    const started = performance.now();
-    const timer = window.setInterval(() => {
-      current += (pose.settle - current) * 0.08;
-      scatter *= 0.93;
-      setAgitation(current);
-      setSpread(scatter);
-      if (pose.breathe) {
-        // Four seconds in, six out.
-        const t = ((performance.now() - started) / 1000) % 10;
-        setBreath(t < 4 ? t / 4 : 1 - (t - 4) / 6);
-      }
-    }, 120);
-    return () => {
-      window.clearInterval(timer);
-      setBreath(undefined);
-    };
-  }, [pose]);
-
-  return (
-    <Lumen
-      label={label}
-      mode={pose.mode}
-      hue={pose.hue}
-      intensity={pose.intensity}
-      density={pose.density}
-      lift={pose.lift - (typing ? 0.03 : 0)}
-      agitation={Math.max(agitation, typing ? 0.15 : 0)}
-      spread={spread}
-      breathPhase={breath}
-    />
-  );
-}
 
 function KeptEntries() {
   const t = useTranslations("vent.entries");
@@ -183,6 +132,7 @@ export default function VentPage() {
   const [keep, setKeep] = useState(false);
   const [typing, setTyping] = useState(false);
   const [result, setResult] = useState<{ reflection: Reflection; kept: boolean } | null>(null);
+  const [reactions, setReactions] = useState(0);
   const tooLong = text.length > MAX;
 
   useEffect(() => {
@@ -206,6 +156,7 @@ export default function VentPage() {
     },
     onSuccess: (outcome) => {
       setResult(outcome);
+      setReactions((count) => count + 1);
       setText("");
       if (outcome.kept) void queryClient.invalidateQueries({ queryKey: keys.vent });
       // Move focus to the reaction so a screen reader hears it, and nothing is lost.
@@ -221,7 +172,6 @@ export default function VentPage() {
 
   const kind: Kind = result?.reflection.reaction ?? "listening";
   const level = result?.reflection.level ?? null;
-  const pose = POSES[kind];
 
   return (
     <div className="space-y-12">
@@ -232,7 +182,7 @@ export default function VentPage() {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-start">
-        <div className="marks mx-auto w-48 border border-line sm:w-56 lg:order-last lg:sticky lg:top-8 lg:w-full">
+        <div className="frame mx-auto w-48 overflow-hidden sm:w-56 lg:order-last lg:sticky lg:top-8 lg:w-full">
           <div className="relative isolate">
             <AnimatedGradientBackground
               key={kind}
@@ -245,7 +195,15 @@ export default function VentPage() {
               gradientStops={GLOW_STOPS}
               containerClassName="-z-10"
             />
-            <Figure pose={pose} typing={typing} label={`${t("figure")}. ${t(`reactions.${kind}.figure`)}`} />
+            {/* Keyed by reaction so each new reaction plays from the start. */}
+            <Pet
+              key={`${kind}-${reactions}`}
+              label={`${t("figure")}. ${t(`reactions.${kind}.figure`)}`}
+              species="cat"
+              mood={typing && !result ? "listening" : MOODS[kind]}
+              companion={kind === "alone"}
+              className="p-6"
+            />
           </div>
           <p className="label border-t border-line px-3 py-2 text-center text-dim" aria-hidden="true">
             {t(`reactions.${kind}.figure`)}

@@ -2,7 +2,7 @@
   "_review": "NEEDS_HUMAN_REVIEW (docs/review-needed.md R26, R27): every reaction line, the crisis panel and the privacy wording on the Vent screen are placeholders written by an engineer.",
   "title": "Vent",
   "intro": "Write whatever you need to, as messy as it comes. Nobody reads this.",
-  "how": "The figure reacts to the words you use. It does not understand you, judge you, or tell anyone anything.",
+  "how": "The cat reacts to the words you use. It does not understand you, judge you, or tell anyone anything.",
   "label": "What is on your mind",
   "hint": "Up to {max} characters.",
   "tooLong": "That is more than {max} characters. Let some of it out now, and write the rest after.",
@@ -12,36 +12,36 @@
   "submitting": "Letting it out",
   "released": "Released. Nothing was saved.",
   "kept": "Kept. Only you can read it.",
-  "unavailable": "The figure could not react just now. What you wrote is still here.",
+  "unavailable": "The cat could not react just now. What you wrote is still here.",
   "again": "Write more",
-  "figure": "A figure made of light",
+  "figure": "A small pink cat",
   "reactions": {
     "listening": {
-      "figure": "The figure leans in, listening.",
+      "figure": "The cat tilts its head, listening.",
       "line": "Thank you for putting it into words."
     },
     "heavy": {
-      "figure": "The figure sinks low and dims, staying with you.",
+      "figure": "The cat lies low beside you, ears down.",
       "line": "That sounds heavy. You do not have to carry all of it at once."
     },
     "racing": {
-      "figure": "The scattered light gathers and starts to breathe slowly.",
-      "line": "A lot is racing. If it helps, breathe with the figure: in as it grows, out as it settles."
+      "figure": "The cat breathes slowly and deeply. Breathe along with it.",
+      "line": "A lot is racing. If it helps, breathe with the cat: in as it grows, out as it settles."
     },
     "storm": {
-      "figure": "The light flares and churns, then slowly settles.",
+      "figure": "The cat puffs up and lashes its tail, then slowly settles.",
       "line": "That sounds really frustrating. Anger is allowed. Let it settle in its own time."
     },
     "alone": {
-      "figure": "A second light comes to sit beside the figure.",
+      "figure": "A little bunny comes to sit beside the cat.",
       "line": "Feeling alone is hard. Reaching one person, even with a short message, can help."
     },
     "lighter": {
-      "figure": "The figure lifts and brightens.",
+      "figure": "The cat hops, tail held high.",
       "line": "It sounds like something eased a little. Notice what helped."
     },
     "steady": {
-      "figure": "The figure stays steady and close.",
+      "figure": "The cat sits still and close.",
       "line": "What you wrote sounds really serious. Nobody has been told, and this app cannot respond to an emergency. You do not have to handle this alone."
     }
   },

@@ -137,11 +137,11 @@ test("breathing: reduced motion uses a progress ring and words", async ({ browse
   await context.close();
 });
 
-test("breathing: with motion allowed the Lumen carries the breath", async ({ page }) => {
+test("breathing: with motion allowed the pet carries the breath", async ({ page }) => {
   await signIn(page, createUser());
   await page.goto("/exercises");
   await page.getByRole("link", { name: "Start Slow breathing" }).click();
-  const lumen = page.locator("[data-player] [data-lumen]");
+  const lumen = page.locator("[data-player] [data-pet]");
   await expect(lumen).toHaveAttribute("aria-label", /grows as you breathe in/);
   await page.locator("[data-player]").getByRole("button", { name: "Start" }).click();
   await expect(lumen).toHaveAttribute("aria-label", /Breathe (in|out)/);

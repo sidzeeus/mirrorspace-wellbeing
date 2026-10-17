@@ -38,8 +38,8 @@ export async function HelplineStrip() {
   ]);
   const withPhone = (resources ?? []).filter((resource) => resource.phone);
   return (
-    <section aria-labelledby="helplines-title" className="border-y border-line">
-      <div className="mx-auto max-w-7xl px-5 py-14 lg:px-10">
+    <section aria-labelledby="helplines-title" className="mx-auto max-w-6xl px-5 pb-20">
+      <div className="frame p-6 md:p-9">
         <div className="mb-8 flex flex-wrap items-baseline justify-between gap-4">
           <h2 id="helplines-title" className="h2">
             {t("title")}
@@ -50,9 +50,9 @@ export async function HelplineStrip() {
         </div>
         {withPhone.length > 0 ? (
           <>
-            <ul className="grid gap-px border border-line bg-line sm:grid-cols-2">
+            <ul className="grid gap-3 sm:grid-cols-2">
               {withPhone.map((resource) => (
-                <li key={resource.id} className="bg-ink p-5">
+                <li key={resource.id} className="rounded-2xl border border-line p-5">
                   <p className="mb-1 flex flex-wrap items-center gap-2 font-medium">
                     {resource.name}
                     {resource.reviewed ? null : (

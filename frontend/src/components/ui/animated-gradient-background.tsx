@@ -10,8 +10,10 @@
  * - The loop only runs while breathing, and pauses when the tab is hidden; a still
  *   gradient is painted once instead of on every frame.
  * - It is decoration, so it is hidden from screen readers.
+ * - framer-motion is loaded through `LazyMotion` with only its basic animation
+ *   features, which keeps it small enough to sit on every page.
  */
-import { motion } from "framer-motion";
+import { LazyMotion, domAnimation, m } from "framer-motion";
 import type React from "react";
 import { useEffect, useRef } from "react";
 
@@ -136,7 +138,8 @@ const AnimatedGradientBackground: React.FC<AnimatedGradientBackgroundProps> = ({
   }, [startingGap, breathing, colorsKey, stopsKey, animationSpeed, breathingRange, topOffset]);
 
   return (
-    <motion.div
+    <LazyMotion features={domAnimation} strict>
+      <m.div
       key="animated-gradient-background"
       aria-hidden="true"
       initial={still ? false : { opacity: 0, scale: 1.5 }}
@@ -148,7 +151,8 @@ const AnimatedGradientBackground: React.FC<AnimatedGradientBackgroundProps> = ({
       className={`absolute inset-0 overflow-hidden ${containerClassName}`}
     >
       <div ref={containerRef} style={containerStyle} className="absolute inset-0 transition-transform" />
-    </motion.div>
+      </m.div>
+    </LazyMotion>
   );
 };
 

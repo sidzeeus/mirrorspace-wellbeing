@@ -1,23 +1,20 @@
-import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
+import { Pet } from "@/components/pet/Pet";
 import { PublicHeader } from "@/components/PublicHeader";
-import { Scene } from "@/components/scene/Scene";
 
-/** Shared frame for the signed-out forms: the form, and on wide screens a picture. */
+/** Shared frame for the signed-out forms: one glass card, centred on the aurora. */
 export function AuthPage({ title, children }: { title: string; children: ReactNode }) {
-  const t = useTranslations("landing.story.two");
   return (
     <>
       <PublicHeader />
-      <div className="mx-auto grid max-w-7xl lg:min-h-[calc(100svh-4rem)] lg:grid-cols-2">
-        <main id="main" className="page-fade mx-auto w-full max-w-md px-5 py-12 lg:self-center">
+      <div className="flex min-h-[calc(100svh-5rem)] items-center justify-center px-4 pb-10 pt-24">
+        <main id="main" className="page-fade frame relative w-full max-w-md p-6 sm:p-8">
+          {/* A fox keeping the form company, sitting on the card's top edge. */}
+          <Pet species="fox" className="absolute -top-[5.4rem] right-6 w-24" />
           <h1 className="h1 mb-6">{title}</h1>
           {children}
         </main>
-        <div className="hidden border-l border-line lg:block">
-          <Scene scene="figure" label={t("lumen")} className="h-full" />
-        </div>
       </div>
     </>
   );

@@ -1,35 +1,39 @@
-import { Scene } from "@/components/scene/Scene";
-import type { SceneName } from "@/components/scene/fields";
+import { Pet, type PetMood, type Species } from "@/components/pet/Pet";
 
 export type StoryStep = { title: string; body: string; lumen: string };
 
-const SCENES: readonly SceneName[] = ["point", "figure", "pair"];
+const PETS: readonly { species: Species; mood: PetMood; companion?: boolean }[] = [
+  { species: "cat", mood: "listening" },
+  { species: "bunny", mood: "racing" },
+  { species: "fox", mood: "alone", companion: true },
+];
 
 /**
- * The three-part promise. Each step is a framed picture beside a few plain lines:
- * a point of light, the light as a person, two people together. The pictures are
- * still images first; they shimmer only where motion is allowed.
+ * The three-part promise, as three glass cards, each with a pet: one listening, one
+ * breathing slowly, one joined by a friend.
  */
 export function Story({ steps }: { steps: readonly StoryStep[] }) {
   return (
-    <ol data-story>
-      {steps.map((step, index) => (
-        <li
-          key={step.title}
-          className="grid items-center gap-8 border-b border-line py-14 lg:grid-cols-2 lg:gap-20 lg:py-24"
-        >
-          <div className={`marks border border-line ${index % 2 === 1 ? "lg:order-last" : ""}`}>
-            <Scene scene={SCENES[index] ?? "point"} label={step.lumen} className="aspect-[4/3]" />
-          </div>
-          <div>
-            <p className="label mb-5 text-dim" aria-hidden="true">
-              {String(index + 1).padStart(2, "0")} / {String(steps.length).padStart(2, "0")}
+    <ol data-story className="grid gap-5 md:grid-cols-3">
+      {steps.map((step, index) => {
+        const pet = PETS[index] ?? PETS[0]!;
+        return (
+          <li key={step.title} className="frame flex flex-col p-6">
+            <Pet
+              label={step.lumen}
+              species={pet.species}
+              mood={pet.mood}
+              companion={pet.companion}
+              className="mx-auto mb-4 w-32"
+            />
+            <p className="label mb-2 text-dim" aria-hidden="true">
+              {String(index + 1).padStart(2, "0")}
             </p>
-            <h3 className="h1 mb-5">{step.title}</h3>
-            <p className="prose-width text-lg text-dim">{step.body}</p>
-          </div>
-        </li>
-      ))}
+            <h3 className="h2 mb-3">{step.title}</h3>
+            <p className="text-dim">{step.body}</p>
+          </li>
+        );
+      })}
     </ol>
   );
 }

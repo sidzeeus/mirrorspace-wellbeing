@@ -51,7 +51,7 @@ test("Support opens in one tap and offers four clear options", async ({ page }) 
 
   // Nothing moves until the person asks for the breathing aid.
   await expect(page.locator("canvas")).toHaveCount(0);
-  await expect(page.locator("[data-lumen]")).toHaveCount(0);
+  await expect(page.locator("[data-pet]")).toHaveCount(0);
   await page.getByRole("button", { name: "A calming exercise" }).click();
   await expect(page.getByText("Breathe in for 4 seconds")).toBeVisible();
 });

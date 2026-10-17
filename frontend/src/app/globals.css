@@ -1,39 +1,42 @@
 @import "tailwindcss";
 
 /*
-  Design tokens (README Part C.3, docs/design-plan.md).
-  Colors are roles. Components use the role names through Tailwind (bg-ink, text-moon,
-  border-line ...) and never a hex value, so both themes stay first-class.
+  Design tokens: "Aurora" (docs/design-plan.md, revision of 2026-10-17).
+  A deep night sky with a slow, breathing aurora at its edges; content sits on frosted
+  glass. Colors are roles. Components use the role names through Tailwind (bg-ink,
+  text-moon, border-line ...) and never a hex value, so both themes stay first-class.
 */
 :root {
   color-scheme: dark;
-  --ink: #000000;
-  --surface: #09090b;
-  --surface-raised: #131317;
-  --line: rgb(255 255 255 / 0.13);
-  --line-strong: rgb(255 255 255 / 0.32);
-  --moon: #f4f4f6;
-  --moon-dim: #a3a3b2;
-  --lumen: #8f88f5;
-  --lumen-hi: #b9b4ff;
-  --on-lumen: #0b0a1f;
-  --calm: #7fd6c2;
+  --ink: #07060d;
+  --surface: #110f22;
+  --surface-raised: #1c1936;
+  --line: rgb(255 255 255 / 0.11);
+  --line-strong: rgb(255 255 255 / 0.26);
+  --moon: #f5f3ff;
+  --moon-dim: #b6b2d2;
+  --lumen: #9a90ff;
+  --lumen-hi: #c6c1ff;
+  --on-lumen: #120f2e;
+  --calm: #86dcc8;
   --warm: #f2c078;
-  --care: #f29ba8;
+  --care: #f4a7b6;
   --on-care: #2a0a12;
-  --glow: rgb(124 116 242 / 0.22);
+  --glow: rgb(140 128 255 / 0.24);
   --dot: 237 235 255;
+  /* Deep, low-light colours, so text stays readable wherever the aurora is behind it. */
+  --aurora: #07060d 32%, #1a1546 46%, #2d2584 57%, #4a33a0 68%, #5e3184 78%, #1b5f66 89%, #262273 100%;
 }
 
 :root[data-theme="daybreak"] {
   color-scheme: light;
-  --ink: #f5f6fb;
+  --ink: #f7f5fc;
   --surface: #ffffff;
-  --surface-raised: #eceef7;
-  --line: rgb(20 21 42 / 0.14);
-  --line-strong: rgb(20 21 42 / 0.36);
-  --moon: #14152a;
-  --moon-dim: #55577a;
+  --surface-raised: #efecf9;
+  --line: rgb(24 22 46 / 0.12);
+  --line-strong: rgb(24 22 46 / 0.3);
+  --moon: #18162e;
+  --moon-dim: #52506c;
   --lumen: #4a41c9;
   --lumen-hi: #2b2670;
   --on-lumen: #ffffff;
@@ -44,6 +47,7 @@
   --glow: rgb(74 65 201 / 0.14);
   --dot: 43 38 112;
   --lumen-l: 38%;
+  --aurora: #f7f5fc 32%, #ece6ff 46%, #d9ceff 57%, #ecd2f5 68%, #f8d8e6 78%, #cdeee7 89%, #dcd8ff 100%;
 }
 
 @theme inline {
@@ -63,7 +67,7 @@
   --color-on-care: var(--on-care);
   --font-sans: var(--font-display), var(--font-devanagari), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-data), ui-monospace, "SFMono-Regular", Menlo, monospace;
-  --radius-control: 2px;
+  --radius-control: 14px;
 }
 
 html {
@@ -92,26 +96,9 @@ body {
   text-rendering: optimizeLegibility;
   /* Long names and long words wrap instead of pushing the page sideways. */
   overflow-wrap: anywhere;
-}
-
-/* A faint film grain over everything. Inline, so it costs no request. */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 70;
-  pointer-events: none;
-  opacity: 0.045;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-:root[data-theme="daybreak"] body::after {
-  opacity: 0.05;
-  filter: invert(1);
-}
-@media print {
-  body::after {
-    display: none;
-  }
+  /* The still aurora: what people see without JavaScript, in low-data mode, and for
+     the moment before the breathing one fades in on top. */
+  background: radial-gradient(105% 115% at 50% 20%, var(--aurora)) fixed;
 }
 
 /* Indian scripts need more vertical room and must never be clipped. */
@@ -122,7 +109,7 @@ body::after {
 :focus-visible {
   outline: 2px solid var(--lumen-hi);
   outline-offset: 3px;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
 ::selection {
@@ -132,10 +119,11 @@ body::after {
 
 @layer components {
   .display {
-    font-size: clamp(2.5rem, 7vw, 5rem);
-    line-height: 1.02;
+    font-size: clamp(2.25rem, 5.5vw, 4rem);
+    line-height: 1.04;
     font-weight: 300;
     letter-spacing: -0.035em;
+    text-wrap: balance;
   }
   .h1 {
     font-size: clamp(1.9rem, 4vw, 2.75rem);
@@ -149,46 +137,46 @@ body::after {
     font-weight: 400;
     letter-spacing: -0.01em;
   }
-  .hero-title {
-    font-size: clamp(1.75rem, 3.6vw, 3.25rem);
-    line-height: 1.12;
-    font-weight: 300;
-    letter-spacing: -0.03em;
-    text-wrap: balance;
-  }
-  /* The closing line is set in the data face, like a terminal sign-off. */
-  .footer-title {
-    font-family: var(--font-mono);
-    font-size: clamp(1.375rem, 3vw, 2.25rem);
-    line-height: 1.25;
-    font-weight: 300;
-    letter-spacing: -0.02em;
-  }
   .nav-link,
   .footer-link {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    padding: 0 0.5rem;
+    padding: 0 0.75rem;
+    border-radius: 999px;
     color: var(--moon);
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
   }
   .footer-link {
     padding: 0;
   }
-  .nav-link:hover,
+  .nav-link:hover {
+    background: color-mix(in srgb, var(--moon) 8%, transparent);
+  }
   .footer-link:hover {
     color: var(--lumen-hi);
     text-decoration: underline;
     text-underline-offset: 4px;
   }
-  /* Small capitals in the data face: section labels, navigation, captions. */
+  /* Small section labels and captions. */
   .label {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
     line-height: 1.5;
-    letter-spacing: 0.14em;
+    font-weight: 500;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
+  }
+  /* A small rounded tag, like the one above the landing headline. */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 32px;
+    padding: 0.25rem 0.875rem;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    background: color-mix(in srgb, var(--surface) 55%, transparent);
+    font-size: 0.8125rem;
   }
   .prose-width {
     max-width: 68ch;
@@ -200,50 +188,28 @@ body::after {
     font-variant-numeric: tabular-nums;
   }
 
-  /* Structural panel: square, one hairline. */
-  .frame {
-    border: 1px solid var(--line);
-    background: var(--surface);
-  }
-
-  /* Crop marks just outside the four corners. Used on three stages only. */
-  .marks {
-    position: relative;
-  }
-  .marks::before {
-    content: "";
-    position: absolute;
-    inset: -9px;
-    pointer-events: none;
-    --m: 12px;
-    --c: var(--line-strong);
-    background:
-      linear-gradient(var(--c), var(--c)) top left / var(--m) 1px no-repeat,
-      linear-gradient(var(--c), var(--c)) top left / 1px var(--m) no-repeat,
-      linear-gradient(var(--c), var(--c)) top right / var(--m) 1px no-repeat,
-      linear-gradient(var(--c), var(--c)) top right / 1px var(--m) no-repeat,
-      linear-gradient(var(--c), var(--c)) bottom left / var(--m) 1px no-repeat,
-      linear-gradient(var(--c), var(--c)) bottom left / 1px var(--m) no-repeat,
-      linear-gradient(var(--c), var(--c)) bottom right / var(--m) 1px no-repeat,
-      linear-gradient(var(--c), var(--c)) bottom right / 1px var(--m) no-repeat;
-  }
-
-  /* Glass for navigation bars, with a solid fallback. */
+  /* A panel of frosted glass. Solid where the browser cannot blur. */
+  .frame,
   .glass {
-    background: var(--surface);
     border: 1px solid var(--line);
+    border-radius: 1.25rem;
+    background: var(--surface);
   }
   @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    .frame {
+      background: color-mix(in srgb, var(--surface) 74%, transparent);
+      -webkit-backdrop-filter: blur(18px) saturate(1.3);
+      backdrop-filter: blur(18px) saturate(1.3);
+    }
     .glass {
-      background: color-mix(in srgb, var(--surface) 78%, transparent);
-      -webkit-backdrop-filter: blur(16px) saturate(1.2);
-      backdrop-filter: blur(16px) saturate(1.2);
+      background: color-mix(in srgb, var(--surface) 62%, transparent);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      backdrop-filter: blur(20px) saturate(1.4);
     }
   }
-
-  /* The only glow in the product sits behind the Lumen. */
-  .lumen-glow {
-    background: radial-gradient(closest-side, var(--glow), transparent 72%);
+  /* Kept for markup that still asks for it; frames no longer carry corner marks. */
+  .marks {
+    position: relative;
   }
 
   .btn {
@@ -252,17 +218,16 @@ body::after {
     justify-content: center;
     gap: 0.5rem;
     min-height: 44px;
-    padding: 0.625rem 1.25rem;
-    border-radius: 0;
-    font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    letter-spacing: 0.04em;
+    padding: 0.625rem 1.375rem;
+    border-radius: 999px;
+    font-size: 0.9375rem;
     font-weight: 500;
     line-height: 1.2;
     text-align: center;
     transition:
       background-color 160ms ease,
       border-color 160ms ease,
+      color 160ms ease,
       opacity 160ms ease;
   }
   .btn:disabled,
@@ -281,11 +246,11 @@ body::after {
   .btn-quiet {
     border: 1px solid var(--line-strong);
     color: var(--moon);
-    background: color-mix(in srgb, var(--surface-raised) 70%, transparent);
+    background: color-mix(in srgb, var(--surface) 55%, transparent);
   }
   .btn-quiet:hover:not(:disabled) {
     border-color: var(--moon-dim);
-    background: var(--surface-raised);
+    background: color-mix(in srgb, var(--surface-raised) 80%, transparent);
   }
   .btn-care {
     background: var(--care);
@@ -305,7 +270,7 @@ body::after {
     width: 100%;
     border-radius: var(--radius-control);
     border: 1px solid var(--line-strong);
-    background: var(--surface);
+    background: color-mix(in srgb, var(--surface) 82%, transparent);
     color: var(--moon);
     padding: 0.625rem 0.875rem;
   }
@@ -322,51 +287,200 @@ body::after {
     text-underline-offset: 4px;
   }
 
-  /*
-    Dithered scenes (components/scene). The still image is a background so that
-    low-bandwidth mode can skip the download entirely.
-  */
-  .scene-still {
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-  }
-  .scene-still[data-scene-still="held"] { background-image: url("/scenes/held-night-l.png"); }
-  .scene-still[data-scene-still="terrain"] { background-image: url("/scenes/terrain-night-l.png"); }
-  .scene-still[data-scene-still="point"] { background-image: url("/scenes/point-night-s.png"); }
-  .scene-still[data-scene-still="figure"] { background-image: url("/scenes/figure-night-s.png"); }
-  .scene-still[data-scene-still="pair"] { background-image: url("/scenes/pair-night-s.png"); }
-  :root[data-theme="daybreak"] .scene-still[data-scene-still="held"] { background-image: url("/scenes/held-daybreak-l.png"); }
-  :root[data-theme="daybreak"] .scene-still[data-scene-still="terrain"] { background-image: url("/scenes/terrain-daybreak-l.png"); }
-  :root[data-theme="daybreak"] .scene-still[data-scene-still="point"] { background-image: url("/scenes/point-daybreak-s.png"); }
-  :root[data-theme="daybreak"] .scene-still[data-scene-still="figure"] { background-image: url("/scenes/figure-daybreak-s.png"); }
-  :root[data-theme="daybreak"] .scene-still[data-scene-still="pair"] { background-image: url("/scenes/pair-daybreak-s.png"); }
-  @media (max-aspect-ratio: 1/1) {
-    .scene-still[data-scene-still="held"] { background-image: url("/scenes/held-night-p.png"); }
-    .scene-still[data-scene-still="terrain"] { background-image: url("/scenes/terrain-night-p.png"); }
-    :root[data-theme="daybreak"] .scene-still[data-scene-still="held"] { background-image: url("/scenes/held-daybreak-p.png"); }
-    :root[data-theme="daybreak"] .scene-still[data-scene-still="terrain"] { background-image: url("/scenes/terrain-daybreak-p.png"); }
-  }
-  html[data-bandwidth="low"] .scene-still {
-    background-image: none !important;
-  }
-
-  /* Text that sits on a scene gets a quiet backing so it never fights the dots. */
-  .on-scene {
-    background: radial-gradient(closest-side, color-mix(in srgb, var(--ink) 82%, transparent), transparent);
-  }
-
   .page-fade {
-    animation: page-fade 220ms ease both;
+    animation: page-fade 260ms ease both;
+  }
+}
+
+/*
+  Pets (components/pet/Pet.tsx). Each part moves around its own box. The reduced-motion
+  rule below stops all of it: every animation ends where it started.
+*/
+.pet g {
+  transform-box: fill-box;
+}
+.pet .pet-animal {
+  transform-origin: 50% 100%;
+  transition: transform 700ms ease;
+}
+.pet .pet-body {
+  transform-origin: 50% 100%;
+  animation: pet-breathe 3.6s ease-in-out infinite;
+}
+.pet .pet-head {
+  transform-origin: 50% 90%;
+  transition: transform 600ms ease;
+}
+.pet .pet-ear {
+  transform-origin: 50% 100%;
+  animation: pet-ear 6.5s ease-in-out infinite;
+  transition: transform 600ms ease;
+}
+.pet .pet-ear-r {
+  animation-delay: 2.4s;
+}
+.pet .pet-tail {
+  transform-origin: 0% 100%;
+  animation: pet-tail 2.8s ease-in-out infinite;
+}
+.pet[data-pet="bunny"] .pet-main > .pet-animal .pet-tail,
+.pet .pet-companion .pet-tail {
+  transform-origin: 50% 50%;
+}
+.pet .pet-main {
+  transition: opacity 700ms ease;
+}
+
+/* Breathing in time with an exercise. */
+.pet .pet-guided .pet-body {
+  animation: none;
+  transform: scale(var(--pet-breath, 1));
+  transition: transform 240ms linear;
+}
+
+.pet[data-mood="listening"] .pet-main .pet-head {
+  transform: rotate(-8deg);
+}
+.pet[data-mood="heavy"] .pet-main .pet-animal {
+  transform: translateY(10px) scaleY(0.9);
+}
+.pet[data-mood="heavy"] .pet-main .pet-body {
+  animation-duration: 5.5s;
+}
+.pet[data-mood="heavy"] .pet-main .pet-ear {
+  animation: none;
+}
+.pet[data-mood="heavy"] .pet-main .pet-ear-l {
+  transform: rotate(-24deg);
+}
+.pet[data-mood="heavy"] .pet-main .pet-ear-r {
+  transform: rotate(24deg);
+}
+.pet[data-mood="heavy"] .pet-main .pet-tail {
+  animation: none;
+  transform: rotate(16deg);
+}
+.pet[data-mood="heavy"] .pet-main {
+  opacity: 0.85;
+}
+.pet[data-mood="storm"] .pet-main .pet-body {
+  animation:
+    pet-puff 3.2s ease-out 1,
+    pet-breathe 3.6s ease-in-out 3.2s infinite;
+}
+.pet[data-mood="storm"] .pet-main .pet-tail {
+  animation:
+    pet-lash 0.4s ease-in-out 7,
+    pet-tail 2.8s ease-in-out 2.8s infinite;
+}
+.pet[data-mood="racing"] .pet-main .pet-body {
+  animation: pet-breathe-deep 6s ease-in-out infinite;
+}
+.pet[data-mood="lighter"] .pet-main .pet-animal {
+  animation: pet-hop 0.7s ease-out 2;
+}
+.pet[data-mood="lighter"] .pet-main .pet-tail {
+  animation-duration: 1.6s;
+}
+.pet[data-mood="steady"] .pet-main .pet-body {
+  animation-duration: 6s;
+}
+.pet[data-mood="steady"] .pet-main .pet-tail,
+.pet[data-mood="steady"] .pet-main .pet-ear {
+  animation: none;
+}
+.pet .pet-companion {
+  animation: pet-arrive 1.2s ease-out both;
+}
+
+@keyframes pet-breathe {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  50% {
+    transform: scale(1.015, 1.035);
+  }
+}
+@keyframes pet-breathe-deep {
+  0%,
+  100% {
+    transform: scale(0.97, 0.95);
+  }
+  40% {
+    transform: scale(1.04, 1.08);
+  }
+}
+@keyframes pet-ear {
+  0%,
+  86%,
+  100% {
+    transform: rotate(0deg);
+  }
+  89% {
+    transform: rotate(-12deg);
+  }
+  92% {
+    transform: rotate(2deg);
+  }
+  95% {
+    transform: rotate(-6deg);
+  }
+}
+@keyframes pet-tail {
+  0%,
+  100% {
+    transform: rotate(-6deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+}
+@keyframes pet-lash {
+  0%,
+  100% {
+    transform: rotate(-14deg);
+  }
+  50% {
+    transform: rotate(18deg);
+  }
+}
+@keyframes pet-puff {
+  0% {
+    transform: scale(1.08, 1.06);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+@keyframes pet-hop {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-14px);
+  }
+}
+@keyframes pet-arrive {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
 @keyframes page-fade {
   from {
     opacity: 0;
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
+    transform: none;
   }
 }
 

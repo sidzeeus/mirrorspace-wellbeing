@@ -1,3 +1,5 @@
+> **Retired on 2026-10-17.** The Lumen was replaced by animated pets (decision B73, `frontend/src/components/pet/Pet.tsx`). This file is kept as a record of the earlier design.
+
 # The Lumen
 
 The Lumen is the app's one glowing object: a cluster of small dots that gathers, brightens, breathes and rests. It lives in `frontend/src/components/lumen/` and nowhere else draws particles.

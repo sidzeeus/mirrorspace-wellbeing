@@ -129,9 +129,9 @@ function NavLink({ item, vertical }: { item: (typeof NAV)[number]; vertical: boo
       aria-current={current ? "page" : undefined}
       className={`flex min-h-11 items-center ${
         vertical
-          ? "gap-3 border-l-2 px-3 text-sm"
-          : "flex-col justify-center gap-0.5 border-t-2 px-0.5 py-1 text-center text-[0.6875rem] leading-tight"
-      } ${current ? "border-moon bg-raised text-moon" : "border-transparent text-dim hover:text-moon"}`}
+          ? "gap-3 rounded-full px-4 text-[0.9375rem]"
+          : "flex-col justify-center gap-0.5 rounded-2xl px-0.5 py-1 text-center text-[0.6875rem] leading-tight"
+      } ${current ? "bg-raised text-moon" : "text-dim hover:bg-raised/60 hover:text-moon"}`}
     >
       <svg
         width={vertical ? 20 : 18}
@@ -190,38 +190,36 @@ export function AppShell({ children }: { children: ReactNode }) {
   const ready = offline || (signedIn && accepted !== null && (accepted || onboarding));
 
   return (
-    <div className="lg:grid lg:min-h-dvh lg:grid-cols-[15rem_minmax(0,1fr)]">
-      <aside className="no-print hidden border-r border-line lg:sticky lg:top-0 lg:flex lg:h-dvh lg:flex-col lg:overflow-y-auto lg:p-5">
-        <Link
-          href="/home"
-          className="label mb-6 inline-flex min-h-11 items-center self-start border-x border-line-strong px-3 text-[0.8125rem] text-moon"
-        >
-          {common("appName")}
-        </Link>
-        <SupportLink className="mb-6 w-full" />
-        {onboarding ? null : (
-          <nav aria-label={t("navLabel")} className="flex flex-col gap-0.5">
-            {NAV.map((item) => (
-              <NavLink key={item.key} item={item} vertical />
-            ))}
-          </nav>
-        )}
+    <div className="lg:grid lg:min-h-dvh lg:grid-cols-[17rem_minmax(0,1fr)]">
+      <aside className="no-print hidden lg:sticky lg:top-0 lg:block lg:h-dvh lg:p-4">
+        <div className="glass flex h-full flex-col overflow-y-auto rounded-3xl p-4">
+          <Link href="/home" className="mb-5 inline-flex min-h-11 items-center px-3 text-lg font-medium tracking-tight">
+            {common("appName")}
+          </Link>
+          <SupportLink className="mb-5 w-full" />
+          {onboarding ? null : (
+            <nav aria-label={t("navLabel")} className="flex flex-col gap-0.5">
+              {NAV.map((item) => (
+                <NavLink key={item.key} item={item} vertical />
+              ))}
+            </nav>
+          )}
+        </div>
       </aside>
 
       <div className="flex min-h-dvh flex-col">
-        <header className="glass no-print sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-x-0 border-t-0 px-5 lg:hidden">
-          <Link
-            href="/home"
-            className="label inline-flex min-h-11 items-center border-x border-line-strong px-3 text-[0.8125rem] text-moon"
-          >
-            {common("appName")}
-          </Link>
-          <SupportLink />
+        <header className="no-print sticky top-0 z-30 px-3 pt-3 lg:hidden">
+          <div className="glass flex h-14 items-center justify-between gap-3 rounded-full py-1 pl-5 pr-1.5">
+            <Link href="/home" className="inline-flex min-h-11 items-center text-lg font-medium tracking-tight">
+              {common("appName")}
+            </Link>
+            <SupportLink />
+          </div>
         </header>
 
         <main
           id="main"
-          className="page-fade mx-auto w-full max-w-3xl grow px-5 pb-40 pt-8 lg:pb-16 lg:pt-12"
+          className="page-fade mx-auto w-full max-w-3xl grow px-5 pb-44 pt-8 lg:pb-16 lg:pt-12"
         >
           {ready ? (
             children
@@ -235,7 +233,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         {onboarding ? null : (
           <nav
             aria-label={t("navLabel")}
-            className="glass no-print fixed inset-x-0 bottom-0 z-30 grid grid-cols-6 border-x-0 border-b-0 pb-[env(safe-area-inset-bottom)] lg:hidden"
+            className="glass no-print fixed inset-x-2 bottom-2 z-30 mb-[env(safe-area-inset-bottom)] grid grid-cols-6 gap-0.5 rounded-3xl p-1 lg:hidden"
           >
             {NAV.map((item) => (
               <NavLink key={item.key} item={item} vertical={false} />
