@@ -32,8 +32,9 @@ test("complete an exercise and mark it not helpful", async ({ page }) => {
   await page.goto("/exercises");
   await expect(page.getByRole("heading", { name: "Exercises", level: 1 })).toBeVisible();
 
-  // In development, unreviewed placeholders are shown and clearly labelled.
-  await expect(page.getByText("Unreviewed placeholder").first()).toBeVisible();
+  // In development, unreviewed placeholders are shown without a label (decision B80);
+  // in production they are not shown at all.
+  await expect(page.getByText("Unreviewed placeholder")).toHaveCount(0);
 
   await page.getByRole("link", { name: "Start Five senses" }).click();
   const player = page.locator("[data-player]");

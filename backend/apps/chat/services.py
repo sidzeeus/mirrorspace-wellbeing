@@ -27,7 +27,7 @@ from django.utils import timezone
 from apps.accounts.models import User
 from apps.audit.services import record as audit
 
-from . import policy, safety
+from . import context, policy, safety
 from .knowledge import Passage, retrieve
 from .models import ChatMessage, ChatSession, ChatUsage, MessageRole
 from .providers import ProviderRefused, ProviderUnavailable, get_provider
@@ -54,6 +54,9 @@ class Reply:
     # Set only for safety replies: "crisis" or "distress". Returned to the screen so it
     # can show the right options. Never stored.
     level: str | None = None
+    # The student's own coping steps, when they mentioned one of their triggers and
+    # chose to share their records with Sushi (B83). Never stored.
+    plan: dict[str, Any] | None = None
 
     @property
     def from_ai(self) -> bool:
@@ -106,9 +109,15 @@ def generate_reply(user: User, text: str, history: list[dict[str, Any]] | None =
         audit("chat.safety_reply_shown", user=user)
         return _safety_reply(assessment.level)
 
+    # What the student chose to share, and whether they mentioned their own trigger.
+    # The plan card comes from code, so it appears even if the model is busy or down.
+    sharing = context.is_enabled(user)
+    matched = context.match_triggers(user, text) if sharing else []
+    plan = context.plan_suggestion(user, matched)
+
     # 2. Budgets.
     if not _budget_left(user):
-        return Reply(LIMIT, policy.LIMIT_REPLY)
+        return Reply(LIMIT, policy.LIMIT_REPLY, plan=plan)
 
     # 3. Reviewed material, when some matches. The model may also simply talk (B74).
     passages = retrieve(text, user.preferred_language)
@@ -116,14 +125,15 @@ def generate_reply(user: User, text: str, history: list[dict[str, Any]] | None =
     # 4. The provider gets instructions, passages and conversation text. Nothing else.
     messages = [*_clean_history(history or []), {"role": "user", "content": text}]
     try:
-        answer = get_provider().complete(
-            system=policy.build_system_prompt(passages), messages=messages
+        system = policy.build_system_prompt(
+            passages, context.build_context(user) if sharing else None, matched
         )
+        answer = get_provider().complete(system=system, messages=messages)
     except ProviderRefused:
-        return Reply(OFF_POLICY, policy.OFF_POLICY_REPLY)
+        return Reply(OFF_POLICY, policy.OFF_POLICY_REPLY, plan=plan)
     except ProviderUnavailable:
         logger.warning("chat_provider_unavailable")
-        return Reply(UNAVAILABLE, policy.UNAVAILABLE_REPLY)
+        return Reply(UNAVAILABLE, policy.UNAVAILABLE_REPLY, plan=plan)
     _count_reply(user)
 
     # 5. Check what came back. The model's reply is not trusted either.
@@ -133,8 +143,8 @@ def generate_reply(user: User, text: str, history: list[dict[str, Any]] | None =
         return _safety_reply(safety.CRISIS)
     if policy.violates_policy(answer):
         logger.warning("chat_reply_blocked_by_policy")
-        return Reply(OFF_POLICY, policy.OFF_POLICY_REPLY)
-    return Reply(ANSWER, answer, sources=_sources(passages))
+        return Reply(OFF_POLICY, policy.OFF_POLICY_REPLY, plan=plan)
+    return Reply(ANSWER, answer, sources=_sources(passages), plan=plan)
 
 
 def respond(session: ChatSession, text: str, history: list[dict[str, Any]] | None = None) -> Reply:

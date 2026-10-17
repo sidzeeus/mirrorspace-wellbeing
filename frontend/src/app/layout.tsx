@@ -6,6 +6,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 
+import { AmbientMusic } from "@/components/AmbientMusic";
 import { AuroraBackground } from "@/components/AuroraBackground";
 import { Providers } from "@/components/Providers";
 import { SkipLink } from "@/components/ui/primitives";
@@ -71,6 +72,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body className="text-moon antialiased">
         <NextIntlClientProvider locale={locale} messages={messages} timeZone="UTC">
           <AuroraBackground />
+          <AmbientMusic />
           <SkipLink>{t("skipToContent")}</SkipLink>
           <Providers>{children}</Providers>
         </NextIntlClientProvider>

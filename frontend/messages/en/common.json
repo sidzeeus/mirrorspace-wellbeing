@@ -30,5 +30,9 @@
     "reload": "Reload"
   },
   "sos": "SOS",
-  "_review_sos": "NEEDS_HUMAN_REVIEW: the SOS button label (common.sos + common.support) needs safeguarding sign-off, see docs/review-needed.md."
+  "_review_sos": "NEEDS_HUMAN_REVIEW: the SOS button label (common.sos + common.support) needs safeguarding sign-off, see docs/review-needed.md.",
+  "music": {
+    "turnOn": "Turn background music on",
+    "turnOff": "Turn background music off"
+  }
 }

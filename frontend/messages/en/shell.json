@@ -13,5 +13,6 @@
   "settings": "Settings",
   "signOut": "Sign out",
   "signedInAs": "Signed in as {email}",
-  "vent": "Vent"
+  "vent": "Vent",
+  "sounds": "Sounds"
 }

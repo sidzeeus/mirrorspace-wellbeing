@@ -6,7 +6,7 @@ import { useFormatter, useTranslations } from "next-intl";
 
 import { PawWeek } from "@/components/pet/PawWeek";
 import { Pet } from "@/components/pet/Pet";
-import { Notice, Panel, UnreviewedBadge, buttonClass } from "@/components/ui/primitives";
+import { Notice, Panel, buttonClass } from "@/components/ui/primitives";
 import { api } from "@/lib/api";
 import { keys, localDate, useErrorText, useExercises, useMe } from "@/lib/hooks";
 import { checkInSchema, page } from "@/lib/schemas";
@@ -106,7 +106,6 @@ export default function HomePage() {
           <div className="frame p-5">
             <p className="mb-1 flex flex-wrap items-center gap-2 font-medium">
               {suggestion.title}
-              {suggestion.reviewed ? null : <UnreviewedBadge>{common("unreviewed")}</UnreviewedBadge>}
             </p>
             <p className="mb-1 text-dim">{suggestion.summary}</p>
             <p className="data mb-4 text-dim">

@@ -551,7 +551,8 @@ class TestApi:
         body = send(
             client, new_session(client)["id"], "How many hours of sleep do students usually need?"
         ).json()
-        assert set(body) == {"kind", "text", "sources", "actions", "level"}
+        assert set(body) == {"kind", "text", "sources", "actions", "level", "plan"}
+        assert body["plan"] is None
         assert body["sources"][0] == {
             "title": "Sleep basics for students",
             "source": "Placeholder text, not yet reviewed or sourced",

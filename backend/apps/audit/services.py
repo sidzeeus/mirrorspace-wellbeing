@@ -46,6 +46,8 @@ ACTIONS = frozenset(
         "chat.safety_reply_shown",
         "chat.transcript_enabled",
         "chat.transcript_deleted",
+        "chat.context_enabled",
+        "chat.context_disabled",
         "notification.sent",
         "notification.cancelled",
         "notification.failed",

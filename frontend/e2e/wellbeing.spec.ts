@@ -195,3 +195,26 @@ test("the interface never applies a clinical label", async ({ page }) => {
     }
   }
 });
+
+test("sounds: a track plays and pauses, and the page is accessible", async ({ page }) => {
+  await signIn(page, createUser());
+  await page.goto("/sounds");
+  await expect(page.getByRole("heading", { name: "Sounds", level: 1 })).toBeVisible();
+  const sleep = page.locator("[data-sound='sleep']");
+  await expect(sleep).toHaveAttribute("aria-pressed", "false");
+  await sleep.click();
+  await expect(sleep).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByText("Playing now")).toBeVisible();
+  // Only one track plays at a time.
+  await page.locator("[data-sound='calm']").click();
+  await expect(sleep).toHaveAttribute("aria-pressed", "false");
+  await expect(page.locator("[data-sound='calm']")).toHaveAttribute("aria-pressed", "true");
+  await page.locator("[data-sound='calm']").click();
+  await expect(page.locator("[data-sound='calm']")).toHaveAttribute("aria-pressed", "false");
+  // Nothing on the page claims to treat anything.
+  const text = (await page.locator("main").innerText()).toLowerCase();
+  for (const claim of ["cure", "treat anxiety", "reduces anxiety", "therapy"]) {
+    expect(text).not.toContain(claim);
+  }
+  await expectAccessible(page);
+});

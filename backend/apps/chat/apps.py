@@ -9,7 +9,21 @@ class ChatConfig(AppConfig):
     def ready(self) -> None:
         from apps.accounts.export import register_export
 
-        from .models import ChatFeedback, ChatMessage, ChatSession, ChatUsage
+        from .models import (
+            ChatContextSetting,
+            ChatFeedback,
+            ChatMessage,
+            ChatSession,
+            ChatUsage,
+        )
+
+        register_export(
+            "chat_context",
+            (ChatContextSetting,),
+            lambda user: {
+                "enabled": ChatContextSetting.objects.filter(user=user, enabled=True).exists()
+            },
+        )
 
         register_export(
             "chat",

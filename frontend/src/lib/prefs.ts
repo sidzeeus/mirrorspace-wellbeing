@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Device preferences: theme, text size, motion and data use.
+ * Device preferences: theme, text size, motion, data use and background music.
  *
  * These are comforts of one device, not account data, so they live in this browser
  * only (localStorage) and are never sent to the server. They are applied as
@@ -15,6 +15,7 @@ export type Prefs = {
   text: "normal" | "large";
   motion: "system" | "reduced";
   bandwidth: "auto" | "low";
+  music: "on" | "off";
 };
 
 export const DEFAULT_PREFS: Prefs = {
@@ -22,6 +23,7 @@ export const DEFAULT_PREFS: Prefs = {
   text: "normal",
   motion: "system",
   bandwidth: "auto",
+  music: "on",
 };
 
 export const PREFS_KEY = "prefs";

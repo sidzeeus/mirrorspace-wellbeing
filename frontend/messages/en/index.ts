@@ -14,10 +14,11 @@ import plan from "./plan.json";
 import resources from "./resources.json";
 import settings from "./settings.json";
 import sharing from "./sharing.json";
+import sounds from "./sounds.json";
 import shell from "./shell.json";
 import support from "./support.json";
 import vent from "./vent.json";
 
-const messages = { auth, chat, checkin, common, contact, episodes, exercises, home, landing, offline, onboarding, patterns, plan, resources, settings, sharing, shell, support, vent };
+const messages = { auth, chat, checkin, common, contact, episodes, exercises, home, landing, offline, onboarding, patterns, plan, resources, settings, sharing, shell, sounds, support, vent };
 
 export default messages;

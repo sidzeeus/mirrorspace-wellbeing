@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Toggle, useToast } from "@/components/ui/controls";
-import { Notice, UnreviewedBadge, buttonClass } from "@/components/ui/primitives";
+import { Notice, buttonClass } from "@/components/ui/primitives";
 import { api } from "@/lib/api";
 import { CATEGORIES } from "@/lib/constants";
 import { useErrorText, useExercises } from "@/lib/hooks";
@@ -94,7 +94,6 @@ export default function ExercisesPage() {
                 <li key={exercise.id} className="p-5" data-exercise={exercise.slug}>
                   <div className="mb-1 flex flex-wrap items-center gap-x-3 gap-y-1">
                     <h2 className="h2">{exercise.title}</h2>
-                    {exercise.reviewed ? null : <UnreviewedBadge>{common("unreviewed")}</UnreviewedBadge>}
                     {exercise.hidden ? <span className="data text-dim">{t("hiddenTag")}</span> : null}
                   </div>
                   <p className="mb-1 text-dim">{exercise.summary}</p>

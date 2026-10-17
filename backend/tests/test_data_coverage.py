@@ -117,8 +117,10 @@ def populate_chat(user):
 
 
 def populate_vent(user):
+    from apps.chat.models import ChatContextSetting
     from apps.vent.models import VentEntry
 
+    ChatContextSetting.objects.create(user=user, enabled=True)
     return {"vent_entry": VentEntry.objects.create(user=user, body=f"{CANARY}-vent")}
 
 
@@ -170,6 +172,7 @@ class TestExport:
             "notifications",
             "audit_events",
             "vent_entries",
+            "chat_context",
             "chat",
         }
         assert body["chat"]["sessions"][0]["messages"][0]["content"] == f"{CANARY}-chat"

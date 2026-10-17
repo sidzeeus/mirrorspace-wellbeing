@@ -14,10 +14,18 @@ from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
 from rest_framework.views import APIView
 
+from apps.accounts.models import User
+from apps.audit.services import record as audit
 from config.views import OwnedModelViewSet
 
-from . import policy, services
-from .models import MAX_RETENTION_DAYS, ChatFeedback, ChatMessage, ChatSession
+from . import context, policy, services
+from .models import (
+    MAX_RETENTION_DAYS,
+    ChatContextSetting,
+    ChatFeedback,
+    ChatMessage,
+    ChatSession,
+)
 
 
 class ChatThrottle(UserRateThrottle):
@@ -130,6 +138,34 @@ class ChatFeedbackViewSet(OwnedModelViewSet):
     model = ChatFeedback
     serializer_class = FeedbackSerializer
     http_method_names = ["get", "post", "delete", "head", "options"]
+
+
+class ChatContextSerializer(serializers.Serializer):
+    enabled = serializers.BooleanField()
+
+
+class ChatContextView(APIView):
+    """GET/PUT /api/v1/chat/context: whether Sushi may see a summary of the student's own
+    records, and the exact text it would see (B83). Off unless turned on."""
+
+    @extend_schema(responses={200: OpenApiTypes.OBJECT})
+    def get(self, request: Request) -> Response:
+        return Response(self._body(request))
+
+    @extend_schema(request=ChatContextSerializer, responses={200: OpenApiTypes.OBJECT})
+    def put(self, request: Request) -> Response:
+        serializer = ChatContextSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        enabled = serializer.validated_data["enabled"]
+        ChatContextSetting.objects.update_or_create(
+            user=cast(User, request.user), defaults={"enabled": enabled}
+        )
+        audit("chat.context_enabled" if enabled else "chat.context_disabled", user=request.user)
+        return Response(self._body(request))
+
+    def _body(self, request: Request) -> dict[str, Any]:
+        user = cast(User, request.user)
+        return {"enabled": context.is_enabled(user), "preview": context.build_context(user)}
 
 
 class ChatInfoView(APIView):

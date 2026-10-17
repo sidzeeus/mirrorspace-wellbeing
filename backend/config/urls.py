@@ -5,7 +5,12 @@ from drf_spectacular.views import SpectacularAPIView
 from rest_framework.routers import SimpleRouter
 
 from apps.accounts.views import AccountView, ExportView
-from apps.chat.views import ChatFeedbackViewSet, ChatInfoView, ChatSessionViewSet
+from apps.chat.views import (
+    ChatContextView,
+    ChatFeedbackViewSet,
+    ChatInfoView,
+    ChatSessionViewSet,
+)
 from apps.checkins.views import CheckInViewSet, PatternsView
 from apps.episodes.views import EpisodeViewSet, TriggerViewSet
 from apps.notifications.views import EmailWebhookView, NotificationViewSet
@@ -39,6 +44,7 @@ api_v1: list[URLPattern | URLResolver] = [
     path("export", ExportView.as_view(), name="export"),
     path("patterns", PatternsView.as_view(), name="patterns"),
     path("chat/info", ChatInfoView.as_view(), name="chat-info"),
+    path("chat/context", ChatContextView.as_view(), name="chat-context"),
     path("vent/reflect", VentReflectView.as_view(), name="vent-reflect"),
     path("safety-plan", SafetyPlanView.as_view(), name="safety-plan"),
     path("sharing/preview", sharing.WeeklyPreviewView.as_view(), name="sharing-preview"),

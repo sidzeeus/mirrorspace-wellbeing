@@ -2,7 +2,8 @@
   "nav": {
     "helplines": "Helplines",
     "signIn": "Sign in",
-    "create": "Create an account"
+    "create": "Create an account",
+    "backToApp": "Back to the app"
   },
   "hero": {
     "lineOne": "Notice your patterns. Find one small step.",

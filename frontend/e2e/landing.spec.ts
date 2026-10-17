@@ -163,3 +163,15 @@ test.describe("landing page", () => {
     });
   }
 });
+
+test("background music can be turned off, and the choice is remembered", async ({ page }) => {
+  await page.goto("/");
+  const toggle = page.locator("[data-music-toggle]");
+  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await expect(toggle).toHaveAccessibleName("Turn background music off");
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  await page.reload();
+  await expect(page.locator("[data-music-toggle]")).toHaveAttribute("aria-pressed", "false");
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("prefs") ?? "{}").music)).toBe("off");
+});

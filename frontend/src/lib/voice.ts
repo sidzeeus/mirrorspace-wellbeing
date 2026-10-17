@@ -13,6 +13,8 @@
  */
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 
+import { ambient } from "@/lib/ambient";
+
 type RecognitionResult = { isFinal: boolean; 0: { transcript: string } };
 type RecognitionEvent = { resultIndex: number; results: ArrayLike<RecognitionResult> };
 type RecognitionErrorEvent = { error: string };
@@ -99,10 +101,12 @@ export function useSpeechRecognition(lang: string) {
       recognition.onend = () => {
         current.current = null;
         setListening(false);
+        ambient.duck(false);
         handlers.onFinal(finalText.trim());
       };
       current.current = recognition;
       setListening(true);
+      ambient.duck(true);
       recognition.start();
     },
     [lang],
@@ -120,7 +124,7 @@ function sentences(text: string): string[] {
 }
 
 /*
-  Mira's voice: soft and feminine. Devices offer different voices, so these are tried
+  Sushi's voice: soft and feminine. Devices offer different voices, so these are tried
   in order, natural-sounding ones first; the first one this device has is used.
 */
 const PREFERRED_VOICES = [
@@ -176,12 +180,20 @@ export function useSpeechSynthesis(lang: string) {
   const mounted = useMounted();
   const supported = mounted && typeof window !== "undefined" && "speechSynthesis" in window;
   const [speaking, setSpeaking] = useState(false);
+  const ducked = useRef(false);
+  const setTalking = useCallback((on: boolean) => {
+    setSpeaking(on);
+    if (on !== ducked.current) {
+      ducked.current = on;
+      ambient.duck(on);
+    }
+  }, []);
 
   const stop = useCallback(() => {
     if (!supported) return;
     window.speechSynthesis.cancel();
-    setSpeaking(false);
-  }, [supported]);
+    setTalking(false);
+  }, [supported, setTalking]);
 
   const speak = useCallback(
     (text: string) => {
@@ -198,15 +210,15 @@ export function useSpeechSynthesis(lang: string) {
         utterance.rate = 0.92;
         utterance.pitch = 1.08;
         utterance.volume = 0.9;
-        if (index === 0) utterance.onstart = () => setSpeaking(true);
+        if (index === 0) utterance.onstart = () => setTalking(true);
         if (index === parts.length - 1) {
-          utterance.onend = () => setSpeaking(false);
-          utterance.onerror = () => setSpeaking(false);
+          utterance.onend = () => setTalking(false);
+          utterance.onerror = () => setTalking(false);
         }
         synth.speak(utterance);
       });
     },
-    [lang, supported],
+    [lang, supported, setTalking],
   );
 
   // Chrome fills the voice list a moment after load; asking once warms it up, so the

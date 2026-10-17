@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useEffect } from "react";
 
+import { MusicToggle } from "@/components/AmbientMusic";
 import { Button } from "@/components/ui/primitives";
 import { ApiError, api, forgetCsrfToken } from "@/lib/api";
 import { PRIVACY_PURPOSE } from "@/lib/constants";
@@ -48,6 +49,7 @@ const ICONS: Record<string, ReactNode> = {
   ),
   vent: <path d="M4 17c3-1 4-4 4-7a4 4 0 0 1 8 0c0 3 1 6 4 7M7 20h10" />,
   chat: <path d="M5 5h14v10h-7l-4 4v-4H5z" />,
+  sounds: <path d="M4 13a8 8 0 0 1 16 0M4 13v4a2 2 0 0 0 2 2h1v-7H6a2 2 0 0 0-2 2ZM20 13v4a2 2 0 0 1-2 2h-1v-7h1a2 2 0 0 1 2 2Z" />,
   resources: (
     <path d="M7 4h3l1 4-2 1.5a10 10 0 0 0 5.5 5.5L16 13l4 1v3a2 2 0 0 1-2 2A14 14 0 0 1 5 6a2 2 0 0 1 2-2Z" />
   ),
@@ -64,12 +66,13 @@ const NAV = [
   { key: "home", href: "/home" },
   { key: "checkIn", href: "/check-in" },
   { key: "vent", href: "/vent" },
+  { key: "chat", href: "/chat" },
   { key: "patterns", href: "/patterns" },
   { key: "episodes", href: "/episodes" },
   { key: "exercises", href: "/exercises" },
   { key: "plan", href: "/plan" },
   { key: "sharing", href: "/sharing" },
-  { key: "chat", href: "/chat" },
+  { key: "sounds", href: "/sounds" },
   { key: "resources", href: "/resources" },
   { key: "settings", href: "/settings" },
 ] as const;
@@ -193,9 +196,12 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="lg:grid lg:min-h-dvh lg:grid-cols-[17rem_minmax(0,1fr)]">
       <aside className="no-print hidden lg:sticky lg:top-0 lg:block lg:h-dvh lg:p-4">
         <div className="glass flex h-full flex-col overflow-y-auto rounded-3xl p-4">
-          <Link href="/home" className="mb-5 inline-flex min-h-11 items-center px-3 text-lg font-medium tracking-tight">
-            {common("appName")}
-          </Link>
+          <div className="mb-5 flex items-center justify-between gap-2">
+            <Link href="/home" className="inline-flex min-h-11 items-center px-3 text-lg font-medium tracking-tight">
+              {common("appName")}
+            </Link>
+            <MusicToggle />
+          </div>
           <SupportLink className="mb-5 w-full" />
           {onboarding ? null : (
             <nav aria-label={t("navLabel")} className="flex flex-col gap-0.5">
@@ -213,7 +219,10 @@ export function AppShell({ children }: { children: ReactNode }) {
             <Link href="/home" className="inline-flex min-h-11 items-center text-lg font-medium tracking-tight">
               {common("appName")}
             </Link>
-            <SupportLink />
+            <div className="flex items-center gap-1.5">
+              <MusicToggle />
+              <SupportLink />
+            </div>
           </div>
         </header>
 

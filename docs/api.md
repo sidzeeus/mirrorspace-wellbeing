@@ -772,6 +772,9 @@ Limit: 30 a minute. Body `{"text": "..."}`, 1 to 5000 characters. Stores nothing
 ### GET, POST /vent-entries; GET, DELETE /vent-entries/{id}
 Entries the student chose to keep: `{"id", "body", "created_at"}`, newest first. `body` is 1 to 5000 characters and encrypted at rest. Entries cannot be edited (`405`). They are included in `GET /export` as `vent_entries`.
 
+### GET, PUT /chat/context (decision B83)
+`{"enabled": false, "preview": "..."}`. `PUT {"enabled": true}` lets the AI see the summary shown in `preview`, which is exactly what it receives. Off by default. Replies to messages may now include `plan: {"matched": [...], "coping_steps": [...], "href": "/plan"}` when sharing is on and the message mentions one of the student's own triggers; otherwise `plan` is `null`.
+
 ### Changes on 2026-10-17 (decision B74)
 
 `POST /chat/sessions/{id}/messages` no longer returns `kind: "unsupported"`. A message with no matching reviewed material is answered by the AI as conversation, with `sources: []`. The `history` the client sends may now include up to 20 earlier turns.

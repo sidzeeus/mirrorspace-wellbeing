@@ -40,7 +40,7 @@ test("chat says it is an AI, answers from reviewed material, and shows its sourc
 
   // One line says it is an AI before any message; the full disclosure is one tap away.
   const banner = page.locator("[data-chat-banner]");
-  await expect(banner).toContainText("Mira is an AI, not a therapist. Nobody monitors this chat.");
+  await expect(banner).toContainText("Sushi is an AI, not a therapist. Nobody monitors this chat.");
   await banner.getByRole("button", { name: "About this chat" }).click();
   await expect(banner.getByText("I am an AI, not a therapist, a counsellor or a doctor.")).toBeVisible();
   await expect(banner.getByText("I cannot diagnose, advise on medication or treatment")).toBeVisible();
@@ -200,7 +200,7 @@ test("voice: Talk sends what was said, and the reply is read aloud", async ({ pa
 test("Enter sends a message and Shift+Enter starts a new line", async ({ page }) => {
   await signIn(page, createUser());
   await page.goto("/chat");
-  await expect(page.getByText("Hi, I'm Mira.")).toBeVisible();
+  await expect(page.getByText("Hi, I'm Sushi.")).toBeVisible();
   const box = page.getByLabel("Your message");
   await box.fill("first line");
   await box.press("Shift+Enter");
@@ -210,4 +210,38 @@ test("Enter sends a message and Shift+Enter starts a new line", async ({ page })
   await expect(box).toHaveValue("");
   await expect(page.locator("[data-turn='user']")).toContainText("second line");
   await expect(page.locator("[data-turn='answer']").first()).toBeVisible({ timeout: 90_000 });
+});
+
+test("Sushi only sees my records when I turn it on, and brings up my plan for my triggers", async ({ page }) => {
+  const email = createUser();
+  manage(`
+from apps.accounts.models import User
+from apps.episodes.models import Trigger
+from apps.safety.models import SafetyPlan
+u = User.objects.get(email=${JSON.stringify(email)})
+Trigger.objects.create(user=u, label="exam results")
+SafetyPlan.objects.create(user=u, coping_steps=["slow breathing", "text my sister"], people=["Private Person"])
+`);
+  await signIn(page, email);
+  await page.goto("/chat");
+  await page.getByRole("button", { name: "Chat settings" }).click();
+  const sharing = page.getByRole("switch", { name: /Let Sushi know about my wellbeing/ });
+  await expect(sharing).not.toBeChecked();
+  await sharing.click();
+  await expect(sharing).toBeChecked();
+  await page.getByText("See exactly what Sushi sees").click();
+  const preview = page.locator("[data-chat-context] pre");
+  await expect(preview).toContainText("exam results");
+  await expect(preview).toContainText("slow breathing");
+  await expect(preview).not.toContainText("Private Person");
+  await expectAccessible(page);
+
+  const box = page.getByLabel("Your message");
+  await box.fill("my exam results come out tomorrow and I can't stop thinking about it");
+  await box.press("Enter");
+  const card = page.locator("[data-plan-card]");
+  await expect(card).toBeVisible({ timeout: 90_000 });
+  await expect(card).toContainText("on your trigger list (exam results)");
+  await expect(card).toContainText("text my sister");
+  await expect(card.getByRole("link", { name: "Open my safety plan" })).toHaveAttribute("href", "/plan");
 });

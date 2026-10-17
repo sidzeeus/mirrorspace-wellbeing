@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocale, useTranslations } from "next-intl";
 import {
   type FormEvent,
@@ -13,7 +13,7 @@ import {
 } from "react";
 import { z } from "zod";
 
-import { Pet } from "@/components/pet/Pet";
+import { CatFace } from "@/components/pet/CatFace";
 import { Toggle, useToast } from "@/components/ui/controls";
 import { Notice, buttonClass } from "@/components/ui/primitives";
 import { api } from "@/lib/api";
@@ -43,8 +43,13 @@ const replySchema = z.object({
     }),
   ),
   level: z.string().nullable(),
+  plan: z
+    .object({ matched: z.array(z.string()), coping_steps: z.array(z.string()), href: z.string() })
+    .nullable()
+    .optional(),
 });
 type Reply = z.infer<typeof replySchema>;
+const contextSchema = z.object({ enabled: z.boolean(), preview: z.string() });
 type Turn =
   | { id: number; role: "user"; text: string }
   | { id: number; role: "reply"; reply: Reply; rated?: boolean };
@@ -83,10 +88,10 @@ const ICONS = {
 } as const;
 
 /**
- * The AI chat, laid out like any messaging app: Mira's messages on the left, yours on
+ * The AI chat, laid out like any messaging app: Sushi's messages on the left, yours on
  * the right, one box at the bottom. Enter sends; Shift+Enter adds a line.
  *
- * What stays, whatever the layout: a line saying Mira is an AI and nobody monitors the
+ * What stays, whatever the layout: a line saying Sushi is an AI and nobody monitors the
  * chat, the full disclosure one tap away, saving off unless turned on, and Support in
  * the shell above. The conversation lives in this screen's memory unless saving is on.
  *
@@ -117,6 +122,19 @@ export default function ChatPage() {
   const [readAloud, setReadAloud] = useState(false);
   // The last message was spoken, so its reply is spoken back.
   const spokenTurn = useRef(false);
+
+  const queryClient = useQueryClient();
+  // Whether Sushi may see a summary of this person's own records (off unless turned on).
+  const sharing = useQuery({
+    queryKey: ["chat-context"],
+    queryFn: () => api("/chat/context", { schema: contextSchema }),
+  });
+  const setSharing = useMutation({
+    mutationFn: (enabled: boolean) =>
+      api("/chat/context", { method: "PUT", body: { enabled }, schema: contextSchema }),
+    onSuccess: (data) => queryClient.setQueryData(["chat-context"], data),
+    onError: (error) => toast(errorText(error)),
+  });
 
   const info = useQuery({
     queryKey: ["chat-info"],
@@ -254,7 +272,12 @@ export default function ChatPage() {
     <div className="flex min-h-[calc(100dvh-14rem)] flex-col lg:min-h-[calc(100dvh-7rem)]">
       {/* Who you are talking to, and the settings, in one quiet bar. */}
       <header className="mb-3 flex items-center gap-3">
-        <Pet species="cat" mood="listening" className="w-11 shrink-0" />
+        <CatFace
+          label={voice.speaking ? t("faceTalking") : t("face")}
+          talking={voice.speaking}
+          thinking={send.isPending}
+          className="w-16 shrink-0"
+        />
         <div className="grow">
           <h1 className="text-lg font-medium leading-tight">{t("title")}</h1>
           <p className="text-sm text-dim">{t("subtitle")}</p>
@@ -295,6 +318,24 @@ export default function ChatPage() {
             checked={saving}
             onChange={(on) => setSave.mutate(on)}
           />
+          <div data-chat-context>
+            <Toggle
+              label={t("context.toggle")}
+              hint={sharing.data?.enabled ? t("context.on") : t("context.off")}
+              checked={sharing.data?.enabled ?? false}
+              onChange={(on) => setSharing.mutate(on)}
+            />
+            {sharing.data?.enabled ? (
+              <details className="mt-1 text-sm">
+                <summary className="link inline-flex min-h-11 cursor-pointer items-center">
+                  {t("context.preview")}
+                </summary>
+                <pre className="whitespace-pre-wrap rounded-2xl border border-line p-3 font-sans text-dim">
+                  {sharing.data.preview || t("context.empty")}
+                </pre>
+              </details>
+            ) : null}
+          </div>
           {voice.supported ? (
             <Toggle
               label={t("voice.readAloud")}
@@ -361,7 +402,7 @@ export default function ChatPage() {
       <div role="log" aria-live="polite" aria-label={t("title")} className="grow space-y-4 pb-4" data-chat-log>
         {turns.length === 0 && !send.isPending ? (
           <div className="flex flex-col items-center py-8 text-center">
-            <Pet species="cat" mood="idle" className="mb-4 w-28" />
+            <CatFace talking={voice.speaking} className="mb-4 w-32" />
             <p className="h2 mb-1">{t("greeting")}</p>
             <p className="mb-6 text-dim">{t("empty")}</p>
             <div className="flex flex-wrap justify-center gap-2">
@@ -389,7 +430,7 @@ export default function ChatPage() {
             </div>
           ) : (
             <div key={turn.id} className="flex items-start gap-2" data-turn={turn.reply.kind}>
-              <Pet species="cat" className="mt-0.5 w-8 shrink-0" />
+              <CatFace className="mt-0.5 w-8 shrink-0" />
               <div className="max-w-[85%]">
                 <div
                   className={`frame rounded-3xl rounded-tl-lg px-4 py-2.5 ${
@@ -413,6 +454,25 @@ export default function ChatPage() {
                           {t(`actions.${item.type}`)}
                         </a>
                       ))}
+                    </div>
+                  ) : null}
+                  {turn.reply.plan ? (
+                    <div className="mt-3 rounded-2xl border border-care/60 p-3" data-plan-card>
+                      <p className="mb-2 text-sm font-medium">
+                        {t("context.planTitle", { trigger: turn.reply.plan.matched.join(", ") })}
+                      </p>
+                      {turn.reply.plan.coping_steps.length > 0 ? (
+                        <ul className="mb-2 list-disc space-y-1 pl-5 text-sm">
+                          {turn.reply.plan.coping_steps.map((step) => (
+                            <li key={step}>{step}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="mb-2 text-sm text-dim">{t("context.planEmpty")}</p>
+                      )}
+                      <a href={turn.reply.plan.href} className="link inline-flex min-h-11 items-center text-sm">
+                        {t("context.openPlan")}
+                      </a>
                     </div>
                   ) : null}
                   {turn.reply.sources.length > 0 ? (
@@ -456,7 +516,7 @@ export default function ChatPage() {
 
         {send.isPending ? (
           <div className="flex items-start gap-2" role="status">
-            <Pet species="cat" className="mt-0.5 w-8 shrink-0" />
+            <CatFace thinking className="mt-0.5 w-8 shrink-0" />
             <div className="frame flex gap-1.5 rounded-3xl rounded-tl-lg px-4 py-4" aria-hidden="true">
               {[0, 1, 2].map((dot) => (
                 <span

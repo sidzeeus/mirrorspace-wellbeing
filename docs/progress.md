@@ -394,3 +394,24 @@ Done
 
 Unfinished or not verified
 - Which voice is used depends on the device; not listened to on real devices in this session.
+
+### 2026-10-17: Sushi, music and sounds
+
+Done
+- The AI companion is renamed Sushi, with a drawn black-cat face that blinks and talks while replies are spoken (B79).
+- Background music: soft generated piano, on by default after the first interaction, with a music button in every header; quieter during voice, silent on Support (B81).
+- Sounds section in the navigation: sleep, relax and anxious-moment tracks with volume and a sleep timer (B82).
+- The "Unreviewed placeholder" label is removed from exercises (B80).
+
+Unfinished or not verified
+- The music and sounds were checked to start, stop and switch; whether they sound pleasant needs a human ear.
+
+### 2026-10-17: Sushi can know the student, if they choose
+
+Done
+- Opt-in "Let Sushi know about my wellbeing" switch, off by default, with an exact preview (B83). `GET/PUT /api/v1/chat/context`; `ChatContextSetting`; `apps/chat/context.py` builds the summary and matches triggers.
+- Mentioning one of your own triggers attaches your coping steps and a link to your plan to the reply, from code, even if the AI is down.
+- 20 backend tests (off by default, exactly what is shared and never shared, preview equals what is sent, trigger matching, crisis path unchanged, cross-user, logs, export and erasure) and a browser test.
+
+Unfinished or not verified
+- Trigger matching is exact words, case-insensitive; it will miss misspellings and synonyms.

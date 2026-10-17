@@ -160,3 +160,19 @@ class ChatUsage(models.Model):
 
     def __str__(self) -> str:
         return f"chat_usage:{self.pk}"
+
+
+class ChatContextSetting(models.Model):
+    """Whether the student lets Sushi see a summary of their own records (B83).
+
+    Off unless the student turns it on. See apps/chat/context.py for what is shared.
+    """
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="chat_context"
+    )
+    enabled = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"ChatContextSetting {self.pk}"

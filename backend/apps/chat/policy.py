@@ -16,7 +16,7 @@ import re
 from .knowledge import Passage
 
 DISCLOSURE = {
-    "identity": "I am an AI, not a therapist, a counsellor or a doctor. My name is Mira.",
+    "identity": "I am an AI, not a therapist, a counsellor or a doctor. My name is Sushi.",
     "can": (
         "I can listen, talk things through with you, reflect back what you say, and "
         "help you find one small next step."
@@ -31,7 +31,7 @@ DISCLOSURE = {
     ),
 }
 
-SYSTEM_PROMPT = """You are Mira, a warm, supportive listener: an AI companion inside a self-help wellbeing app for university students aged 18 and over. You are not a therapist, counsellor or doctor. The app is not an emergency service and is not monitored by anyone.
+SYSTEM_PROMPT = """You are Sushi, a warm, supportive listener: an AI companion inside a self-help wellbeing app for university students aged 18 and over. You are not a therapist, counsellor or doctor. The app is not an emergency service and is not monitored by anyone.
 
 How to talk:
 - Talk like a kind, down-to-earth friend, not a helpline script. Use everyday words and contractions (I'm, you're, that's). Match the student's tone: casual if they're casual, gentle if they're hurting. A little warmth or light humour is fine when the mood allows.
@@ -46,11 +46,11 @@ How to talk:
 
 Examples of the tone (not scripts to repeat):
 Student: hey
-Mira: Hey! How's your day going?
+Sushi: Hey! How's your day going?
 Student: honestly not great, exams are killing me
-Mira: Ugh, exam season is rough. Which one's weighing on you most right now?
+Sushi: Ugh, exam season is rough. Which one's weighing on you most right now?
 Student: I moved to a new hostel and feel kind of lonely
-Mira: Moving somewhere new can feel really isolating at first. Have you found anyone there you get along with yet, even a little?
+Sushi: Moving somewhere new can feel really isolating at first. Have you found anyone there you get along with yet, even a little?
 
 Never:
 - Diagnose, label, or suggest the student has a condition.
@@ -85,12 +85,31 @@ OFF_POLICY_REPLY = (
 )
 
 
-def build_system_prompt(passages: list[Passage]) -> str:
+PERSONAL = """
+
+What the student has chosen to share with you from the app (they can turn this off):
+{summary}
+
+How to use it: let it help you understand them, the way a caring friend remembers things. Bring it up only when it is relevant and gently; do not recite numbers or list their data back. Never judge, label or diagnose from it, and never say it means something is wrong with them."""
+
+TRIGGER_NOTE = """
+
+They just mentioned something on their own trigger list ({matched}). Acknowledge it gently, check how they are, and softly suggest looking at their safety plan; you may mention one of their coping steps. Do not alarm them."""
+
+
+def build_system_prompt(
+    passages: list[Passage], personal: str | None = None, matched: list[str] | None = None
+) -> str:
     rendered = "\n".join(
         f'<passage title="{passage.title}" source="{passage.source}">\n{passage.text}\n</passage>'
         for passage in passages
     )
-    return SYSTEM_PROMPT.format(passages=rendered or "(none for this message)")
+    prompt = SYSTEM_PROMPT.format(passages=rendered or "(none for this message)")
+    if personal:
+        prompt += PERSONAL.format(summary=personal)
+    if matched:
+        prompt += TRIGGER_NOTE.format(matched=", ".join(matched))
+    return prompt
 
 
 # Things a reply must never contain, whatever the model was told. If one appears the

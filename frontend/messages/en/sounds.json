@@ -1,0 +1,28 @@
+{
+  "_review": "NEEDS_HUMAN_REVIEW (docs/review-needed.md R30): track names and descriptions must not suggest treatment. Placeholder wording by an engineer.",
+  "title": "Sounds",
+  "intro": "Soft piano and gentle sounds, made right here on your device. Put one on to fall asleep, unwind, or slow your breathing down.",
+  "tracks": {
+    "sleep": {
+      "title": "For sleep",
+      "body": "Slow, low piano with soft rain. Set a timer and let it fade out on its own."
+    },
+    "relax": {
+      "title": "To relax",
+      "body": "Light, unhurried piano with a warm hum underneath."
+    },
+    "calm": {
+      "title": "When you feel anxious",
+      "body": "Slow waves that rise for four seconds and fall for six. Breathe in as they rise, out as they fall."
+    }
+  },
+  "play": "Play {name}",
+  "pause": "Pause",
+  "nowPlaying": "Playing now",
+  "settings": "Listening",
+  "volume": "Volume",
+  "timer": "Stop after",
+  "timerOff": "Keep playing",
+  "timerMinutes": "{minutes} minutes",
+  "note": "These are calming sounds, not a treatment. If you need support now, use SOS Support at the top of the screen."
+}

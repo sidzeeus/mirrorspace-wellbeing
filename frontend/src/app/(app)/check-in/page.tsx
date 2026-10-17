@@ -7,7 +7,7 @@ import { useState } from "react";
 
 import { Pet, type PetMood } from "@/components/pet/Pet";
 import { ScaleControl, Slider } from "@/components/ui/controls";
-import { Button, Notice, Panel, UnreviewedBadge, buttonClass } from "@/components/ui/primitives";
+import { Button, Notice, Panel, buttonClass } from "@/components/ui/primitives";
 import { api } from "@/lib/api";
 import { SCALE } from "@/lib/constants";
 import { localDate, useErrorText, useExercises, useMe } from "@/lib/hooks";
@@ -129,7 +129,6 @@ function CheckInForm({ saved }: { saved: CheckIn | null }) {
             <div className="frame mb-5 p-5">
               <p className="mb-1 flex flex-wrap items-center gap-2 font-medium">
                 {suggestion.title}
-                {suggestion.reviewed ? null : <UnreviewedBadge>{common("unreviewed")}</UnreviewedBadge>}
               </p>
               <p className="text-dim">{suggestion.summary}</p>
             </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
+import { BackButton } from "@/components/BackButton";
 import { PublicHeader } from "@/components/PublicHeader";
 import { ResourceList } from "@/components/ResourceList";
 import { Notice } from "@/components/ui/primitives";
@@ -35,6 +36,7 @@ export default async function ResourcesPage() {
     <>
       <PublicHeader />
       <main id="main" className="mx-auto max-w-3xl px-5 py-10">
+        <BackButton className="mb-6" />
         <h1 className="h1 mb-4">{t("title")}</h1>
         <p className="prose-width mb-4 text-dim">{t("intro")}</p>
         <div className="mb-8">

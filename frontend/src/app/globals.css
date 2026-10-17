@@ -473,7 +473,86 @@ body {
   }
 }
 
-/* The three dots while Mira is typing. */
+/*
+  Cat face (components/pet/CatFace.tsx). Blinks every few seconds; the mouth opens and
+  closes while a reply is spoken; the head tilts while a reply is on its way.
+*/
+.cat-face g {
+  transform-box: fill-box;
+}
+.cat-face .cat-head {
+  transform-origin: 50% 90%;
+  transition: transform 500ms ease;
+}
+.cat-face.is-thinking .cat-head {
+  transform: rotate(-7deg);
+}
+.cat-face.is-talking .cat-head {
+  animation: cat-nod 1.6s ease-in-out infinite;
+}
+.cat-face .cat-eyes {
+  transform-origin: 50% 50%;
+  animation: cat-blink 5.5s ease-in-out infinite;
+}
+.cat-face .cat-pompom {
+  transform-origin: 50% 100%;
+  animation: cat-pompom 4s ease-in-out infinite;
+}
+.cat-face .cat-mouth-open {
+  opacity: 0;
+  transform-origin: 50% 0%;
+}
+.cat-face.is-talking .cat-mouth-closed {
+  opacity: 0;
+}
+.cat-face.is-talking .cat-mouth-open {
+  opacity: 1;
+  animation: cat-talk 0.36s ease-in-out infinite alternate;
+}
+@keyframes cat-blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+@keyframes cat-talk {
+  0% {
+    transform: scaleY(0.25);
+  }
+  45% {
+    transform: scaleY(1);
+  }
+  70% {
+    transform: scaleY(0.55);
+  }
+  100% {
+    transform: scaleY(0.9);
+  }
+}
+@keyframes cat-nod {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(2.5deg) translateY(1px);
+  }
+}
+@keyframes cat-pompom {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(6deg);
+  }
+}
+
+/* The three dots while Sushi is typing. */
 .typing-dot {
   animation: typing-dot 1.2s ease-in-out infinite;
 }

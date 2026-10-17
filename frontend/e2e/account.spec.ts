@@ -171,3 +171,22 @@ test.describe("dashboard", () => {
     await expect(page).toHaveURL(/\/login$/);
   });
 });
+
+test("from Helplines, a signed-in person gets back into the app, not to sign-up", async ({ page }) => {
+  await signIn(page, createUser());
+  await page.goto("/home");
+  await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Helplines", exact: true }).first().click();
+  await expect(page).toHaveURL(/\/resources$/);
+  await expect(page.getByRole("link", { name: "Sign in" })).toHaveCount(0);
+  await expect(page.locator("[data-back-to-app]")).toBeVisible();
+
+  // The app's name leads home, not to the start page.
+  await page.getByRole("link", { name: "Mirrorspace" }).click();
+  await expect(page).toHaveURL(/\/home$/);
+
+  // And the Back button returns to where you were.
+  await page.goto("/home");
+  await page.goto("/resources");
+  await page.locator("[data-back]").click();
+  await expect(page).toHaveURL(/\/home$/);
+});

@@ -9,7 +9,7 @@ import { createPortal } from "react-dom";
 
 import { SupportLink } from "@/components/AppShell";
 import { BreathingPlayer } from "@/components/BreathingPlayer";
-import { Button, Notice, UnreviewedBadge, buttonClass } from "@/components/ui/primitives";
+import { Button, Notice, buttonClass } from "@/components/ui/primitives";
 import { api } from "@/lib/api";
 import { useOfflineExercises } from "@/lib/offline";
 
@@ -119,11 +119,6 @@ export default function ExercisePlayerPage() {
         ) : (
           <div>
             <h1 className="h1 mb-2 flex flex-wrap items-center gap-3">{exercise.title}</h1>
-            {exercise.reviewed ? null : (
-              <p className="mb-2">
-                <UnreviewedBadge>{t("placeholder")}</UnreviewedBadge>
-              </p>
-            )}
             <p className="mb-8 text-dim">{exercise.summary}</p>
 
             {breathing ? (

@@ -1,6 +1,6 @@
 {
-  "_review": "NEEDS_HUMAN_REVIEW: placeholder wording for the chat screen, including the voice privacy note. The banner, limits and voice notice must be reviewed by a clinician and a lawyer (docs/review-needed.md R9, R12, R28).",
-  "title": "Mira",
+  "_review": "NEEDS_HUMAN_REVIEW: placeholder wording for the chat screen, including the voice privacy note. The banner, limits and voice notice must be reviewed by a clinician and a lawyer (docs/review-needed.md R9, R12, R28), R31 (what Sushi may see).",
+  "title": "Sushi",
   "banner": "I am an AI, not a therapist.",
   "can": "What I can do",
   "cannot": "What I cannot do",
@@ -16,7 +16,7 @@
   "input": "Your message",
   "inputHint": "Enter to send, Shift+Enter for a new line.",
   "send": "Send message",
-  "sending": "Mira is typing",
+  "sending": "Sushi is typing",
   "tooLong": "Shorten your message to {max} characters or fewer.",
   "helpful": "Helpful",
   "notHelpful": "Not helpful",
@@ -57,15 +57,27 @@
     }
   },
   "subtitle": "Your AI companion",
-  "aiLine": "Mira is an AI, not a therapist. Nobody monitors this chat. In an emergency, use SOS Support.",
+  "aiLine": "Sushi is an AI, not a therapist. Nobody monitors this chat. In an emergency, use SOS Support.",
   "about": "About this chat",
   "settings": "Chat settings",
-  "greeting": "Hi, I'm Mira.",
+  "greeting": "Hi, I'm Sushi.",
   "suggestions": {
     "stressed": "I'm feeling stressed",
     "sleep": "I can't sleep",
     "lonely": "I feel a bit lonely",
     "talk": "I just want to talk"
   },
-  "placeholder": "Message Mira"
+  "placeholder": "Message Sushi",
+  "face": "Sushi, a black cat in an orange beanie and round glasses",
+  "faceTalking": "Sushi, a black cat in an orange beanie, speaking",
+  "context": {
+    "toggle": "Let Sushi know about my wellbeing",
+    "off": "Off. Sushi knows nothing about your check-ins, triggers or plan.",
+    "on": "On. Sushi sees a short summary: check-ins and sleep from the last 14 days, your triggers, recent hard moments, and your safety plan's warning signs and coping steps. Never the people in your plan, your Vent entries or your contacts.",
+    "preview": "See exactly what Sushi sees",
+    "empty": "Nothing yet: add a check-in, a trigger or your safety plan.",
+    "planTitle": "That's on your trigger list ({trigger}). Your coping steps:",
+    "planEmpty": "You haven't added coping steps to your safety plan yet.",
+    "openPlan": "Open my safety plan"
+  }
 }
