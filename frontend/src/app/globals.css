@@ -681,6 +681,60 @@ html[data-motion="reduced"] .bubbles {
     opacity: 0;
   }
 }
+/* Sushi character (components/pet/SushiCharacter.tsx). */
+.sushi g {
+  transform-box: fill-box;
+}
+.sushi .sushi-tail {
+  transform-origin: 0% 100%;
+  animation: sushi-tail 3.2s ease-in-out infinite;
+}
+.sushi .sushi-head {
+  transform-origin: 50% 100%;
+  animation: sushi-head 6s ease-in-out infinite;
+}
+.sushi .sushi-eyes {
+  transform-origin: 50% 50%;
+  animation: cat-blink 5s ease-in-out infinite;
+}
+.sushi .sushi-needles {
+  transform-origin: 100% 100%;
+  animation: sushi-knit 1.1s ease-in-out infinite alternate;
+}
+.sushi .sushi-pompom {
+  transform-origin: 50% 100%;
+  animation: cat-pompom 4s ease-in-out infinite;
+}
+@keyframes sushi-tail {
+  0%,
+  100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(7deg);
+  }
+}
+@keyframes sushi-head {
+  0%,
+  70%,
+  100% {
+    transform: rotate(0deg);
+  }
+  80% {
+    transform: rotate(-6deg);
+  }
+  90% {
+    transform: rotate(2deg);
+  }
+}
+@keyframes sushi-knit {
+  from {
+    transform: rotate(-4deg);
+  }
+  to {
+    transform: rotate(4deg);
+  }
+}
 @keyframes cat-blink {
   0%,
   92%,

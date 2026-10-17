@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
 
 import { PawWeek } from "@/components/pet/PawWeek";
-import { MascotCycle } from "@/components/pet/Mascot";
+import { SushiCharacter } from "@/components/pet/SushiCharacter";
 import { Notice, Panel, buttonClass } from "@/components/ui/primitives";
 import { api } from "@/lib/api";
 import { keys, localDate, useErrorText, useExercises, useMe } from "@/lib/hooks";
@@ -46,12 +46,35 @@ export default function HomePage() {
 
   return (
     <div className="space-y-10">
-      <div className="flex items-end justify-between gap-4">
-        <h1 className="h1">
+      {/*
+        The welcome: who you are, where you are, and Sushi. It spans the whole width of
+        the screen (not just the reading column below), and every size inside is a share
+        of that width: the name takes about three quarters, Sushi most of the rest.
+      */}
+      <section
+        aria-labelledby="welcome-title"
+        className="@container relative left-1/2 w-[calc(100vw-2.5rem)] -translate-x-1/2 pb-4 pt-2 text-center lg:w-[calc(100vw-17rem-4rem)]"
+        data-welcome
+      >
+        {/* On desktop the sidebar takes 17rem on the left; moving these by half of that
+            puts them at the centre of the whole screen. */}
+        <h1
+          id="welcome-title"
+          className="mb-[0.6cqw] text-[max(1.25rem,3.4cqw)] font-normal leading-tight lg:-translate-x-[8.5rem]"
+        >
           {me.data?.display_name ? t("hello", { name: me.data.display_name }) : t("helloPlain")}
         </h1>
-        <MascotCycle className="w-20 shrink-0 sm:w-24" />
-      </div>
+        <p className="label mb-[1.5cqw] text-[max(0.75rem,1.35cqw)] text-dim lg:-translate-x-[8.5rem]">
+          {t("welcome")}
+        </p>
+        <div className="flex items-center justify-center gap-[2cqw]">
+          {/* One word, never broken across lines. */}
+          <p className="whitespace-nowrap text-[9cqw] font-medium uppercase leading-none tracking-[0.04em] [overflow-wrap:normal]">
+            {common("appName")}
+          </p>
+          <SushiCharacter label={t("sushi")} className="w-[18cqw] shrink-0" />
+        </div>
+      </section>
 
       {checkIns.isError ? (
         <Notice tone="attention" role="alert">
@@ -80,10 +103,8 @@ export default function HomePage() {
           {t("week.title")}
         </h2>
         <Panel className="mb-4 overflow-hidden">
-          <div className="mx-auto max-w-md">
-            <PawWeek lit={lit} label={t("week.lumen", { count, days })} />
-          </div>
-          <ol className="data grid grid-cols-7 border-t border-line text-center text-dim" aria-hidden="true">
+          <PawWeek lit={lit} label={t("week.lumen", { count, days })} />
+          <ol className="data grid grid-cols-7 gap-1 border-t border-line px-2 text-center text-dim" aria-hidden="true">
             {dates.map((date) => (
               <li key={date} className="py-2">
                 {format.dateTime(new Date(`${date}T12:00:00Z`), { weekday: "narrow", timeZone: "UTC" })}

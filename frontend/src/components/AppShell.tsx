@@ -86,7 +86,7 @@ const NAV = [
 export function SupportLink({ className = "" }: { className?: string }) {
   const t = useTranslations("common");
   return (
-    <a href="/support" className={`btn btn-care no-print ${className}`} data-support-link>
+    <a href="/support" className={`btn btn-care no-print whitespace-nowrap [overflow-wrap:normal] ${className}`} data-support-link>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <path
           d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"
@@ -96,7 +96,8 @@ export function SupportLink({ className = "" }: { className?: string }) {
         />
       </svg>
       <span className="font-semibold tracking-[0.16em]">{t("sos")}</span>
-      <span>{t("support")}</span>
+      {/* On the narrowest phones the button reads "SOS"; the full name stays for screen readers. */}
+      <span className="max-[359px]:sr-only">{t("support")}</span>
     </a>
   );
 }
@@ -219,8 +220,9 @@ export function AppShell({ children }: { children: ReactNode }) {
         <header className="no-print sticky top-0 z-30 px-3 pt-3 lg:hidden">
           <div className="glass flex h-14 items-center justify-between gap-3 rounded-full py-1 pl-5 pr-1.5">
             <Link href="/home" className="inline-flex min-h-11 items-center gap-2 text-lg font-medium tracking-tight">
-              <CatFace expression="happy" className="w-8" />
-              <span className="sr-only min-[360px]:not-sr-only">{common("appName")}</span>
+              <CatFace expression="happy" className="w-9" />
+              {/* On phones the face is the logo; the name stays for screen readers. */}
+              <span className="sr-only sm:not-sr-only">{common("appName")}</span>
             </Link>
             <div className="flex items-center gap-1.5">
               <MusicToggle />

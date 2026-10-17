@@ -28,5 +28,7 @@
     "plan": "My safety plan",
     "support": "Support options"
   },
-  "error": "Your home screen could not be loaded."
+  "error": "Your home screen could not be loaded.",
+  "welcome": "Welcome to",
+  "sushi": "Sushi, a black cat in an orange beanie and round glasses, knitting with a ball of orange yarn."
 }

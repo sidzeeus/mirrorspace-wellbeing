@@ -430,3 +430,9 @@ Unfinished or not verified
 ### 2026-10-17: Check in and Vent in one section
 
 - Check in now has two tabs, Quick check-in and Vent (B85). Vent is out of the navigation; old links redirect.
+
+### 2026-10-17: Home welcome
+
+- Home opens with "Hello, {name}", "Welcome to" and a large MIRRORSPACE across about three quarters of the width, with full-body Sushi (knitting, after the owner's reference) beside it. Sizes scale with the screen width.
+- Fixed: the week's paw prints now sit over the right day letters.
+- On the narrowest phones the header shows Sushi's face as the logo and the button reads "SOS" (full name kept for screen readers), so nothing scrolls sideways.
