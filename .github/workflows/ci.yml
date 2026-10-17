@@ -34,7 +34,7 @@ jobs:
       DJANGO_SETTINGS_MODULE: config.settings.test
       DATABASE_URL: postgres://wellbeing:wellbeing@localhost:5432/wellbeing
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -64,7 +64,7 @@ jobs:
     env:
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
@@ -86,7 +86,7 @@ jobs:
     env:
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       # CI has no local model: the chat uses the deterministic stand-in.
       - name: Use the stand-in chat model
         run: echo "CHAT_PROVIDER=apps.chat.providers.MockProvider" > .env
@@ -122,7 +122,7 @@ jobs:
     name: Container images build
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Backend image
         run: docker build -f Dockerfile.backend -t wellbeing-backend:ci .
       - name: Frontend image
