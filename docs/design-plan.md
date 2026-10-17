@@ -1,6 +1,6 @@
 # Frontend design plan
 
-Written before any frontend code (README Prompt 4), checked against README Part C and against generic defaults, then revised. The revisions are listed at the end.
+Written before any frontend code (spec Prompt 4), checked against spec Part C and against generic defaults, then revised. The revisions are listed at the end.
 
 ## Concept
 
@@ -113,11 +113,11 @@ Support is a real link to `/support` on every screen (top right on mobile, botto
 | A purple gradient button on black as the only accent | That is the single-bright-accent-on-black look, and a glowing purple button competes with the Lumen. | The Lumen is the only thing that glows. Primary buttons are a flat pale fill (`lumen-hi`) with dark text. Support has its own color (`care`), used nowhere else. |
 | Three identical rounded cards for "Notice / Step / Help" | Identical cards are the template look, and they made the promise read like a feature list. | The promise is a scroll story: numbered text beside a sticky stage in which the Lumen changes form. No cards. |
 | "What it is / is not" as two cards with icons | Same card repetition; icons add nothing. | Two ruled columns of plain sentences, like a printed notice. |
-| An all-caps eyebrow above every heading | README C.3 forbids all-caps labels and stacked eyebrows. | Removed. Where a section needs a marker it is a mono numeral (1, 2, 3). |
-| Fade-and-slide-up on every section as it scrolls in | Scattered effects; README C.4 allows one moment per page. | Only the Lumen moves. Sections are simply there. |
-| One 16px radius on everything | README C.3 asks for radii by hierarchy. | Square structural panels, 14px controls, round buttons. |
+| An all-caps eyebrow above every heading | spec C.3 forbids all-caps labels and stacked eyebrows. | Removed. Where a section needs a marker it is a mono numeral (1, 2, 3). |
+| Fade-and-slide-up on every section as it scrolls in | Scattered effects; spec C.4 allows one moment per page. | Only the Lumen moves. Sections are simply there. |
+| One 16px radius on everything | spec C.3 asks for radii by hierarchy. | Square structural panels, 14px controls, round buttons. |
 | Centered hero with the orb as a background decoration | The Lumen must never be decoration. | The hero Lumen sits in a framed stage with crop marks and is the same object that later reflects the check-in. Its text alternative says what it is. |
-| A streak counter and "great job" on the dashboard | README C.4: no streaks, no praise, no guilt. | The week view shows which days have a check-in as lit clusters, with one neutral sentence. |
+| A streak counter and "great job" on the dashboard | spec C.4: no streaks, no praise, no guilt. | The week view shows which days have a check-in as lit clusters, with one neutral sentence. |
 | Framer Motion for transitions | It would add about 40 KB to every page for effects CSS can do, against the performance budget. | CSS transitions only. Recorded as a decision. |
 | Theme, text size and motion saved to the account | Those are device comforts, not account data. | Kept in the browser only. Language is the one preference stored on the account. |
 

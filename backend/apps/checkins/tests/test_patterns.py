@@ -13,7 +13,7 @@ pytestmark = pytest.mark.django_db
 URL = "/api/v1/patterns"
 
 # Wording an observation must never use: causal, predictive, diagnostic, judging or
-# advising language (non-negotiable 1, README C.6 "Patterns").
+# advising language (non-negotiable 1, spec C.6 "Patterns").
 BANNED_PHRASES = [
     "because",
     "cause",

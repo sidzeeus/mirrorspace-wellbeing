@@ -4,7 +4,7 @@
  * AnimatedGradientBackground: a radial gradient that fades in and can slowly "breathe".
  *
  * Adapted from a community component (shadcn-style, framer-motion). Changes from the
- * original, to meet this app's rules (README Part C, docs/decisions.md B70):
+ * original, to meet this app's rules (spec Part C, docs/decisions.md B70):
  * - With reduced motion or low-bandwidth mode it is a still gradient: no entrance
  *   animation and no animation loop.
  * - The loop only runs while breathing, and pauses when the tab is hidden; a still

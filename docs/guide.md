@@ -116,7 +116,8 @@ In words:
 
 ```
 CLAUDE.md                 Rules for anyone (or any AI) working on the code
-README.md                 The original build specification
+README.md                 Project overview
+docs/spec.md              The original build specification
 .env.example              Every setting, documented, with safe local values
 docker-compose.yml        The local stack: db, redis, web, worker, beat, frontend
 Dockerfile.backend        The backend image (one image, three roles)

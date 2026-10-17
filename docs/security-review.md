@@ -1,6 +1,6 @@
 # Security review
 
-Hardening pass over the whole repository (README Prompt 8), carried out on 2026-10-12 against the blueprint's security baseline (Part E, section 8).
+Hardening pass over the whole repository (spec Prompt 8), carried out on 2026-10-12 against the blueprint's security baseline (Part E, section 8).
 
 > This is an engineer's self-review with automated checks. It is not a penetration test or an independent audit. Both are recommended before real students use the app.
 
