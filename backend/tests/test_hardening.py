@@ -82,7 +82,7 @@ class TestSecuritySettings:
             "assert s.CORS_ALLOWED_ORIGINS == ['https://app.example.test'];"
             "assert not getattr(s, 'CORS_ALLOW_ALL_ORIGINS', False);"
             "assert s.SHOW_UNREVIEWED_CONTENT is False;"
-            "assert s.CHAT_PROVIDER.endswith('AnthropicProvider');"
+            "assert s.CHAT_PROVIDER.endswith('OpenAICompatibleProvider');"
             "assert 'Argon2' in s.PASSWORD_HASHERS[0];"
             "assert s.REST_FRAMEWORK['NUM_PROXIES'] >= 1;"
             "assert s.DATA_UPLOAD_MAX_MEMORY_SIZE <= 262144;"

@@ -5,8 +5,9 @@ Everything else calls `get_provider().complete(...)` and handles three outcomes:
 here and naming it in CHAT_PROVIDER. Nothing in this file logs a prompt or a reply.
 
 Data minimization: a provider receives the fixed instructions, a few reviewed
-passages, and the conversation text. It never receives a name, an email address, a
-user id, a check-in, a safety plan or a contact.
+passages and the conversation text, plus a short wellbeing summary only if the
+student turned that on (apps/chat/context.py). It never receives a name, an email
+address, a user id, a Vent entry or a contact.
 """
 
 from __future__ import annotations
@@ -115,43 +116,51 @@ class AnthropicProvider:
         return text
 
 
-class OllamaProvider:
-    """A model running on our own machine through Ollama (https://ollama.com). Free.
+class OpenAICompatibleProvider:
+    """Any server that speaks the OpenAI chat-completions API. Uses only the standard library.
 
-    Nothing leaves the server the app runs on: the request goes to the Ollama server
-    named by OLLAMA_URL, which runs OLLAMA_MODEL locally. Uses only the standard library.
+    One class covers both modes: a free model on your own machine through Ollama
+    (LLM_BASE_URL=http://localhost:11434/v1, no key) and a hosted provider for the
+    public demo, such as Groq or OpenRouter (their /v1 URL plus LLM_API_KEY). The key is
+    read from settings on the server and is never sent to the browser.
     """
 
     def complete(self, *, system: str, messages: list[dict[str, str]]) -> str:
-        body = {
-            "model": settings.OLLAMA_MODEL,
-            "messages": [{"role": "system", "content": system}, *messages],
-            "stream": False,
-            # Keep the model loaded between messages, so replies after the first are quick.
-            "keep_alive": "30m",
-            "options": {"temperature": 0.8, "num_predict": settings.CHAT_MAX_OUTPUT_TOKENS},
-        }
-        base = settings.OLLAMA_URL.rstrip("/")
+        base = settings.LLM_BASE_URL.rstrip("/")
         if not base.startswith(("http://", "https://")):
             logger.error("chat_provider_misconfigured")
             raise ProviderUnavailable
+        body = {
+            "model": settings.LLM_MODEL,
+            "messages": [{"role": "system", "content": system}, *messages],
+            "temperature": 0.8,
+            "max_tokens": settings.CHAT_MAX_OUTPUT_TOKENS,
+            "stream": False,
+        }
+        headers = {"Content-Type": "application/json"}
+        if settings.LLM_API_KEY:
+            headers["Authorization"] = f"Bearer {settings.LLM_API_KEY}"
         request = urllib.request.Request(  # noqa: S310 - scheme checked above
-            f"{base}/api/chat",
+            f"{base}/chat/completions",
             data=json.dumps(body).encode(),
-            headers={"Content-Type": "application/json"},
+            headers=headers,
             method="POST",
         )
         try:
             # The scheme is checked above, so only http and https are ever opened.
-            with urllib.request.urlopen(request, timeout=settings.OLLAMA_TIMEOUT) as response:  # noqa: S310
+            with urllib.request.urlopen(request, timeout=settings.LLM_TIMEOUT) as response:  # noqa: S310
                 payload = json.load(response)
         except urllib.error.HTTPError as error:
+            # Status code only: the error body can echo the request.
             logger.error("chat_provider_error", extra={"status": error.code})
             raise ProviderUnavailable from None
         except (urllib.error.URLError, TimeoutError, OSError, ValueError):
             logger.warning("chat_provider_unreachable")
             raise ProviderUnavailable from None
-        text = str((payload.get("message") or {}).get("content") or "").strip()
+        try:
+            text = str(payload["choices"][0]["message"]["content"] or "").strip()
+        except (KeyError, IndexError, TypeError):
+            raise ProviderUnavailable from None
         if not text:
             raise ProviderUnavailable
         return text
