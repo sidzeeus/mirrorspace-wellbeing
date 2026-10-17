@@ -163,6 +163,7 @@ class TestOpenAICompatibleProvider:
         )
         assert sent["url"] == "https://api.groq.test/openai/v1/chat/completions"
         assert sent["headers"]["Authorization"] == "Bearer test-key-not-real"
+        assert sent["headers"]["User-agent"] == "mirrorspace/1.0"
 
     def test_reasoning_effort_is_sent_only_when_set(self, monkeypatch, settings):
         settings.LLM_REASONING_EFFORT = ""

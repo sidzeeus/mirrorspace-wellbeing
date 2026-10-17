@@ -141,7 +141,9 @@ class OpenAICompatibleProvider:
         # effort keeps replies quick; their reasoning is returned outside `content`.
         if settings.LLM_REASONING_EFFORT:
             body["reasoning_effort"] = settings.LLM_REASONING_EFFORT
-        headers = {"Content-Type": "application/json"}
+        # A named client: some hosted APIs sit behind Cloudflare, which rejects the
+        # default "Python-urllib" user agent with a 403.
+        headers = {"Content-Type": "application/json", "User-Agent": "mirrorspace/1.0"}
         if settings.LLM_API_KEY:
             headers["Authorization"] = f"Bearer {settings.LLM_API_KEY}"
         request = urllib.request.Request(  # noqa: S310 - scheme checked above
