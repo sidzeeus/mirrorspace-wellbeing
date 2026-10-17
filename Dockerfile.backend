@@ -44,4 +44,6 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
 
 # Gunicorn stops accepting new requests on SIGTERM and lets in-flight ones finish.
 # The access log is left off: application logs are structured and redacted instead.
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "30", "--graceful-timeout", "30"]
+# The control socket goes to /tmp because the app directory is not writable.
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", \
+     "--timeout", "30", "--graceful-timeout", "30", "--control-socket", "/tmp/gunicorn.ctl"]

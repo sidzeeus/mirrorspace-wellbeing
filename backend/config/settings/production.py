@@ -12,6 +12,9 @@ ENVIRONMENT = env("ENVIRONMENT", default="production")
 
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS")
+# Render sets this to the service's own public hostname.
+if env("RENDER_EXTERNAL_HOSTNAME", default=""):
+    ALLOWED_HOSTS.append(env("RENDER_EXTERNAL_HOSTNAME"))
 FRONTEND_URL = env("FRONTEND_URL").rstrip("/")
 
 DATABASES["default"].update(env.db("DATABASE_URL"))
