@@ -30,13 +30,13 @@ frontend/playwright-report/
 *.sqlite3
 backups/
 
+# Logs
+*.log
+logs/
+
 # Editors and OS
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
 frontend/next-env.d.ts
-
-# Frontend test output
-frontend/test-results/
-frontend/playwright-report/
