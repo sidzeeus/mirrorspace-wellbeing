@@ -1,4 +1,4 @@
-"""Hardening checks (README Prompt 8): tasks, settings, query counts and scale."""
+"""Hardening checks (spec Prompt 8): tasks, settings, query counts and scale."""
 
 from __future__ import annotations
 

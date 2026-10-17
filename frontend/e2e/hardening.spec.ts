@@ -1,6 +1,6 @@
 /**
  * Localization, layout at large text, installability and the bundle budget
- * (README Prompt 6).
+ * (spec Prompt 6).
  */
 import { type Page, expect, test } from "@playwright/test";
 

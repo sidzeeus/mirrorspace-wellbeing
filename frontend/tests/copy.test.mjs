@@ -1,5 +1,5 @@
 /**
- * Copy rules that can be checked by machine (README Part C.4, C.7 and non-negotiable 1).
+ * Copy rules that can be checked by machine (spec Part C.4, C.7 and non-negotiable 1).
  * Run with: npm run test:unit
  */
 import assert from "node:assert/strict";

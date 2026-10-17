@@ -8,7 +8,7 @@ A privacy-first wellbeing companion for students aged 18 and over. It helps a st
 
 It is a support and education prototype. It is **not** therapy, diagnosis, clinical care, or an emergency-monitoring service. Nobody watches the data, and the app never contacts anyone on its own.
 
-`README.md` is the build specification. Precedence: Part A wins for decisions, Part C wins for design, Part E (the blueprint) wins for everything else. Safety and privacy rules in Part E are never relaxed by any prompt.
+`docs/spec.md` is the build specification (`README.md` is the project overview). Precedence: Part A wins for decisions, Part C wins for design, Part E (the blueprint) wins for everything else. Safety and privacy rules in Part E are never relaxed by any prompt.
 
 ## The 8 non-negotiables
 
@@ -65,10 +65,12 @@ Keep it a modular Django monolith with one PostgreSQL database. No Kubernetes, m
 frontend/            Next.js app
 backend/
   config/            Django settings (base/local/test/production), URLs, ASGI/WSGI, Celery
-  apps/              accounts, checkins, episodes, wellbeing, safety, sharing,
+  apps/              accounts, checkins, episodes, wellbeing, vent, safety, sharing,
                      notifications, chat, content_admin, audit
+  start-all.sh       single-container start for the free hosted demo
   tests/             cross-app tests (route enumeration, privacy canaries)
 infra/               deployment files and scripts
+render.yaml          Render Blueprint for the public demo
 .github/workflows/   CI and deploy pipelines
 docs/                decisions, progress, review-needed, api, privacy, runbook
 ```
@@ -87,11 +89,14 @@ Frontend
 - ESLint, TypeScript strict, no `any` without a comment explaining why.
 - Playwright for browser flows and axe-core for accessibility on every screen.
 - Every user-facing string lives in a `next-intl` message file.
-- Follow README Part C. WCAG 2.2 AA, 44px touch targets, visible focus, reduced-motion and low-bandwidth fallbacks.
+- Follow docs/spec.md Part C. WCAG 2.2 AA, 44px touch targets, visible focus, reduced-motion and low-bandwidth fallbacks.
 - The persistent Support button is present on every authenticated screen and is never hidden.
 - No streaks, guilt copy, confetti, or gamified scores.
 
 Both
+- Keep it simple. Reuse existing code before writing new; no duplicate files, no unused dependencies, no dead or commented-out code.
+- UI text is short, specific and calm. No filler, marketing phrases or decorative emoji.
+- Comments explain why, not what.
 - Test first for anything touching users' data: write the cross-user access, consent and ownership tests before or alongside the code.
 - Small commits, one logical change each. Never commit secrets, real data, or `.env` files.
 - When something is ambiguous, choose the safer and more private option, record it in `docs/decisions.md`, and tell the owner. Never guess silently on consent, privacy or safety behavior.

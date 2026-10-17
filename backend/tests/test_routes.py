@@ -1,4 +1,4 @@
-"""Every API route, enumerated (README Prompt 8, non-negotiable 7).
+"""Every API route, enumerated (spec Prompt 8, non-negotiable 7).
 
 These tests walk the URL configuration, so a route added later is covered without
 anyone remembering to write a test for it. For each route they assert:

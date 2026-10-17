@@ -1,6 +1,6 @@
 # Decisions
 
-The locked decisions for this project, each with a short rationale and the date it was recorded. `README.md` Part A is the source. Change a decision here first, then mirror it in `CLAUDE.md`.
+The locked decisions for this project, each with a short rationale and the date it was recorded. `docs/spec.md` Part A is the source. Change a decision here first, then mirror it in `CLAUDE.md`.
 
 When something is ambiguous during the build, the safer and more private option is chosen and added to "Build-time decisions" below.
 
@@ -27,7 +27,7 @@ Choices made while building where the specification was silent or contradictory.
 | # | Topic | Decision | Rationale | Date |
 |---|---|---|---|---|
 | B1 | Check-in "optional note" in blueprint section 3 and section 6 | Not built. D4 applies. | Part A overrides Part E for decisions. | 2026-10-12 |
-| B2 | Blueprint API lists `DELETE /api/v1/sharing/consent/{id}` | Revoking sets `status=revoked` and `revoked_at`; the row is kept. | Consent history must stay visible to the student (non-negotiable 2, README C.6). | 2026-10-12 |
+| B2 | Blueprint API lists `DELETE /api/v1/sharing/consent/{id}` | Revoking sets `status=revoked` and `revoked_at`; the row is kept. | Consent history must stay visible to the student (non-negotiable 2, spec C.6). | 2026-10-12 |
 | B3 | Product name | The repository folder name `mirrorspace` is treated as a working name only. User-facing copy uses a single configurable app-name string. | No name was specified; a single string keeps renaming cheap. | 2026-10-12 |
 | B4 | Registering with an email that already has an account | The API gives the same 201 reply either way. No second account is made; the real owner gets an email saying someone tried. Resend-verification and password-reset replies are equally uniform. | Having an account in a wellbeing app is itself sensitive, so nobody should be able to test whether a given person uses it. | 2026-10-12 |
 | B5 | Accounts that never confirm their email | Deleted automatically after 7 days (`UNVERIFIED_ACCOUNT_TTL_DAYS`). | Data minimization: an address typed by mistake, or by someone else, is not kept. | 2026-10-12 |
@@ -64,12 +64,12 @@ Choices made while building where the specification was silent or contradictory.
 | B36 | Do-not-email fingerprints are kept indefinitely | They survive account deletion and have no expiry. | Forgetting a "do not email me" request would break it. A fingerprint identifies nobody without the server secret. Flagged for legal review (R8). | 2026-10-12 |
 | B37 | Bounce and complaint webhook | A generic endpoint authenticated by a shared secret, taking a message reference and an event type. Disabled unless configured. | The provider is not chosen (Q1); this keeps provider specifics out of the app and never puts an address in the request. | 2026-10-12 |
 | B38 | How the browser reaches the API | Through a same-origin proxy in the frontend (`frontend/src/app/api/v1/[...path]/route.ts`). The browser never calls the API host directly. | Cookies are first-party, there is no cross-origin configuration to get wrong, and the API address is a runtime setting. The CORS allowlist stays in place for any direct client. | 2026-10-12 |
-| B39 | No Framer Motion | Transitions use CSS only. | It would add roughly 40 KB to every screen for effects CSS already does, against the performance budget. README C.9 lists it as a recommendation, not a requirement. | 2026-10-12 |
+| B39 | No Framer Motion | Transitions use CSS only. | It would add roughly 40 KB to every screen for effects CSS already does, against the performance budget. spec C.9 lists it as a recommendation, not a requirement. | 2026-10-12 |
 | B40 | Hand-written service worker instead of Serwist | `frontend/public/sw.js`, about 100 lines. | Next.js 16 builds with Turbopack, which the Serwist plugin does not target, and a small explicit worker makes "never cache /api/" easy to read and test. | 2026-10-12 |
 | B41 | Device preferences stay on the device | Theme, text size, reduced motion and low-bandwidth mode are saved in the browser only. Language is the one preference also saved to the account. | They are comforts of a device, not account data; nothing is gained by sending them to the server. | 2026-10-12 |
 | B42 | What is kept on the device for offline use | The safety plan (removed on sign-out and account deletion), the helpline list and exercise texts. Nothing else. The service worker caches pages and static files, never an API response. | Decision D7 needs the plan and helplines offline; everything else stays on the server. A browser test checks both stores. | 2026-10-12 |
 | B43 | Support is a page, not a dialog | `/support` is a plain link on every screen, and its four options are sections of one page. | A link works offline, before scripts load, with a keyboard and with a screen reader. Nothing on it moves unless the person starts the breathing aid. | 2026-10-12 |
-| B44 | Accent color adjusted for contrast | `--lumen` is `#8F88F5` in Night, a little lighter than the README's `#7C74F2`, and primary buttons use the pale `--lumen-hi` fill with dark text. | Meets WCAG AA for text on the dark background; README C.3 allows refining values while keeping roles. | 2026-10-12 |
+| B44 | Accent color adjusted for contrast | `--lumen` is `#8F88F5` in Night, a little lighter than the spec's `#7C74F2`, and primary buttons use the pale `--lumen-hi` fill with dark text. | Meets WCAG AA for text on the dark background; spec C.3 allows refining values while keeping roles. | 2026-10-12 |
 | B45 | Response types | Hand-written Zod schemas in `frontend/src/lib/schemas.ts`, matching the OpenAPI schema, rather than generated code. | Small, readable, and validates responses at run time. A generator can replace it later without changing screens. | 2026-10-12 |
 | B46 | The mood scale wording | 1 to 5 as "Very low, Low, In between, High, Very high"; the same words for energy and stress; sleep quality from "Very restless" to "Very restful". | Neutral, evenly spaced, no "good" or "bad". Flagged for review (R17). | 2026-10-12 |
 | B47 | Offline with an unverifiable session | When the device has no connection, the signed-in screens still render so the device copies are reachable. Every other request fails and says so. | Otherwise the saved safety plan would be locked behind a session check that cannot run offline. | 2026-10-12 |
@@ -124,7 +124,7 @@ These are for the project owner. Until answered, the stated default is used.
 | Q1 | Which transactional email provider (Resend, Postmark, other)? | Provider-agnostic adapter; console backend locally; no provider SDK is hard-wired. |
 | Q2 | Which hosted LLM provider and model for Phase 4? | Answered by default in B54 (Anthropic, `claude-opus-5-5`); confirm, and review the provider's data terms (R13). No real key has been used: only the mock has run. |
 | Q3 | Where will the API, worker, database and Redis be hosted? | Generic Docker host with managed PostgreSQL and Redis; frontend deployable to Vercel or as a container. |
-| Q4 | Exact wording of the fixed neutral line in the weekly email. | README example: "This is a routine weekly note. Silence does not mean anything either way." Marked NEEDS_HUMAN_REVIEW. |
+| Q4 | Exact wording of the fixed neutral line in the weekly email. | Spec example: "This is a routine weekly note. Silence does not mean anything either way." Marked NEEDS_HUMAN_REVIEW. |
 | Q5 | Default timezone for new accounts. | Browser-detected timezone sent at registration, falling back to `Asia/Kolkata`. |
 | Q6 | Chat transcript retention period when a student turns transcripts on. | 30 days, user-adjustable downward, deletable at any time. |
 | Q7 | Who is the named human owner for helpline verification, and how often? | Unassigned. Entries older than 90 days are flagged stale; release is blocked on re-verification. |
