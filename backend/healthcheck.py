@@ -10,7 +10,8 @@ import urllib.request
 
 path = sys.argv[1] if len(sys.argv) > 1 else "/api/v1/health"
 host = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost").split(",")[0].strip() or "localhost"
-request = urllib.request.Request(f"http://127.0.0.1:8000{path}", headers={"Host": host})  # noqa: S310
+port = os.environ.get("PORT", "8000")
+request = urllib.request.Request(f"http://127.0.0.1:{port}{path}", headers={"Host": host})  # noqa: S310
 try:
     with urllib.request.urlopen(request, timeout=3) as response:  # noqa: S310
         sys.exit(0 if response.status == 200 else 1)

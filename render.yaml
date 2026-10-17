@@ -1,0 +1,121 @@
+# Render Blueprint for the public demo: https://render.com/docs/blueprint-spec
+#
+# Dashboard > New > Blueprint > pick this repository. Render asks for every value
+# marked `sync: false`; docs/deploy-render.md lists what to enter. Everything here is
+# on the free plan: services sleep after 15 minutes idle (the first visit after that
+# takes about a minute), and the free database expires after 30 days.
+
+services:
+  # Django API, Celery worker and scheduler in one container (backend/start-all.sh).
+  - type: web
+    name: mirrorspace-api
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile.backend
+    dockerContext: .
+    dockerCommand: sh start-all.sh
+    autoDeploy: true
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.production
+      - key: ENVIRONMENT
+        value: demo
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: PSEUDONYM_KEY
+        generateValue: true
+      # A Fernet key; see docs/deploy-render.md for the one-line command that makes one.
+      - key: FIELD_ENCRYPTION_KEYS
+        sync: false
+      # Render adds the service's own hostname (RENDER_EXTERNAL_HOSTNAME) to this.
+      - key: DJANGO_ALLOWED_HOSTS
+        value: localhost
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mirrorspace-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: mirrorspace-redis
+          property: connectionString
+      # The frontend's public URL, for example https://mirrorspace-web.onrender.com.
+      # The browser only talks to the frontend, which forwards /api/v1 to this service,
+      # so the API's public base URL is the frontend's URL too.
+      - key: FRONTEND_URL
+        sync: false
+      - key: API_BASE_URL
+        sync: false
+      - key: CSRF_TRUSTED_ORIGINS
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      # Two proxies sit in front of Django: Render's, then the frontend's /api/v1 proxy.
+      - key: NUM_PROXIES
+        value: "2"
+      # Email over HTTPS: Render's free tier blocks outbound SMTP.
+      - key: EMAIL_BACKEND
+        value: apps.notifications.backends.BrevoBackend
+      - key: BREVO_API_KEY
+        sync: false
+      - key: DEFAULT_FROM_EMAIL
+        sync: false
+      - key: EMAIL_DAILY_LIMIT
+        value: "100"
+      # A hosted model, OpenAI-compatible. Groq's free tier serves Llama 3.1 8B.
+      - key: CHAT_PROVIDER
+        value: apps.chat.providers.OpenAICompatibleProvider
+      - key: LLM_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: LLM_MODEL
+        value: llama-3.1-8b-instant
+      - key: LLM_API_KEY
+        sync: false
+      - key: LLM_TIMEOUT_SECONDS
+        value: "30"
+      - key: CHAT_MAX_OUTPUT_TOKENS
+        value: "600"
+      - key: CHAT_USER_DAILY_LIMIT
+        value: "30"
+      - key: CHAT_GLOBAL_DAILY_LIMIT
+        value: "800"
+      - key: WEB_CONCURRENCY
+        value: "2"
+      # The first admin account (for approving content). Remove both after it exists.
+      - key: DJANGO_SUPERUSER_EMAIL
+        sync: false
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
+
+  # Next.js frontend. It serves the pages and proxies /api/v1 to the API.
+  - type: web
+    name: mirrorspace-web
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      # The API's public URL, for example https://mirrorspace-api.onrender.com.
+      - key: API_INTERNAL_URL
+        sync: false
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+
+  - type: keyvalue
+    name: mirrorspace-redis
+    plan: free
+    region: singapore
+    ipAllowList: []
+    maxmemoryPolicy: noeviction
+
+databases:
+  - name: mirrorspace-db
+    plan: free
+    region: singapore
+    databaseName: mirrorspace
+    user: mirrorspace
+    ipAllowList: []

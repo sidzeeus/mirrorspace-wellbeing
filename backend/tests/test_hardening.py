@@ -91,6 +91,17 @@ class TestSecuritySettings:
         result = manage("shell", "-c", code, env=PRODUCTION_ENV)
         assert result.returncode == 0, result.stderr
 
+    def test_the_render_hostname_is_allowed_when_render_sets_it(self):
+        result = manage(
+            "shell",
+            "-c",
+            "from django.conf import settings as s;"
+            "assert s.ALLOWED_HOSTS == ['api.example.test', 'mirrorspace-api.onrender.com'];"
+            "print('ok')",
+            env={**PRODUCTION_ENV, "RENDER_EXTERNAL_HOSTNAME": "mirrorspace-api.onrender.com"},
+        )
+        assert result.returncode == 0, result.stderr
+
     def test_unreviewed_content_cannot_be_enabled_in_production(self):
         result = manage(
             "shell",
