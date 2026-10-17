@@ -1,4 +1,4 @@
-"""Free conversation (decision B74) and the local Ollama provider."""
+"""Free conversation (decision B74) and the OpenAI-compatible provider."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import urllib.error
 import pytest
 
 from apps.chat import policy, services
-from apps.chat.providers import MockProvider, OllamaProvider, ProviderUnavailable
+from apps.chat.providers import MockProvider, OpenAICompatibleProvider, ProviderUnavailable
 from tests.factories import UserFactory
 
 pytestmark = pytest.mark.django_db
@@ -95,7 +95,7 @@ class FakeResponse(io.BytesIO):
         self.close()
 
 
-class TestOllamaProvider:
+class TestOpenAICompatibleProvider:
     def _capture(self, monkeypatch, reply="Hello there.", error=None):
         sent = {}
 
@@ -103,24 +103,29 @@ class TestOllamaProvider:
             sent["url"] = request.full_url
             sent["body"] = json.loads(request.data)
             sent["timeout"] = timeout
+            sent["headers"] = dict(request.header_items())
             if error is not None:
                 raise error
             return FakeResponse(
-                json.dumps({"message": {"role": "assistant", "content": reply}}).encode()
+                json.dumps(
+                    {"choices": [{"message": {"role": "assistant", "content": reply}}]}
+                ).encode()
             )
 
         monkeypatch.setattr("apps.chat.providers.urllib.request.urlopen", fake_urlopen)
         return sent
 
     def test_sends_only_instructions_and_conversation(self, monkeypatch, settings):
-        settings.OLLAMA_URL = "http://ollama.test:11434"
-        settings.OLLAMA_MODEL = "llama3.1:8b"
+        settings.LLM_BASE_URL = "http://ollama.test:11434/v1"
+        settings.LLM_MODEL = "llama3.1:8b"
+        settings.LLM_API_KEY = ""
         sent = self._capture(monkeypatch)
-        text = OllamaProvider().complete(
+        text = OpenAICompatibleProvider().complete(
             system="be kind", messages=[{"role": "user", "content": "hi"}]
         )
         assert text == "Hello there."
-        assert sent["url"] == "http://ollama.test:11434/api/chat"
+        assert sent["url"] == "http://ollama.test:11434/v1/chat/completions"
+        assert "Authorization" not in sent["headers"]
         body = sent["body"]
         assert body["model"] == "llama3.1:8b"
         assert body["stream"] is False
@@ -128,7 +133,7 @@ class TestOllamaProvider:
             {"role": "system", "content": "be kind"},
             {"role": "user", "content": "hi"},
         ]
-        assert set(body) == {"model", "messages", "stream", "options", "keep_alive"}
+        assert set(body) == {"model", "messages", "stream", "temperature", "max_tokens"}
 
     @pytest.mark.parametrize(
         "error",
@@ -144,12 +149,38 @@ class TestOllamaProvider:
         caplog.set_level(logging.DEBUG)
         self._capture(monkeypatch, error=error)
         with pytest.raises(ProviderUnavailable):
-            OllamaProvider().complete(
+            OpenAICompatibleProvider().complete(
                 system="rules", messages=[{"role": "user", "content": CANARY}]
             )
         assert CANARY not in caplog.text
 
+    def test_a_hosted_provider_gets_the_key_as_a_bearer_token(self, monkeypatch, settings):
+        settings.LLM_BASE_URL = "https://api.groq.test/openai/v1/"
+        settings.LLM_API_KEY = "test-key-not-real"
+        sent = self._capture(monkeypatch)
+        OpenAICompatibleProvider().complete(
+            system="s", messages=[{"role": "user", "content": "hi"}]
+        )
+        assert sent["url"] == "https://api.groq.test/openai/v1/chat/completions"
+        assert sent["headers"]["Authorization"] == "Bearer test-key-not-real"
+
+    def test_a_non_http_url_is_refused(self, monkeypatch, settings):
+        settings.LLM_BASE_URL = "file:///etc/passwd"
+        self._capture(monkeypatch)
+        with pytest.raises(ProviderUnavailable):
+            OpenAICompatibleProvider().complete(system="s", messages=[])
+
+    def test_a_malformed_reply_counts_as_unavailable(self, monkeypatch):
+        def fake_urlopen(request, timeout):
+            return FakeResponse(b'{"unexpected": true}')
+
+        monkeypatch.setattr("apps.chat.providers.urllib.request.urlopen", fake_urlopen)
+        with pytest.raises(ProviderUnavailable):
+            OpenAICompatibleProvider().complete(system="s", messages=[])
+
     def test_an_empty_reply_counts_as_unavailable(self, monkeypatch):
         self._capture(monkeypatch, reply="   ")
         with pytest.raises(ProviderUnavailable):
-            OllamaProvider().complete(system="rules", messages=[{"role": "user", "content": "hi"}])
+            OpenAICompatibleProvider().complete(
+                system="rules", messages=[{"role": "user", "content": "hi"}]
+            )

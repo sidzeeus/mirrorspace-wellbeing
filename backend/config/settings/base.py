@@ -227,11 +227,12 @@ CHAT_MODEL = env("CHAT_MODEL", default="claude-opus-5-5")
 CHAT_MAX_OUTPUT_TOKENS = env.int("CHAT_MAX_OUTPUT_TOKENS", default=2048)
 CHAT_PROVIDER_TIMEOUT = env.float("CHAT_PROVIDER_TIMEOUT_SECONDS", default=30.0)
 # AI replies one student may receive in a day, and everyone together (a cost ceiling).
-# The free local model (apps.chat.providers.OllamaProvider). A first reply can take a
-# while as the model loads into memory, so its timeout is longer.
-OLLAMA_URL = env("OLLAMA_URL", default="http://localhost:11434")
-OLLAMA_MODEL = env("OLLAMA_MODEL", default="llama3.1:8b")
-OLLAMA_TIMEOUT = env.float("OLLAMA_TIMEOUT_SECONDS", default=120.0)
+# apps.chat.providers.OpenAICompatibleProvider: local Ollama by default, or a hosted
+# provider. A first local reply can be slow while the model loads, hence the timeout.
+LLM_BASE_URL = env("LLM_BASE_URL", default="http://localhost:11434/v1")
+LLM_API_KEY = env("LLM_API_KEY", default="")
+LLM_MODEL = env("LLM_MODEL", default="llama3.1:8b")
+LLM_TIMEOUT = env.float("LLM_TIMEOUT_SECONDS", default=120.0)
 CHAT_USER_DAILY_LIMIT = env.int("CHAT_USER_DAILY_LIMIT", default=40)
 CHAT_GLOBAL_DAILY_LIMIT = env.int("CHAT_GLOBAL_DAILY_LIMIT", default=2000)
 

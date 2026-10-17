@@ -119,7 +119,37 @@ services:
     depends_on:
       - web
 
+  # Optional: the AI model in a container instead of Ollama installed on your computer.
+  #   docker compose --profile ollama up --build
+  # and set LLM_BASE_URL=http://ollama:11434/v1 in .env. The first start downloads
+  # LLM_MODEL (llama3.1:8b is about 5 GB); a smaller model such as llama3.2:3b or
+  # qwen2.5:3b is faster on a laptop without a GPU, at some cost to reply quality.
+  ollama:
+    image: ollama/ollama:0.34.4
+    profiles: ["ollama"]
+    volumes:
+      - ollama_models:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  # Downloads the model once, if it is missing, then exits.
+  ollama-pull:
+    image: ollama/ollama:0.34.4
+    profiles: ["ollama"]
+    environment:
+      OLLAMA_HOST: ollama:11434
+      MODEL: ${LLM_MODEL:-llama3.1:8b}
+    entrypoint: ["sh", "-c", "ollama show \"$$MODEL\" >/dev/null 2>&1 || ollama pull \"$$MODEL\""]
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: "no"
+
 volumes:
+  ollama_models:
   pgdata:
   frontend_node_modules:
   frontend_next:
