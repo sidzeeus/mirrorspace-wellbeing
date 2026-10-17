@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM node:22.23.3-bookworm-slim AS deps
+FROM node:26.11.1-bookworm-slim AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build
 
 # Production: only the standalone server output, run as the unprivileged node user.
-FROM node:22.23.3-bookworm-slim AS production
+FROM node:26.11.1-bookworm-slim AS production
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
 WORKDIR /app
 COPY --from=build --chown=node:node /app/.next/standalone ./
