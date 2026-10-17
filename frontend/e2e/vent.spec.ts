@@ -31,7 +31,7 @@ test("venting reacts to the words, keeps nothing by default, and keeping is a ch
   const reaction = page.locator("[data-vent-reaction]");
   await expect(reaction).toHaveAttribute("data-vent-reaction", "alone");
   await expect(reaction).toContainText("Released. Nothing was saved.");
-  await expect(page.getByRole("img", { name: /second light comes to sit beside/ })).toBeVisible();
+  await expect(page.getByRole("img", { name: /little bunny comes to sit beside Sushi/ })).toBeVisible();
   await expect(page.getByLabel("What is on your mind")).toHaveValue("");
   expect(keptEntries(email)).toBe("0");
 

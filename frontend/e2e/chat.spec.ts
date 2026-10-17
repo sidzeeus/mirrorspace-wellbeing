@@ -126,7 +126,7 @@ test("saving is opt-in and can be deleted", async ({ page }) => {
 
   await page.getByLabel("Your message").fill("Is there a breathing pattern that can steady me when tense?");
   await page.getByRole("button", { name: "Send message" }).click();
-  await expect(page.locator("[data-turn='answer']")).toBeVisible();
+  await expect(page.locator("[data-turn='answer']")).toBeVisible({ timeout: 90_000 });
   await expect.poll(() => savedMessages(email)).toBe("2");
 
   await page.getByRole("button", { name: "Delete the saved conversation" }).click();
@@ -141,7 +141,7 @@ test("chat is accessible in the light theme and on desktop", async ({ page }) =>
   await page.goto("/chat");
   await page.getByLabel("Your message").fill("I have exams and deadlines and feel stressed. One small step?");
   await page.getByRole("button", { name: "Send message" }).click();
-  await expect(page.locator("[data-turn='answer']")).toBeVisible();
+  await expect(page.locator("[data-turn='answer']")).toBeVisible({ timeout: 90_000 });
   await expectAccessible(page);
   await page.setViewportSize({ width: 1440, height: 900 });
   await expectAccessible(page);

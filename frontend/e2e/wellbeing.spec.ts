@@ -41,18 +41,18 @@ test("sign in, check in, see the trend", async ({ page }) => {
   // Skipping is always on screen.
   await expect(page.getByRole("link", { name: "Skip for now" })).toBeVisible();
 
-  // The mood slider changes how the pet sits, with the same information in words.
-  const lumen = page.locator("main [data-pet]");
-  await expect(lumen).toHaveAttribute("aria-label", /sits quietly, waiting/);
+  // The mood slider changes Sushi's face, with the same information in words.
+  const lumen = page.locator("main [data-cat-face][role='img']");
+  await expect(lumen).toHaveAttribute("aria-label", /waits quietly/);
   const slider = page.getByRole("slider", { name: "Mood" });
   await slider.focus();
   await page.keyboard.press("End");
   await expect(slider).toHaveAttribute("aria-valuetext", "5: Very high");
-  await expect(lumen).toHaveAttribute("aria-label", /hops a little/);
-  await expect(lumen).toHaveAttribute("data-mood", "lighter");
+  await expect(lumen).toHaveAttribute("aria-label", /smiles and hops/);
+  await expect(lumen).toHaveAttribute("data-expression", "happy");
   await page.keyboard.press("Home");
-  await expect(lumen).toHaveAttribute("aria-label", /lies low/);
-  await expect(lumen).toHaveAttribute("data-mood", "heavy");
+  await expect(lumen).toHaveAttribute("aria-label", /a little sad/);
+  await expect(lumen).toHaveAttribute("data-expression", "sad");
   await page.keyboard.press("ArrowRight");
   await page.keyboard.press("ArrowRight");
   await page.keyboard.press("ArrowRight");

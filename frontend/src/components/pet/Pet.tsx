@@ -8,7 +8,9 @@
  */
 import type { CSSProperties } from "react";
 
-export type Species = "cat" | "bunny" | "fox";
+export type Species = "cat" | "bunny" | "fox" | "mouse";
+/** Colour choices, so the same animal can come in different coats. */
+export type Coat = "pink" | "lilac" | "orange" | "grey" | "cream" | "teal" | "ginger";
 export type PetMood =
   | "idle"
   | "listening"
@@ -28,20 +30,41 @@ export type PetProps = {
   breathPhase?: number;
   /** A second, smaller pet sits beside this one. */
   companion?: boolean;
+  /** A different coat from the animal's usual colour. */
+  coat?: Coat;
   className?: string;
 };
 
 type Palette = { body: string; shade: string; inner: string; accent: string };
 
-const PALETTES: Record<Species, Palette> = {
-  cat: { body: "#f472b6", shade: "#ec4899", inner: "#fbcfe8", accent: "#fdf2f8" },
-  bunny: { body: "#c4b5fd", shade: "#a78bfa", inner: "#f5d0fe", accent: "#ffffff" },
-  fox: { body: "#fb923c", shade: "#f97316", inner: "#fed7aa", accent: "#fff7ed" },
+const COATS: Record<Coat, Palette> = {
+  pink: { body: "#f472b6", shade: "#ec4899", inner: "#fbcfe8", accent: "#fdf2f8" },
+  lilac: { body: "#c4b5fd", shade: "#a78bfa", inner: "#f5d0fe", accent: "#ffffff" },
+  orange: { body: "#fb923c", shade: "#f97316", inner: "#fed7aa", accent: "#fff7ed" },
+  grey: { body: "#b8b4c8", shade: "#9690ab", inner: "#fbcfe8", accent: "#f1f0f5" },
+  cream: { body: "#f3e3c3", shade: "#e2c999", inner: "#fbcfe8", accent: "#ffffff" },
+  teal: { body: "#7fd6c2", shade: "#4fb8a2", inner: "#d1f5ec", accent: "#f0fdfa" },
+  ginger: { body: "#f59e0b", shade: "#d97706", inner: "#fde68a", accent: "#fffbeb" },
 };
+const USUAL: Record<Species, Coat> = { cat: "pink", bunny: "lilac", fox: "orange", mouse: "grey" };
 
-const COMPANION: Record<Species, Species> = { cat: "bunny", bunny: "cat", fox: "bunny" };
+const COMPANION: Record<Species, Species> = { cat: "bunny", bunny: "cat", fox: "bunny", mouse: "cat" };
 
 function Ears({ species, colors }: { species: Species; colors: Palette }) {
+  if (species === "mouse") {
+    return (
+      <>
+        <g className="pet-ear pet-ear-l">
+          <circle cx="72" cy="34" r="20" fill={colors.body} />
+          <circle cx="72" cy="34" r="12" fill={colors.inner} />
+        </g>
+        <g className="pet-ear pet-ear-r">
+          <circle cx="128" cy="34" r="20" fill={colors.body} />
+          <circle cx="128" cy="34" r="12" fill={colors.inner} />
+        </g>
+      </>
+    );
+  }
   if (species === "bunny") {
     return (
       <>
@@ -72,6 +95,19 @@ function Ears({ species, colors }: { species: Species; colors: Palette }) {
 }
 
 function Tail({ species, colors }: { species: Species; colors: Palette }) {
+  if (species === "mouse") {
+    return (
+      <g className="pet-tail">
+        <path
+          d="M126 174 C 170 182 186 150 168 136 C 156 128 150 146 162 150"
+          fill="none"
+          stroke={colors.inner}
+          strokeWidth="4"
+          strokeLinecap="round"
+        />
+      </g>
+    );
+  }
   if (species === "bunny") {
     return (
       <g className="pet-tail">
@@ -105,9 +141,9 @@ function Tail({ species, colors }: { species: Species; colors: Palette }) {
 }
 
 /** One animal. Kept separate so a companion can be drawn with the same parts. */
-function Animal({ species }: { species: Species }) {
-  const colors = PALETTES[species];
-  const round = species === "bunny";
+function Animal({ species, coat }: { species: Species; coat?: Coat }) {
+  const colors = COATS[coat ?? USUAL[species]];
+  const round = species === "bunny" || species === "mouse";
   return (
     <g className="pet-animal">
       <Tail species={species} colors={colors} />
@@ -140,6 +176,7 @@ export function Pet({
   mood = "idle",
   breathPhase,
   companion = false,
+  coat,
   className = "",
 }: PetProps) {
   const guided = breathPhase !== undefined;
@@ -167,7 +204,7 @@ export function Pet({
           style={style}
           transform={companion ? "translate(4 38) scale(0.76)" : undefined}
         >
-          <Animal species={species} />
+          <Animal species={species} coat={coat} />
         </g>
       </svg>
     </div>

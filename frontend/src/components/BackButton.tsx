@@ -6,9 +6,9 @@ import { useTranslations } from "next-intl";
 import { useMe } from "@/lib/hooks";
 
 /**
- * Goes back to wherever the person came from in this app. Opened directly (a link from
- * outside, a bookmark), there is nowhere to go back to, so it goes to Home when signed
- * in and to the start page otherwise.
+ * Goes back, like the browser's back button. Opened in a fresh tab (a bookmark, a link
+ * from outside), there is nowhere to go back to, so it goes to Home when signed in and
+ * to the start page otherwise.
  */
 export function BackButton({ className = "" }: { className?: string }) {
   const t = useTranslations("common");
@@ -20,9 +20,7 @@ export function BackButton({ className = "" }: { className?: string }) {
       type="button"
       className={`btn btn-quiet ${className}`}
       onClick={() => {
-        const cameFromHere =
-          window.history.length > 1 && document.referrer.startsWith(window.location.origin);
-        if (cameFromHere) router.back();
+        if (window.history.length > 1) router.back();
         else router.push(fallback);
       }}
       data-back

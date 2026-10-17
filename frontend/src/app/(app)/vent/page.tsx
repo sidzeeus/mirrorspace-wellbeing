@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
 import { type FormEvent, useEffect, useId, useRef, useState } from "react";
 
-import { Pet, type PetMood } from "@/components/pet/Pet";
+import { CatFace, type Expression } from "@/components/pet/CatFace";
+import { Pet } from "@/components/pet/Pet";
 import AnimatedGradientBackground from "@/components/ui/animated-gradient-background";
 import { Toggle, useToast } from "@/components/ui/controls";
 import { Button, Notice, buttonClass } from "@/components/ui/primitives";
@@ -17,19 +18,43 @@ const MAX = 5000;
 
 type Kind = Reflection["reaction"];
 /**
- * How the pet answers each reaction. It only ever does gentle things: it leans in,
- * lies low, breathes slowly, settles after a storm, hops, or is joined by a friend.
- * It never looks alarmed and never leaves.
+ * How Sushi answers each reaction. Only gentle things: curious, a little sad with you,
+ * a short huff that settles into calm, slow breathing to follow, a happy hop, a friend
+ * who comes to sit beside you. Never alarmed, and never gone.
  */
-const MOODS: Record<Kind, PetMood> = {
-  listening: "listening",
-  heavy: "heavy",
-  racing: "racing",
-  storm: "storm",
-  alone: "alone",
-  lighter: "lighter",
-  steady: "steady",
+const FACES: Record<Kind, Expression> = {
+  listening: "curious",
+  heavy: "sad",
+  racing: "calm",
+  storm: "upset",
+  alone: "sad",
+  lighter: "happy",
+  steady: "calm",
 };
+
+/** Sushi on the Vent screen. After a storm, the huff settles into calm. */
+function VentSushi({ kind, typing, label }: { kind: Kind; typing: boolean; label: string }) {
+  const [settled, setSettled] = useState(false);
+  useEffect(() => {
+    if (kind !== "storm") return;
+    const timer = window.setTimeout(() => setSettled(true), 3000);
+    return () => window.clearTimeout(timer);
+  }, [kind]);
+  const expression: Expression = typing ? "curious" : kind === "storm" && settled ? "calm" : FACES[kind];
+  return (
+    <div className="relative p-6">
+      <CatFace
+        label={label}
+        expression={expression}
+        breathing={kind === "racing" && !typing}
+        hop={kind === "lighter" && !typing}
+      />
+      {kind === "alone" ? (
+        <Pet species="bunny" coat="lilac" mood="alone" className="absolute bottom-2 right-0 w-16" />
+      ) : null}
+    </div>
+  );
+}
 
 const NEXT: Record<Kind, readonly { key: string; href: string }[]> = {
   listening: [],
@@ -196,13 +221,11 @@ export default function VentPage() {
               containerClassName="-z-10"
             />
             {/* Keyed by reaction so each new reaction plays from the start. */}
-            <Pet
+            <VentSushi
               key={`${kind}-${reactions}`}
+              kind={kind}
+              typing={typing && !result}
               label={`${t("figure")}. ${t(`reactions.${kind}.figure`)}`}
-              species="cat"
-              mood={typing && !result ? "listening" : MOODS[kind]}
-              companion={kind === "alone"}
-              className="p-6"
             />
           </div>
           <p className="label border-t border-line px-3 py-2 text-center text-dim" aria-hidden="true">

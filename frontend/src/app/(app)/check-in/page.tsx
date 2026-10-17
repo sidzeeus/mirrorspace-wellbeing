@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-import { Pet, type PetMood } from "@/components/pet/Pet";
+import { CatFace, type Expression } from "@/components/pet/CatFace";
 import { ScaleControl, Slider } from "@/components/ui/controls";
 import { Button, Notice, Panel, buttonClass } from "@/components/ui/primitives";
 import { api } from "@/lib/api";
@@ -37,8 +37,8 @@ function fromCheckIn(row: CheckIn): Answers {
  * seconds. A pet shows the mood answer as it changes, with the same information
  * in words for anyone who cannot see it. Skipping is always possible and saves nothing.
  */
-/** How the pet sits for each mood answer, 1 (low) to 5 (good); 0 is unanswered. */
-const MOOD_POSES: readonly PetMood[] = ["idle", "heavy", "steady", "idle", "listening", "lighter"];
+/** Sushi's face for each mood answer, 1 (low) to 5 (good); 0 is unanswered. */
+const MOOD_FACES: readonly Expression[] = ["neutral", "sad", "calm", "neutral", "curious", "happy"];
 
 /** The check-in stays taps only; anything longer has its own private place. */
 function VentPrompt() {
@@ -168,10 +168,10 @@ function CheckInForm({ saved }: { saved: CheckIn | null }) {
       <p className="mb-6 text-dim">{saved ? t("editing") : t("intro")}</p>
 
       <Panel className="mx-auto mb-6 w-44 p-4 sm:w-52">
-        <Pet
+        <CatFace
           label={t("lumen", { state: t(`lumenStates.${mood ?? "unset"}`) })}
-          species="cat"
-          mood={MOOD_POSES[mood ?? 0] ?? "idle"}
+          expression={MOOD_FACES[mood ?? 0] ?? "neutral"}
+          hop={mood === 5}
         />
       </Panel>
       <p className="sr-only" aria-live="polite">

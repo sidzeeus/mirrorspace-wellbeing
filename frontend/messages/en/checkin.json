@@ -6,14 +6,14 @@
   "mood": "Mood",
   "moodUnset": "Move the slider to answer",
   "moodClear": "Leave mood blank",
-  "lumen": "A cat that changes how it sits as you move the mood slider. {state}",
+  "lumen": "Sushi, whose face changes as you move the mood slider. {state}",
   "lumenStates": {
-    "unset": "It sits quietly, waiting.",
-    "1": "It lies low, ears down.",
-    "2": "It sits very still, breathing slowly.",
-    "3": "It sits calmly, tail swaying.",
-    "4": "It tilts its head, ears up.",
-    "5": "It hops a little, tail high."
+    "unset": "Sushi waits quietly.",
+    "1": "Sushi looks a little sad with you.",
+    "2": "Sushi is calm and still.",
+    "3": "Sushi looks at you, relaxed.",
+    "4": "Sushi tilts its head, curious.",
+    "5": "Sushi smiles and hops."
   },
   "sleepHours": "Hours of sleep last night",
   "sleepHoursValue": "{hours, plural, =0 {0 hours} one {1 hour} other {# hours}}",

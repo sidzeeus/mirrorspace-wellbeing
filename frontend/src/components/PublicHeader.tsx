@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { MusicToggle } from "@/components/AmbientMusic";
+import { CatFace } from "@/components/pet/CatFace";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useMe } from "@/lib/hooks";
 
@@ -22,9 +23,10 @@ export function PublicHeader() {
       <div className="glass mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 rounded-full py-1 pl-5 pr-2">
         <Link
           href={signedIn ? "/home" : "/"}
-          className="inline-flex min-h-11 items-center text-lg font-medium tracking-tight"
+          className="inline-flex min-h-11 items-center gap-2 text-lg font-medium tracking-tight"
         >
-          {common("appName")}
+          <CatFace expression="happy" className="w-8" />
+          <span className="sr-only min-[360px]:not-sr-only">{common("appName")}</span>
         </Link>
         <nav aria-label={common("appName")} className="flex items-center gap-1">
           {signedIn ? (

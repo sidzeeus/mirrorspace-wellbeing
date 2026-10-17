@@ -309,7 +309,7 @@ body {
   position: absolute;
   border-radius: 999px;
   background: #fffaf0;
-  box-shadow: 0 0 4px 1px rgb(255 250 240 / 0.35);
+  box-shadow: 0 0 6px 1.5px rgb(255 250 240 / 0.4);
   opacity: var(--star-dim, 0.6);
   animation: star-twinkle ease-in-out infinite;
 }
@@ -326,6 +326,63 @@ body {
     opacity: 0.12;
     transform: scale(0.7);
   }
+}
+
+/*
+  Bubbles (components/AuroraBackground.tsx): light theme only. Dark, soft-edged bubbles
+  rise slowly and pop near the top. Hidden on Support and with reduced motion.
+*/
+.bubbles {
+  display: none;
+}
+:root[data-theme="daybreak"] .bubbles {
+  display: block;
+}
+.bubbles-still {
+  display: none !important;
+}
+.bubble {
+  position: absolute;
+  bottom: -60px;
+  border-radius: 999px;
+  border: 1.5px solid rgb(24 22 46 / 0.55);
+  background: radial-gradient(circle at 32% 30%, rgb(255 255 255 / 0.9) 0 12%, transparent 13%),
+    radial-gradient(circle at 50% 50%, rgb(24 22 46 / 0.04), rgb(24 22 46 / 0.14));
+  animation: bubble-rise linear infinite;
+}
+@keyframes bubble-rise {
+  0% {
+    transform: translate(0, 0) scale(0.9);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.85;
+  }
+  50% {
+    transform: translate(var(--bubble-sway, 0px), -55vh) scale(1);
+  }
+  86% {
+    transform: translate(0, -92vh) scale(1);
+    opacity: 0.85;
+  }
+  /* The pop: a quick swell and vanish. */
+  90% {
+    transform: translate(0, -95vh) scale(1.6);
+    opacity: 0;
+    border-width: 0.5px;
+  }
+  100% {
+    transform: translate(0, -95vh) scale(1.6);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:not([data-motion="full"]) .bubbles {
+    display: none !important;
+  }
+}
+html[data-motion="reduced"] .bubbles {
+  display: none !important;
 }
 
 /*
@@ -544,6 +601,85 @@ body {
 .cat-face.is-talking .cat-mouth-open {
   opacity: 1;
   animation: cat-talk 0.36s ease-in-out infinite alternate;
+}
+.cat-face .cat-body {
+  transform-origin: 50% 90%;
+}
+.cat-face.is-curious .cat-head {
+  transform: rotate(-9deg);
+}
+.cat-face.is-sad .cat-head {
+  transform: translateY(3px) rotate(4deg);
+}
+.cat-face.is-upset .cat-body {
+  animation: cat-huff 0.5s ease-in-out 5;
+}
+.cat-face.is-breathing .cat-body {
+  animation: cat-breathe 10s ease-in-out infinite;
+}
+.cat-face.is-hopping .cat-body {
+  animation: cat-hop 0.7s ease-out 2;
+}
+.cat-face .cat-paws {
+  transform-origin: 50% 100%;
+  animation: cat-paws-up 0.35s ease-out both;
+}
+.cat-face .cat-tear {
+  animation: cat-tear 3s ease-in infinite;
+}
+@keyframes cat-huff {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-2px) rotate(-1.5deg);
+  }
+  75% {
+    transform: translateX(2px) rotate(1.5deg);
+  }
+}
+@keyframes cat-breathe {
+  0%,
+  100% {
+    transform: scale(0.94);
+  }
+  40% {
+    transform: scale(1.05);
+  }
+}
+@keyframes cat-hop {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-9px);
+  }
+}
+@keyframes cat-paws-up {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes cat-tear {
+  0%,
+  20% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  35% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(10px);
+    opacity: 0;
+  }
 }
 @keyframes cat-blink {
   0%,

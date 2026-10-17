@@ -420,3 +420,9 @@ Unfinished or not verified
 
 - Small twinkling stars in the dark upper sky on every page (night theme only), fading out where the aurora begins; still on Support and with reduced motion.
 - Fixed: the still gradient was painted on `<body>`, which covered the breathing aurora. It is now on `<html>`, so the moving aurora and the stars show.
+
+### 2026-10-17: Sushi everywhere, animals and bubbles
+
+- Sushi is the logo and mascot, with seven expressions; on Vent and check-in the face follows the reaction or mood; on the sign-in cards Sushi reacts to which field you are in (B84).
+- Small animal pairs above each section heading (a mouse joins the cat, bunny and fox).
+- Light theme: rising, popping bubbles. Night theme: larger stars.

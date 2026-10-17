@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 
 import { HelplineStrip } from "@/components/landing/HelplineStrip";
 import { Story } from "@/components/landing/Story";
-import { Pet } from "@/components/pet/Pet";
+import { MascotCycle } from "@/components/pet/Mascot";
 import { PublicHeader } from "@/components/PublicHeader";
 import { buttonClass } from "@/components/ui/primitives";
 
@@ -24,7 +24,7 @@ export default async function LandingPage() {
       <main id="main">
         {/* The stage: one gathering light, and the promise beneath it. */}
         <section className="mx-auto flex min-h-[calc(100svh-6rem)] max-w-4xl flex-col items-center justify-center px-5 pb-16 pt-4 text-center">
-          <Pet label={t("hero.lumen")} species="cat" className="mb-2 w-36 sm:w-44" />
+          <MascotCycle label={t("hero.lumen")} className="mb-4 w-32 sm:w-40" />
           <p className="pill mb-5 text-dim">{t("hero.eyebrow")}</p>
           <h1 className="display mb-6">
             <span className="block">{t("hero.lineOne")}</span>

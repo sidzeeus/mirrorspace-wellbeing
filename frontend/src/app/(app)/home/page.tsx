@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";
 
 import { PawWeek } from "@/components/pet/PawWeek";
-import { Pet } from "@/components/pet/Pet";
+import { MascotCycle } from "@/components/pet/Mascot";
 import { Notice, Panel, buttonClass } from "@/components/ui/primitives";
 import { api } from "@/lib/api";
 import { keys, localDate, useErrorText, useExercises, useMe } from "@/lib/hooks";
@@ -50,7 +50,7 @@ export default function HomePage() {
         <h1 className="h1">
           {me.data?.display_name ? t("hello", { name: me.data.display_name }) : t("helloPlain")}
         </h1>
-        <Pet species="cat" mood="listening" className="w-20 shrink-0 sm:w-24" />
+        <MascotCycle className="w-20 shrink-0 sm:w-24" />
       </div>
 
       {checkIns.isError ? (

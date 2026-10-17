@@ -7,6 +7,8 @@ import { useTranslations } from "next-intl";
 import { type ReactNode, useEffect } from "react";
 
 import { MusicToggle } from "@/components/AmbientMusic";
+import { CatFace } from "@/components/pet/CatFace";
+import { SectionCritters } from "@/components/pet/SectionCritters";
 import { Button } from "@/components/ui/primitives";
 import { ApiError, api, forgetCsrfToken } from "@/lib/api";
 import { PRIVACY_PURPOSE } from "@/lib/constants";
@@ -197,7 +199,8 @@ export function AppShell({ children }: { children: ReactNode }) {
       <aside className="no-print hidden lg:sticky lg:top-0 lg:block lg:h-dvh lg:p-4">
         <div className="glass flex h-full flex-col overflow-y-auto rounded-3xl p-4">
           <div className="mb-5 flex items-center justify-between gap-2">
-            <Link href="/home" className="inline-flex min-h-11 items-center px-3 text-lg font-medium tracking-tight">
+            <Link href="/home" className="inline-flex min-h-11 items-center gap-2 px-1 text-lg font-medium tracking-tight">
+              <CatFace expression="happy" className="w-9" />
               {common("appName")}
             </Link>
             <MusicToggle />
@@ -216,8 +219,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="flex min-h-dvh flex-col">
         <header className="no-print sticky top-0 z-30 px-3 pt-3 lg:hidden">
           <div className="glass flex h-14 items-center justify-between gap-3 rounded-full py-1 pl-5 pr-1.5">
-            <Link href="/home" className="inline-flex min-h-11 items-center text-lg font-medium tracking-tight">
-              {common("appName")}
+            <Link href="/home" className="inline-flex min-h-11 items-center gap-2 text-lg font-medium tracking-tight">
+              <CatFace expression="happy" className="w-8" />
+              <span className="sr-only min-[360px]:not-sr-only">{common("appName")}</span>
             </Link>
             <div className="flex items-center gap-1.5">
               <MusicToggle />
@@ -231,7 +235,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           className="page-fade mx-auto w-full max-w-3xl grow px-5 pb-44 pt-8 lg:pb-16 lg:pt-12"
         >
           {ready ? (
-            children
+            <>
+              <SectionCritters pathname={pathname} />
+              {children}
+            </>
           ) : (
             <p role="status" className="text-dim">
               {me.isError ? common("errors.unreachable") : t("loading")}

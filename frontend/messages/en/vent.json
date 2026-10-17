@@ -2,7 +2,7 @@
   "_review": "NEEDS_HUMAN_REVIEW (docs/review-needed.md R26, R27): every reaction line, the crisis panel and the privacy wording on the Vent screen are placeholders written by an engineer.",
   "title": "Vent",
   "intro": "Write whatever you need to, as messy as it comes. Nobody reads this.",
-  "how": "The cat reacts to the words you use. It does not understand you, judge you, or tell anyone anything.",
+  "how": "Sushi reacts to the words you use. Sushi does not understand you, judge you, or tell anyone anything.",
   "label": "What is on your mind",
   "hint": "Up to {max} characters.",
   "tooLong": "That is more than {max} characters. Let some of it out now, and write the rest after.",
@@ -12,36 +12,36 @@
   "submitting": "Letting it out",
   "released": "Released. Nothing was saved.",
   "kept": "Kept. Only you can read it.",
-  "unavailable": "The cat could not react just now. What you wrote is still here.",
+  "unavailable": "Sushi could not react just now. What you wrote is still here.",
   "again": "Write more",
-  "figure": "A small pink cat",
+  "figure": "Sushi, a black cat in an orange beanie",
   "reactions": {
     "listening": {
-      "figure": "The cat tilts its head, listening.",
+      "figure": "Sushi tilts its head, curious and listening.",
       "line": "Thank you for putting it into words."
     },
     "heavy": {
-      "figure": "The cat lies low beside you, ears down.",
+      "figure": "Sushi looks a little sad with you.",
       "line": "That sounds heavy. You do not have to carry all of it at once."
     },
     "racing": {
-      "figure": "The cat breathes slowly and deeply. Breathe along with it.",
-      "line": "A lot is racing. If it helps, breathe with the cat: in as it grows, out as it settles."
+      "figure": "Sushi breathes slowly and deeply. Breathe along with it.",
+      "line": "A lot is racing. If it helps, breathe with Sushi: in as it grows, out as it settles."
     },
     "storm": {
-      "figure": "The cat puffs up and lashes its tail, then slowly settles.",
+      "figure": "Sushi huffs for a moment, then settles into calm.",
       "line": "That sounds really frustrating. Anger is allowed. Let it settle in its own time."
     },
     "alone": {
-      "figure": "A little bunny comes to sit beside the cat.",
+      "figure": "A little bunny comes to sit beside Sushi.",
       "line": "Feeling alone is hard. Reaching one person, even with a short message, can help."
     },
     "lighter": {
-      "figure": "The cat hops, tail held high.",
+      "figure": "Sushi smiles and hops.",
       "line": "It sounds like something eased a little. Notice what helped."
     },
     "steady": {
-      "figure": "The cat sits still and close.",
+      "figure": "Sushi sits still and close.",
       "line": "What you wrote sounds really serious. Nobody has been told, and this app cannot respond to an emergency. You do not have to handle this alone."
     }
   },

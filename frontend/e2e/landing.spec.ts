@@ -114,9 +114,12 @@ test.describe("landing page", () => {
 
   test("with motion allowed the pets breathe and sway", async ({ page }) => {
     await page.goto("/");
-    const hero = page.locator("[data-pet]").first();
-    await expect(hero).toHaveAttribute("aria-label", /pink cat/);
-    const body = hero.locator(".pet-body").first();
+    // The hero is Sushi, the mascot.
+    await expect(page.locator("main [data-cat-face][role='img']").first()).toHaveAttribute(
+      "aria-label",
+      /Sushi/,
+    );
+    const body = page.locator("[data-pet] .pet-body").first();
     expect(await body.evaluate((element) => getComputedStyle(element).animationIterationCount)).toBe("infinite");
   });
 
@@ -142,7 +145,8 @@ test.describe("landing page", () => {
 
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Notice your patterns.");
     // The pets are plain SVG drawn on the server, so they are there without JavaScript.
-    expect(await page.locator("[data-pet] svg").count()).toBeGreaterThanOrEqual(4);
+    expect(await page.locator("[data-pet] svg").count()).toBeGreaterThanOrEqual(3);
+    expect(await page.locator("main [data-cat-face] svg").count()).toBeGreaterThanOrEqual(1);
     // The still aurora is plain CSS, so it is there without JavaScript too.
     expect(await page.evaluate(() => getComputedStyle(document.documentElement).backgroundImage)).toContain(
       "radial-gradient",

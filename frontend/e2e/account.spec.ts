@@ -150,8 +150,8 @@ test.describe("dashboard", () => {
     const page = await context.newPage();
     await signIn(page, email);
     await expect(page.locator("[data-week]")).toBeVisible();
-    // The pets hold still: every animation runs once, instantly.
-    const body = page.locator(".pet .pet-body").first();
+    // Sushi holds still: every animation runs once, instantly.
+    const body = page.locator("[data-cat-face] .cat-pompom").first();
     expect(await body.evaluate((element) => getComputedStyle(element).animationIterationCount)).toBe("1");
     await expect(page.locator("canvas")).toHaveCount(0);
 

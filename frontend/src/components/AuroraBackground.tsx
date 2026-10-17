@@ -37,7 +37,7 @@ function seeded(seed: number) {
 }
 const random = seeded(2026);
 const STARS = Array.from({ length: 90 }, (_, index) => {
-  const size = random() < 0.12 ? 2.6 : random() < 0.5 ? 1.8 : 1.2;
+  const size = random() < 0.12 ? 4.5 : random() < 0.5 ? 3 : 2;
   return {
     key: index,
     left: `${(random() * 100).toFixed(2)}%`,
@@ -64,6 +64,40 @@ function Stars({ still }: { still: boolean }) {
             animationDuration: star.duration,
             animationDelay: star.delay,
             ["--star-dim" as string]: star.dim,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/*
+  Light theme: soft dark bubbles that drift up the screen and pop near the top
+  (globals.css, "Bubbles"). Fixed seed, like the stars.
+*/
+const BUBBLES = Array.from({ length: 28 }, (_, index) => ({
+  key: index,
+  left: `${(random() * 100).toFixed(2)}%`,
+  size: Math.round(10 + random() * 26),
+  duration: `${(14 + random() * 14).toFixed(1)}s`,
+  delay: `${(-random() * 28).toFixed(1)}s`,
+  sway: `${Math.round((random() - 0.5) * 60)}px`,
+}));
+
+function Bubbles({ still }: { still: boolean }) {
+  return (
+    <div className={`bubbles absolute inset-0 overflow-hidden ${still ? "bubbles-still" : ""}`}>
+      {BUBBLES.map((bubble) => (
+        <span
+          key={bubble.key}
+          className="bubble"
+          style={{
+            left: bubble.left,
+            width: bubble.size,
+            height: bubble.size,
+            animationDuration: bubble.duration,
+            animationDelay: bubble.delay,
+            ["--bubble-sway" as string]: bubble.sway,
           }}
         />
       ))}
@@ -98,6 +132,7 @@ export function AuroraBackground() {
         />
       ) : null}
       <Stars still={still} />
+      <Bubbles still={still} />
     </div>
   );
 }
