@@ -164,6 +164,25 @@ class TestOpenAICompatibleProvider:
         assert sent["url"] == "https://api.groq.test/openai/v1/chat/completions"
         assert sent["headers"]["Authorization"] == "Bearer test-key-not-real"
 
+    def test_reasoning_effort_is_sent_only_when_set(self, monkeypatch, settings):
+        settings.LLM_REASONING_EFFORT = ""
+        sent = self._capture(monkeypatch)
+        OpenAICompatibleProvider().complete(system="s", messages=[])
+        assert "reasoning_effort" not in sent["body"]
+
+        settings.LLM_REASONING_EFFORT = "low"
+        sent = self._capture(monkeypatch)
+        OpenAICompatibleProvider().complete(system="s", messages=[])
+        assert sent["body"]["reasoning_effort"] == "low"
+
+    def test_reasoning_text_is_never_returned(self, monkeypatch):
+        def fake_urlopen(request, timeout):
+            reply = {"message": {"content": "Hi.", "reasoning": "secret thoughts"}}
+            return FakeResponse(json.dumps({"choices": [reply]}).encode())
+
+        monkeypatch.setattr("apps.chat.providers.urllib.request.urlopen", fake_urlopen)
+        assert OpenAICompatibleProvider().complete(system="s", messages=[]) == "Hi."
+
     def test_a_non_http_url_is_refused(self, monkeypatch, settings):
         settings.LLM_BASE_URL = "file:///etc/passwd"
         self._capture(monkeypatch)

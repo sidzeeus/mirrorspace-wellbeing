@@ -124,7 +124,7 @@ The first start downloads the model, about 5 GB. On a laptop without a GPU, a sm
 
 | | Local | Public demo |
 |---|---|---|
-| AI model | Llama 3.1 8B on your machine; nothing leaves it | Llama 3.1 8B on Groq's free tier |
+| AI model | Llama 3.1 8B on your machine; nothing leaves it | gpt-oss-20b on Groq's free tier |
 | Email | Mailpit catches everything (or your SMTP) | Brevo HTTPS API, capped at 100 a day |
 | Unreviewed sample content | shown, to try the app | hidden until a reviewer approves it |
 | First load | instant | about a minute after 15 idle minutes (free-tier cold start) |

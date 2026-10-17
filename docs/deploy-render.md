@@ -68,7 +68,7 @@ Everything else works from the first deploy: check-ins, Vent, patterns, episodes
 
 | | Local (`docker compose up`) | Public demo (Render) |
 |---|---|---|
-| AI | Ollama on your computer, `llama3.1:8b`, nothing leaves the machine | Groq, `llama-3.1-8b-instant`; chat text is sent to Groq |
+| AI | Ollama on your computer, `llama3.1:8b`, nothing leaves the machine | Groq, `openai/gpt-oss-20b`; chat text is sent to Groq |
 | Email | Mailpit catches everything (or your Gmail over SMTP) | Brevo over HTTPS, at most 100 emails a day |
 | Background jobs | separate worker and beat containers | inside the API container; paused while it sleeps |
 | Unreviewed content | shown, so you can try it | hidden until approved |

@@ -233,6 +233,8 @@ LLM_BASE_URL = env("LLM_BASE_URL", default="http://localhost:11434/v1")
 LLM_API_KEY = env("LLM_API_KEY", default="")
 LLM_MODEL = env("LLM_MODEL", default="llama3.1:8b")
 LLM_TIMEOUT = env.float("LLM_TIMEOUT_SECONDS", default=120.0)
+# For reasoning models only: low, medium or high. Empty sends nothing (Ollama, Llama).
+LLM_REASONING_EFFORT = env("LLM_REASONING_EFFORT", default="")
 CHAT_USER_DAILY_LIMIT = env.int("CHAT_USER_DAILY_LIMIT", default=40)
 CHAT_GLOBAL_DAILY_LIMIT = env.int("CHAT_GLOBAL_DAILY_LIMIT", default=2000)
 

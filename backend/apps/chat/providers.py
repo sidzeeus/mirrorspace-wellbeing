@@ -130,13 +130,17 @@ class OpenAICompatibleProvider:
         if not base.startswith(("http://", "https://")):
             logger.error("chat_provider_misconfigured")
             raise ProviderUnavailable
-        body = {
+        body: dict[str, Any] = {
             "model": settings.LLM_MODEL,
             "messages": [{"role": "system", "content": system}, *messages],
             "temperature": 0.8,
             "max_tokens": settings.CHAT_MAX_OUTPUT_TOKENS,
             "stream": False,
         }
+        # Reasoning models (such as gpt-oss on Groq) think before answering. A low
+        # effort keeps replies quick; their reasoning is returned outside `content`.
+        if settings.LLM_REASONING_EFFORT:
+            body["reasoning_effort"] = settings.LLM_REASONING_EFFORT
         headers = {"Content-Type": "application/json"}
         if settings.LLM_API_KEY:
             headers["Authorization"] = f"Bearer {settings.LLM_API_KEY}"
