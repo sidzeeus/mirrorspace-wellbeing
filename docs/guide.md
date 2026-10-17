@@ -2,7 +2,7 @@
 
 A plain-language explanation of how the whole thing works, written for the owner. Every path, function and route named here exists in the repository as of 2026-10-12. Nothing here is a secret, and no example uses a real person.
 
-If you read only three things: section 1 (what it is and is not), section 11 (what still needs a human), and `docs/final-review.md` (what is and is not ready).
+If you read only three things: section 1 (what it is and is not), section 11 (what still needs a human).
 
 ## Contents
 
@@ -165,13 +165,12 @@ docs/                     Everything written down (see the end of this section)
 | `decisions.md` | You want to know why something is the way it is (D1 to D11 locked, B1 to B62 made while building, Q1 to Q11 still open). |
 | `progress.md` | You want the history, phase by phase, with what was not verified. |
 | `review-needed.md` | You are arranging sign-offs (R1 to R24 and every safety-critical string). |
-| `final-review.md` | You want the PASS / FAIL / NEEDS_HUMAN_REVIEW verdicts. |
 | `api.md` | You need exact request and response shapes. |
 | `privacy.md` | You need to know what is stored, where, and for how long. |
 | `security-review.md` | You want fixed and open security findings. |
 | `runbook.md` | You are deploying, rolling back, restoring or handling an incident. |
 | `development.md` | You are setting up a machine. |
-| `design-plan.md`, `lumen.md`, `localization.md` | You are working on the interface. |
+| `design-plan.md`, `localization.md` | You are working on the interface. |
 
 ---
 

@@ -127,7 +127,7 @@ Button, IconButton, Panel (hairline, optional crop marks), GlassPanel, Field and
 
 ## The Lumen
 
-One isolated component, documented in `docs/lumen.md`.
+One isolated component (retired 2026-10-17 in favour of Sushi and the pets, decision B73).
 
 - Props: `mode` (orb, figure, pair, week), `intensity`, `density`, `hue`, `breathPhase`, `lit`.
 - It always has a text alternative that states what it is showing.
