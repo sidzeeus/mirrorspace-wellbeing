@@ -463,3 +463,18 @@ Assumptions:
 - Brevo for email.
 - The MIT license.
 
+
+### 2026-10-18: Public demo live on Render
+Done:
+- Deployed from `render.yaml`. The frontend is at https://mirrorspace-web.onrender.com and the API at https://mirrorspace-api-t69y.onrender.com.
+- Owner-confirmed working: sign-up with email verification (Brevo) and chat (Groq).
+- Fixes found on the way:
+  - The demo model moved to `openai/gpt-oss-20b`, because Groq retired its free Llama models (B89).
+  - The AI adapter now sends a named User-Agent, because Cloudflare rejected Python's default one with a 403.
+  - Deploy notes: the API gets a suffixed hostname when its name is taken, so `API_INTERNAL_URL` must use the real one; Brevo needs an API key (`xkeysib-`), not an SMTP key.
+
+Unfinished:
+- The privacy notice must name Groq and Brevo (R32).
+- Helplines and exercises stay hidden until approved.
+- Remove `DJANGO_SUPERUSER_*` from Render after the first admin sign-in.
+- The free database expires after 30 days.
