@@ -30,11 +30,29 @@ export function forgetCsrfToken(): void {
   csrfToken = null;
 }
 
+/** Fired with `true` while the API is waking up, and `false` once it answers. */
+export const WAKING_EVENT = "mirrorspace:waking";
+const WAKE_RETRY_MS = 5_000;
+const WAKE_GIVE_UP_MS = 150_000;
+
+function signalWaking(waking: boolean): void {
+  window.dispatchEvent(new CustomEvent(WAKING_EVENT, { detail: waking }));
+}
+
+async function readJson(response: Response): Promise<unknown> {
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+}
+
 async function getCsrfToken(): Promise<string> {
   if (csrfToken) return csrfToken;
   const response = await fetch("/api/v1/auth/csrf", { credentials: "same-origin" });
-  const body = (await response.json()) as { csrf_token: string };
-  csrfToken = body.csrf_token;
+  const payload = await readJson(response);
+  if (!response.ok) throw toError(response.status, payload);
+  csrfToken = (payload as { csrf_token: string }).csrf_token;
   return csrfToken;
 }
 
@@ -57,41 +75,74 @@ function toError(status: number, payload: unknown): ApiError {
   return new ApiError(status, code, detail, fields);
 }
 
+/**
+ * One API call. While the API is waking up (free hosting sleeps when idle), it waits
+ * and tries again for up to two and a half minutes instead of failing at once.
+ */
 export async function api<S extends z.ZodTypeAny | undefined = undefined>(
   path: string,
-  { method = "GET", body, schema }: Options<S> = {},
+  options: Options<S> = {},
+): Promise<S extends z.ZodTypeAny ? z.infer<S> : unknown> {
+  const started = Date.now();
+  let waking = false;
+  for (;;) {
+    try {
+      const result = await request(path, options);
+      if (waking) signalWaking(false);
+      return result;
+    } catch (error) {
+      const retry =
+        error instanceof ApiError &&
+        error.code === "waking" &&
+        Date.now() - started < WAKE_GIVE_UP_MS;
+      if (!retry) {
+        if (waking) signalWaking(false);
+        throw error;
+      }
+      waking = true;
+      signalWaking(true);
+      await new Promise((resolve) => setTimeout(resolve, WAKE_RETRY_MS));
+    }
+  }
+}
+
+async function request<S extends z.ZodTypeAny | undefined>(
+  path: string,
+  { method = "GET", body, schema }: Options<S>,
   retried = false,
 ): Promise<S extends z.ZodTypeAny ? z.infer<S> : unknown> {
   const headers: Record<string, string> = { Accept: "application/json" };
-  let response: Response;
-  try {
-    if (method !== "GET") headers["X-CSRFToken"] = await getCsrfToken();
-    if (body !== undefined) headers["Content-Type"] = "application/json";
-    response = await fetch(`/api/v1${path}`, {
+  if (method !== "GET") headers["X-CSRFToken"] = await withNetwork(getCsrfToken());
+  if (body !== undefined) headers["Content-Type"] = "application/json";
+  const response = await withNetwork(
+    fetch(`/api/v1${path}`, {
       method,
       headers,
       body: body === undefined ? undefined : JSON.stringify(body),
       credentials: "same-origin",
       cache: "no-store",
-    });
-  } catch {
-    throw new ApiError(0, "offline", "");
-  }
+    }),
+  );
 
   if (response.status === 204) return undefined as never;
-  let payload: unknown = null;
-  try {
-    payload = await response.json();
-  } catch {
-    payload = null;
-  }
+  const payload = await readJson(response);
   if (!response.ok) {
     const error = toError(response.status, payload);
     if (error.code === "csrf_failed" && !retried) {
       forgetCsrfToken();
-      return api(path, { method, body, schema }, true);
+      return request(path, { method, body, schema }, true);
     }
     throw error;
   }
   return (schema ? schema.parse(payload) : payload) as never;
+}
+
+/** A request that never reached the server means no connection: say "offline". */
+async function withNetwork<T>(pending: Promise<T>): Promise<T> {
+  try {
+    return await pending;
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError(0, "offline", "");
+  }
 }

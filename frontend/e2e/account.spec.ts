@@ -98,6 +98,28 @@ test("wrong password explains itself without saying which part was wrong", async
   await expect(page).toHaveURL(/\/login$/);
 });
 
+test("a sleeping server is waited for, with a notice, instead of 'offline'", async ({ page }) => {
+  const email = createUser();
+  // The first two answers say the API is still starting, as a sleeping host would.
+  let sleeping = 2;
+  await page.route("**/api/v1/auth/csrf", async (route) => {
+    if (sleeping > 0) {
+      sleeping -= 1;
+      await route.fulfill({ status: 503, json: { detail: "", code: "waking" } });
+    } else {
+      await route.continue();
+    }
+  });
+  await page.goto("/login");
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Password").fill(PASSWORD);
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByText(/The server is waking up/)).toBeVisible();
+  await expect(page.getByText(/appear to be offline/)).toHaveCount(0);
+  await page.waitForURL(/\/(home|onboarding)/, { timeout: 30_000 });
+  await expect(page.getByText(/The server is waking up/)).toHaveCount(0);
+});
+
 test.describe("dashboard", () => {
   for (const theme of ["night", "daybreak"] as const) {
     test(`is accessible in ${theme} on phone and desktop`, async ({ page }) => {

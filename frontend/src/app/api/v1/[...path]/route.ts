@@ -62,6 +62,16 @@ async function proxy(request: NextRequest, path: string[]): Promise<Response> {
     );
   }
 
+  // A sleeping host (free hosting tiers) answers with its own HTML error page while the
+  // API starts. Nothing reached Django, so the client may safely retry.
+  const isJson = upstream.headers.get("content-type")?.includes("application/json");
+  if ([502, 503, 504].includes(upstream.status) && !isJson) {
+    return Response.json(
+      { detail: "", code: "waking" },
+      { status: 503, headers: { "retry-after": "5", "cache-control": "no-store" } },
+    );
+  }
+
   const responseHeaders = new Headers();
   for (const name of FORWARDED_RESPONSE_HEADERS) {
     const value = upstream.headers.get(name);

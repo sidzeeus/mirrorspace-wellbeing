@@ -99,6 +99,7 @@ export function useErrorText() {
     (error: unknown): string => {
       if (error instanceof ApiError) {
         if (error.status === 0) return t("offline");
+        if (error.code === "waking") return t("waking");
         if (error.status === 429) return t("throttled");
         if (error.status === 401) return t("session");
         if (error.status === 503) return t("unreachable");

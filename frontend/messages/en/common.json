@@ -14,6 +14,7 @@
   "optional": "optional",
   "unreviewed": "Unreviewed placeholder",
   "unverified": "Not verified yet",
+  "waking": "The server is waking up after a quiet spell. This can take up to two minutes, and it keeps trying on its own.",
   "theme": {
     "toNight": "Switch to the dark theme",
     "toDaybreak": "Switch to the light theme"
@@ -23,7 +24,8 @@
     "unreachable": "The service cannot be reached right now. Try again in a moment.",
     "throttled": "Too many attempts. Wait a little, then try again.",
     "session": "You have been signed out. Sign in again to continue.",
-    "generic": "That did not work. Try again, and if it keeps happening, reload the page."
+    "generic": "That did not work. Try again, and if it keeps happening, reload the page.",
+    "waking": "The server is still waking up. Wait a minute, then try again."
   },
   "update": {
     "available": "A new version is ready.",

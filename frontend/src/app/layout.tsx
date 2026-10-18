@@ -10,6 +10,7 @@ import { AmbientMusic } from "@/components/AmbientMusic";
 import { AuroraBackground } from "@/components/AuroraBackground";
 import { Providers } from "@/components/Providers";
 import { SkipLink } from "@/components/ui/primitives";
+import { WakingNotice } from "@/components/WakingNotice";
 import { PREFS_BOOT_SCRIPT } from "@/lib/prefs";
 
 const display = Hanken_Grotesk({
@@ -74,6 +75,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           <AuroraBackground />
           <AmbientMusic />
           <SkipLink>{t("skipToContent")}</SkipLink>
+          <WakingNotice />
           <Providers>{children}</Providers>
         </NextIntlClientProvider>
       </body>
