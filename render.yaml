@@ -84,8 +84,9 @@ services:
         value: "30"
       - key: CHAT_GLOBAL_DAILY_LIMIT
         value: "800"
+      # One gunicorn process with threads (backend/start-all.sh): fastest to wake.
       - key: WEB_CONCURRENCY
-        value: "2"
+        value: "1"
       # The first admin account (for approving content). Remove both after it exists.
       - key: DJANGO_SUPERUSER_EMAIL
         sync: false
