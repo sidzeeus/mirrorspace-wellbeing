@@ -28,10 +28,6 @@ click==8.5.0
     # via
     #   -c requirements.txt
     #   pip-tools
-colorama==0.4.6
-    # via
-    #   build
-    #   pytest
 coverage==7.16.2
     # via pytest-cov
 cyclonedx-python-lib==11.12.0
@@ -130,7 +126,7 @@ requests==2.34.2
     #   pip-audit
 rich==15.0.0
     # via pip-audit
-ruff==0.17.0
+ruff==0.17.1
     # via -r requirements-dev.in
 sortedcontainers==2.4.0
     # via cyclonedx-python-lib
@@ -154,11 +150,6 @@ typing-extensions==4.16.0
     #   django-stubs-ext
     #   djangorestframework-stubs
     #   mypy
-tzdata==2026.5
-    # via
-    #   -c requirements.txt
-    #   django
-    #   faker
 urllib3==2.8.0
     # via
     #   -c requirements.txt
