@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=requirements.txt --strip-extras requirements.in
 #
-amqp==5.4.1
+amqp==5.4.2
     # via kombu
 annotated-types==0.8.0
     # via pydantic
@@ -26,9 +26,9 @@ attrs==26.1.0
     # via
     #   jsonschema
     #   referencing
-billiard==4.3.1
+billiard==4.3.2
     # via celery
-celery==5.6.3
+celery==5.7.0
     # via -r requirements.in
 certifi==2026.7.22
     # via sentry-sdk
@@ -88,17 +88,15 @@ jsonschema==4.26.0
     # via drf-spectacular
 jsonschema-specifications==2025.9.1
     # via jsonschema
-kombu==5.6.2
+kombu==5.7.0
     # via celery
-packaging==26.3
-    # via kombu
 pgvector==0.5.1
     # via -r requirements.in
 prompt-toolkit==3.0.53
     # via click-repl
-psycopg==3.3.6
+psycopg==3.3.8
     # via -r requirements.in
-psycopg-binary==3.3.6
+psycopg-binary==3.3.8
     # via psycopg
 pycparser==3.11
     # via cffi
@@ -120,7 +118,7 @@ rpds-py==2026.9.1
     # via
     #   jsonschema
     #   referencing
-sentry-sdk==2.71.0
+sentry-sdk==2.74.0
     # via -r requirements.in
 six==1.17.0
     # via python-dateutil
@@ -145,13 +143,8 @@ typing-extensions==4.16.0
     #   typing-inspection
 typing-inspection==0.4.4
     # via pydantic
-tzdata==2026.5
-    # via
-    #   -r requirements.in
-    #   django
-    #   kombu
-    #   psycopg
-    #   tzlocal
+tzdata==2026.6
+    # via -r requirements.in
 tzlocal==5.4.4
     # via celery
 uritemplate==4.2.0
